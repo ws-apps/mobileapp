@@ -14,9 +14,12 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug</OutputPath>
-    <DefineConstants>DEBUG;</DefineConstants>
+    <DefineConstants>DEBUG;__DROID__</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DefineConstants>__DROID__</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -35,6 +38,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Toggl.Giskard\Toggl.Giskard.csproj">
+      <Project>{CEB93402-CEAE-4D6F-8169-3ACA1F792DF4}</Project>
+      <Name>Toggl.Giskard</Name>
+      <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="..\Toggl.Tests.UI\Toggl.Tests.UI.projitems" Label="Shared" Condition="Exists('..\Toggl.Tests.UI\Toggl.Tests.UI.projitems')" />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
