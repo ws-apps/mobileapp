@@ -9,6 +9,7 @@
         android:layout_height="48dp"
         android:layout_width="match_parent">
         <Button
+            android:contentDescription="Sign up button"
             local:MvxBind="Click SignUpCommand"
             android:background="@android:color/transparent"
             android:text="@string/SignUp"
@@ -16,6 +17,7 @@
             android:layout_height="match_parent"
             android:layout_width="0dp" />
         <Button
+            android:contentDescription="Login button"
             local:MvxBind="Click LoginCommand"
             android:text="@string/Login"
             android:background="@android:color/transparent"
