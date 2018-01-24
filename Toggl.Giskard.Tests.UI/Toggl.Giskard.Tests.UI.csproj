@@ -31,6 +31,7 @@
   <ItemGroup>
     <Compile Include="AndroidAccessibilityNames.cs" />
     <Compile Include="Configuration.cs" />
+    <Compile Include="AppExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
