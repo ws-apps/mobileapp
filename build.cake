@@ -163,6 +163,7 @@ private string[] GetUnitTestProjects() => new []
 
 private string[] GetUITestFiles() => new []
 {
+    "./bin/Debug/Toggl.Giskard.Tests.UI.dll",
     "./bin/Debug/Toggl.Daneel.Tests.UI.dll"
 };
 
