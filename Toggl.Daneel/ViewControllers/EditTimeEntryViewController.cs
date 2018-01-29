@@ -54,7 +54,7 @@ namespace Toggl.Daneel.ViewControllers
 
             var durationConverter = new TimeSpanToDurationWithUnitValueConverter();
             var dateConverter = new DateToTitleStringValueConverter();
-            var timeConverter = new DateTimeToTimeConverter();
+            var timeConverter = new DateTimeToTimeValueConverter();
             var visibilityConverter = new MvxVisibilityValueConverter();
             var invertedBoolConverter = new BoolToConstantValueConverter<bool>(false, true);
             var inverterVisibilityConverter = new MvxInvertedVisibilityValueConverter();

@@ -21,7 +21,6 @@ namespace Toggl.Daneel.Views.Reports
         private readonly CGColor lightColor = Color.Reports.Loading.LightColor.ToNativeColor().CGColor;
         private readonly CGColor darkColor = Color.Reports.Loading.DarkColor.ToNativeColor().CGColor;
 
-        private CGPoint center;
         private CGPoint start;
         private nfloat radius;
 
@@ -53,28 +52,31 @@ namespace Toggl.Daneel.Views.Reports
         {
         }
 
-        public override void AwakeFromNib()
+        public override void LayoutSubviews()
         {
-            base.AwakeFromNib();
+            base.LayoutSubviews();
 
-            var centerX = 0.5f * Bounds.Size.Width;
-            var centerY = 0.5f * Bounds.Size.Height;
+            // change the layout only if the size of the view changes
+            if (Center.X != radius)
+            {
+                radius = Center.X;
+                start = new CGPoint(Center.X, Center.Y + radius);
 
-            radius = centerX;
-            center = new CGPoint(centerX, centerY);
-            start = new CGPoint(centerX, centerY + radius);
+                foreground = new CAShapeLayer();
+                foreground.FillColor = darkColor;
 
-            foreground = new CAShapeLayer();
-            foreground.FillColor = darkColor;
+                background = new CAShapeLayer();
+                background.FillColor = lightColor;
 
-            background = new CAShapeLayer();
-            background.FillColor = lightColor;
+                background.RemoveFromSuperLayer();
+                foreground.RemoveFromSuperLayer();
 
-            Layer.AddSublayer(background);
-            Layer.AddSublayer(foreground);
+                Layer.AddSublayer(background);
+                Layer.AddSublayer(foreground);
 
-            animation = createAnimation();
-            startAnimation();
+                animation = createAnimation();
+                startAnimation();
+            }
         }
 
         private void startAnimation()
@@ -102,9 +104,9 @@ namespace Toggl.Daneel.Views.Reports
         {
             var angle = startAngle + fullCircle * percent;
             var path = new UIBezierPath();
-            path.MoveTo(center);
+            path.MoveTo(Center);
             path.AddLineTo(start);
-            path.AddArc(center, radius, startAngle, angle, true);
+            path.AddArc(Center, radius, startAngle, angle, true);
             path.ClosePath();
             return path.CGPath;
         }

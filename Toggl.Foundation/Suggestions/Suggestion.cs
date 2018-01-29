@@ -1,7 +1,9 @@
-﻿using Toggl.PrimeRadiant.Models;
+using Toggl.Multivac;
+using Toggl.PrimeRadiant.Models;
 
 namespace Toggl.Foundation.Suggestions
 {
+    [Preserve(AllMembers = true)]
     public sealed class Suggestion
     {
         public string Description { get; } = "";

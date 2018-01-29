@@ -8,7 +8,9 @@
     <string name="AddDescription">Add description</string>
     <string name="TermsOfService"><u>Terms of service</u></string>
     <string name="PrivacyPolicy"><u>Privacy policy</u></string>
-	
+    <string name="StartTimeEntryHint">What are you working on?</string>
+
     <string name="SuggestionsTemplateSelector" translatable="false">Toggl.Giskard.TemplateSelectors.SuggestionsTemplateSelector, Toggl.Giskard</string>
     <string name="TimeEntriesLogTemplateSelector" translatable="false">Toggl.Giskard.TemplateSelectors.TimeEntriesLogTemplateSelector, Toggl.Giskard</string>
+    <string name="StartTimeEntrySuggestionsTemplateSelector" translatable="false">Toggl.Giskard.TemplateSelectors.StartTimeEntrySuggestionsTemplateSelector, Toggl.Giskard</string>
 </resources>

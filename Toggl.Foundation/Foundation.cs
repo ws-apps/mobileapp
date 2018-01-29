@@ -15,6 +15,7 @@ namespace Toggl.Foundation
         public IApiFactory ApiFactory { get; internal set; }
         public ITogglDatabase Database { get; internal set; }
         public ITimeService TimeService { get; internal set; }
+        public IMailService MailService { get; internal set; }
         public IGoogleService GoogleService { get; internal set; }
         public ApiEnvironment ApiEnvironment { get; internal set; }
         public IBackgroundService BackgroundService { get; internal set; }
@@ -25,6 +26,7 @@ namespace Toggl.Foundation
             string version,
             ITogglDatabase database,
             ITimeService timeService,
+            IMailService mailService,
             IGoogleService googleService,
             ApiEnvironment apiEnvironment,
             IPlatformConstants platformConstants)
@@ -33,6 +35,7 @@ namespace Toggl.Foundation
             Ensure.Argument.IsNotNull(database, nameof(database));
             Ensure.Argument.IsNotNull(clientName, nameof(clientName));
             Ensure.Argument.IsNotNull(timeService, nameof(timeService));
+            Ensure.Argument.IsNotNull(mailService, nameof(mailService));
             Ensure.Argument.IsNotNull(googleService, nameof(googleService));
             Ensure.Argument.IsNotNull(platformConstants, nameof(platformConstants));
 
@@ -43,6 +46,7 @@ namespace Toggl.Foundation
                 Database = database,
                 UserAgent = userAgent,
                 TimeService = timeService,
+                MailService = mailService,
                 GoogleService = googleService,
                 ApiEnvironment = apiEnvironment,
                 Version = Version.Parse(version),

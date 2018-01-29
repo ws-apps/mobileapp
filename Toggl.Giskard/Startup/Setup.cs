@@ -57,6 +57,7 @@ namespace Toggl.Giskard
                 version,
                 new Database(),
                 new TimeService(Scheduler.Default),
+                new MailService(),
                 new GoogleService(),
                 environment,
                 new PlatformConstants()

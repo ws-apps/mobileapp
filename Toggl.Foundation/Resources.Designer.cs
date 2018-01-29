@@ -514,7 +514,7 @@ namespace Toggl.Foundation {
                 return ResourceManager.GetString("NoTagsInfoMessage", resourceCulture);
             }
         }
-       
+        
         public static string NoProjectsInfoMessage {
             get {
                 return ResourceManager.GetString("NoProjectsInfoMessage", resourceCulture);
@@ -578,6 +578,18 @@ namespace Toggl.Foundation {
         public static string WorkspaceChangedAlertMessage {
             get {
                 return ResourceManager.GetString("WorkspaceChangedAlertMessage", resourceCulture);
+            }
+        }
+        
+        public static string NoEmailErrorTitle {
+            get {
+                return ResourceManager.GetString("NoEmailErrorTitle", resourceCulture);
+            }
+        }
+        
+        public static string NoEmailErrorMessage {
+            get {
+                return ResourceManager.GetString("NoEmailErrorMessage", resourceCulture);
             }
         }
     }

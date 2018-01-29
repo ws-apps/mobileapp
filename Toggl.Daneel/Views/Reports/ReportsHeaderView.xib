@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
-    <device id="retina4_7" orientation="portrait">
+    <device id="retina4_0" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
@@ -110,16 +110,32 @@
                     <rect key="frame" x="0.0" y="153" width="375" height="382"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                 </view>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="oxk-69-eH5" customClass="PieChartView">
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="BGP-SH-dFd">
                     <rect key="frame" x="32" y="177" width="311" height="311"/>
-                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <subviews>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="oxk-69-eH5" customClass="PieChartView">
+                            <rect key="frame" x="0.0" y="0.0" width="311" height="311"/>
+                            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        </view>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HT1-Ki-ody" customClass="LoadingPieChartView">
+                            <rect key="frame" x="0.0" y="0.0" width="311" height="311"/>
+                            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        </view>
+                    </subviews>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <constraints>
-                        <constraint firstAttribute="width" secondItem="oxk-69-eH5" secondAttribute="height" multiplier="1:1" id="PXy-Y0-b48"/>
+                        <constraint firstItem="HT1-Ki-ody" firstAttribute="width" secondItem="BGP-SH-dFd" secondAttribute="width" id="73i-aC-Mh3"/>
+                        <constraint firstItem="HT1-Ki-ody" firstAttribute="top" secondItem="BGP-SH-dFd" secondAttribute="top" id="8Hz-6W-OC0"/>
+                        <constraint firstItem="oxk-69-eH5" firstAttribute="top" secondItem="BGP-SH-dFd" secondAttribute="top" id="BSy-9X-V14"/>
+                        <constraint firstItem="HT1-Ki-ody" firstAttribute="height" secondItem="BGP-SH-dFd" secondAttribute="height" id="KSj-Xm-qfZ"/>
+                        <constraint firstAttribute="trailing" secondItem="oxk-69-eH5" secondAttribute="trailing" id="Vqu-Hf-PT0"/>
+                        <constraint firstAttribute="trailing" secondItem="HT1-Ki-ody" secondAttribute="trailing" id="VsP-bq-C83"/>
+                        <constraint firstItem="oxk-69-eH5" firstAttribute="leading" secondItem="BGP-SH-dFd" secondAttribute="leading" id="fmv-IC-A8Y"/>
+                        <constraint firstItem="HT1-Ki-ody" firstAttribute="leading" secondItem="BGP-SH-dFd" secondAttribute="leading" id="mAT-wt-Xrj"/>
+                        <constraint firstAttribute="bottom" secondItem="oxk-69-eH5" secondAttribute="bottom" id="wCj-tp-ImG"/>
+                        <constraint firstAttribute="width" secondItem="BGP-SH-dFd" secondAttribute="height" multiplier="1:1" id="zGy-3e-ihB"/>
+                        <constraint firstAttribute="bottom" secondItem="HT1-Ki-ody" secondAttribute="bottom" id="zQ8-St-i6n"/>
                     </constraints>
-                </view>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HT1-Ki-ody" customClass="LoadingPieChartView">
-                    <rect key="frame" x="32" y="177" width="311" height="311"/>
-                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nZs-8E-xY9">
                     <rect key="frame" x="0.0" y="153" width="375" height="382"/>
@@ -157,26 +173,21 @@ the selected time period.</string>
             <constraints>
                 <constraint firstItem="L3q-fe-0ae" firstAttribute="leading" secondItem="1" secondAttribute="leading" id="05W-ue-ZDv"/>
                 <constraint firstAttribute="trailing" secondItem="nZs-8E-xY9" secondAttribute="trailing" id="10m-4K-7KI"/>
-                <constraint firstItem="oxk-69-eH5" firstAttribute="leading" secondItem="1" secondAttribute="leading" constant="32" id="2l0-wx-czE"/>
                 <constraint firstItem="CCY-m1-lmD" firstAttribute="leading" secondItem="1" secondAttribute="leading" id="6YX-3o-jMS"/>
-                <constraint firstItem="oxk-69-eH5" firstAttribute="top" secondItem="CCY-m1-lmD" secondAttribute="bottom" constant="24" id="DbQ-5v-MHG"/>
+                <constraint firstAttribute="trailing" secondItem="BGP-SH-dFd" secondAttribute="trailing" constant="32" id="81U-Kg-2Oj"/>
                 <constraint firstAttribute="bottom" secondItem="L3q-fe-0ae" secondAttribute="bottom" id="Kka-Ug-7yc"/>
                 <constraint firstItem="CCY-m1-lmD" firstAttribute="top" secondItem="qPk-V7-gUb" secondAttribute="bottom" constant="25" id="Ls3-Xy-nLw"/>
                 <constraint firstAttribute="trailing" secondItem="L3q-fe-0ae" secondAttribute="trailing" id="P4N-he-CeN"/>
                 <constraint firstItem="qPk-V7-gUb" firstAttribute="leading" secondItem="1" secondAttribute="leading" id="TBw-PC-gaM"/>
                 <constraint firstAttribute="bottom" secondItem="nZs-8E-xY9" secondAttribute="bottom" id="VGA-pZ-XI3"/>
-                <constraint firstItem="HT1-Ki-ody" firstAttribute="width" secondItem="oxk-69-eH5" secondAttribute="width" id="VuS-PI-ce5"/>
                 <constraint firstItem="nZs-8E-xY9" firstAttribute="leading" secondItem="1" secondAttribute="leading" id="XqN-5b-wLy"/>
-                <constraint firstItem="HT1-Ki-ody" firstAttribute="height" secondItem="oxk-69-eH5" secondAttribute="height" id="ezc-Uo-02U"/>
                 <constraint firstItem="L3q-fe-0ae" firstAttribute="top" secondItem="CCY-m1-lmD" secondAttribute="bottom" id="fk2-fH-31w"/>
                 <constraint firstAttribute="trailing" secondItem="qPk-V7-gUb" secondAttribute="trailing" id="k65-mk-FmW"/>
-                <constraint firstItem="HT1-Ki-ody" firstAttribute="trailing" secondItem="oxk-69-eH5" secondAttribute="trailing" id="lCJ-2A-7N1"/>
-                <constraint firstItem="HT1-Ki-ody" firstAttribute="leading" secondItem="oxk-69-eH5" secondAttribute="leading" id="op5-Pr-uiY"/>
-                <constraint firstItem="HT1-Ki-ody" firstAttribute="top" secondItem="oxk-69-eH5" secondAttribute="top" id="pYB-f0-4gC"/>
+                <constraint firstItem="BGP-SH-dFd" firstAttribute="leading" secondItem="1" secondAttribute="leading" constant="32" id="prc-T3-SpP"/>
                 <constraint firstItem="qPk-V7-gUb" firstAttribute="top" secondItem="1" secondAttribute="top" id="syk-8K-3RK"/>
-                <constraint firstAttribute="trailing" secondItem="oxk-69-eH5" secondAttribute="trailing" constant="32" id="vG5-Oh-LMF"/>
                 <constraint firstItem="nZs-8E-xY9" firstAttribute="top" secondItem="CCY-m1-lmD" secondAttribute="bottom" id="vok-GV-Y77"/>
                 <constraint firstAttribute="trailing" secondItem="CCY-m1-lmD" secondAttribute="trailing" id="wnQ-do-EcG"/>
+                <constraint firstItem="BGP-SH-dFd" firstAttribute="top" secondItem="CCY-m1-lmD" secondAttribute="bottom" constant="24" id="xQl-m8-OhD"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <connections>

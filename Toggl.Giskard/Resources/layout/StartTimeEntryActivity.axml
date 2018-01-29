@@ -1,5 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:local="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+    android:layout_height="match_parent">
+    <RelativeLayout
+        android:id="@+id/StartTimeEntryDurationCard"
+        android:layout_height="56dp"
+        android:layout_gravity="bottom"
+        android:layout_width="match_parent">
+        <ImageView
+            android:src="@drawable/TopShadow"
+            android:layout_height="8dp"
+            android:layout_width="match_parent"
+            android:layout_alignParentTop="true" />
+        <TextView
+            local:MvxBind="Text TimeSpanToDuration(ElapsedTime)"
+            android:textSize="20sp"
+            android:textColor="#328fff"
+            android:lineSpacingExtra="4sp"
+            tools:text="5 sec"
+            android:layout_margin="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/StartTimeEntryDoneButton"
+        local:MvxBind="Click DoneCommand"
+        local:elevation="4dp"
+        local:backgroundTint="@color/playButtonGreen"
+        android:src="@drawable/check_light"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="20dp"
+        android:layout_gravity="bottom|right" />
+    <toggl.giskard.views.StartTimeEntryRecyclerView
+        local:MvxBind="ItemsSource Suggestions; ItemClick SelectSuggestionCommand; UseGrouping UseGrouping"
+        local:MvxTemplateSelector="@string/StartTimeEntrySuggestionsTemplateSelector"
+        android:scrollbars="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/startTimeEntryToolbarHeight" />
+    <RelativeLayout
+        android:elevation="2dp"
+        android:background="@android:color/white"
+        android:layout_height="@dimen/startTimeEntryToolbarHeight"
+        android:layout_width="match_parent">
+        <EditText
+            android:id="@+id/StartTimeEntryDescriptionTextField"
+            local:MvxBind="Text TextFieldInfo.Text"
+            android:maxLines="1"
+            android:textSize="19sp"
+            android:singleLine="true"
+            android:letterSpacing="-0.01"
+            android:lineSpacingExtra="5sp"
+            android:scrollHorizontally="true"
+            android:textColor="@android:color/black"
+            android:background="@android:color/white"
+            android:hint="@string/StartTimeEntryHint"
+            android:textColorHint="@color/defaultText"
+            android:inputType="textNoSuggestions|textVisiblePassword"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <ImageView
+            local:MvxBind="Click ToggleBillableCommand; DrawableId BillableDrawable(IsBillable); Visibility Visibility(IsBillableAvailable), CommandParameter=true"
+            android:id="@+id/StartTimeEntryToolbarBillable"
+            android:background="@drawable/billable"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_alignParentRight="true" />
+        <ImageView
+            local:MvxBind="Click ToggleTagSuggestionsCommand; DrawableId TagsDrawable(IsSuggestingTags)"
+            android:id="@+id/StartTimeEntryToolbarTag"
+            android:background="@drawable/tag"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_toLeftOf="@+id/StartTimeEntryToolbarBillable" />
+        <ImageView
+            local:MvxBind="Click ToggleProjectSuggestionsCommand; DrawableId ProjectDrawable(IsSuggestingProjects)"
+            android:id="@+id/StartTimeEntryToolbarProject"
+            android:background="@drawable/project"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_toLeftOf="@+id/StartTimeEntryToolbarTag" />
+    </RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

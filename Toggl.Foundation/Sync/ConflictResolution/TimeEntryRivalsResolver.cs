@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using Toggl.Foundation.Models;
 using Toggl.Multivac.Extensions;
+using Toggl.Multivac.Models;
 using Toggl.PrimeRadiant;
 using Toggl.PrimeRadiant.Models;
 
@@ -28,18 +29,33 @@ namespace Toggl.Foundation.Sync.ConflictResolution
             return potentialRival => potentialRival.Duration == null && potentialRival.Id != entity.Id;
         }
 
-        public (IDatabaseTimeEntry FixedEntity, IDatabaseTimeEntry FixedRival) FixRivals(IDatabaseTimeEntry entity, IDatabaseTimeEntry rival, IQueryable<IDatabaseTimeEntry> allTimeEntries)
+        public (IDatabaseTimeEntry FixedEntity, IDatabaseTimeEntry FixedRival) FixRivals<TDatabaseObject>(
+            IDatabaseTimeEntry entity, IDatabaseTimeEntry rival, IQueryable<TDatabaseObject> allTimeEntries)
+            where TDatabaseObject : IDatabaseTimeEntry
             => rival.At < entity.At ? (entity, stop(rival, allTimeEntries)) : (stop(entity, allTimeEntries), rival);
 
-        private IDatabaseTimeEntry stop(IDatabaseTimeEntry toBeStopped, IQueryable<IDatabaseTimeEntry> allTimeEntries)
+        private IDatabaseTimeEntry stop<TDatabaseObject>(IDatabaseTimeEntry toBeStopped, IQueryable<TDatabaseObject> allTimeEntries)
+            where TDatabaseObject : IDatabaseTimeEntry
         {
-            var stop = ((IEnumerable<IDatabaseTimeEntry>)allTimeEntries.Where(other => other.Start > toBeStopped.Start))
+            var timeEntriesStartingAfter = (IEnumerable<IDatabaseTimeEntry>)allTimeEntries
+                .Where(startsAfter<TDatabaseObject>(toBeStopped.Start));
+            var stopTime = timeEntriesStartingAfter
                 .Select(te => te.Start)
                 .Where(start => start != default(DateTimeOffset))
                 .DefaultIfEmpty(timeService.CurrentDateTime)
                 .Min();
-            long duration = (long)(stop - toBeStopped.Start).TotalSeconds; // truncates towards zero (floor)
+            long duration = (long)(stopTime - toBeStopped.Start).TotalSeconds; // truncates towards zero (floor)
             return new TimeEntry(toBeStopped, duration);
+        }
+
+        private Expression<Func<TDatabaseObject, bool>> startsAfter<TDatabaseObject>(DateTimeOffset start)
+            where TDatabaseObject : IDatabaseTimeEntry
+        {
+            var other = Expression.Parameter(typeof(TDatabaseObject), "other");
+            var otherStart = Expression.Property(other, nameof(ITimeEntry.Start));
+            var startDate = Expression.Constant(start, typeof(DateTimeOffset));
+            var expression = Expression.GreaterThan(otherStart, startDate);
+            return Expression.Lambda<Func<TDatabaseObject, bool>>(expression, new[] { other });
         }
     }
 }

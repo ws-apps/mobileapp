@@ -2,6 +2,7 @@
 using FluentAssertions;
 using NSubstitute;
 using Toggl.Foundation.Login;
+using Toggl.Foundation.Services;
 using Toggl.Foundation.Tests.Generators;
 using Toggl.PrimeRadiant;
 using Toggl.Ultrawave;
@@ -14,12 +15,13 @@ namespace Toggl.Foundation.Tests
         public class TheCreateMethod
         {
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(SixParameterConstructorTestData))]
+            [ClassData(typeof(SevenParameterConstructorTestData))]
             public void ThrowsIfAnyOfTheArgumentsIsNull(
                 bool useClientName,
                 bool useVersion,
                 bool useDatabase,
                 bool useTimeService,
+                bool useMailService,
                 bool useGoogleService,
                 bool usePlatformConstants)
             {
@@ -27,6 +29,7 @@ namespace Toggl.Foundation.Tests
                 var clientName = useClientName ? "Some Client" : null;
                 var database = useDatabase ? Substitute.For<ITogglDatabase>() : null;
                 var timeService = useTimeService ? Substitute.For<ITimeService>() : null;
+                var mailService = useMailService ? Substitute.For<IMailService>() : null;
                 var googleService = useGoogleService ? Substitute.For<IGoogleService>() : null;
                 var platformConstants = usePlatformConstants ? Substitute.For<IPlatformConstants>() : null;
 
@@ -36,6 +39,7 @@ namespace Toggl.Foundation.Tests
                         version,
                         database,
                         timeService,
+                        mailService,
                         googleService,
                         ApiEnvironment.Staging,
                         platformConstants

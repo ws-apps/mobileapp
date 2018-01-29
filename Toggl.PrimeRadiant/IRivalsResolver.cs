@@ -8,6 +8,7 @@ namespace Toggl.PrimeRadiant
     {
         bool CanHaveRival(TModel entity);
         Expression<Func<TModel, bool>> AreRivals(TModel entity);
-        (TModel FixedEntity, TModel FixedRival) FixRivals(TModel entity, TModel rival, IQueryable<TModel> allEntities);
+        (TModel FixedEntity, TModel FixedRival) FixRivals<TRealmObject>(TModel entity, TModel rival, IQueryable<TRealmObject> allEntities)
+            where TRealmObject : TModel;
     }
 }

@@ -6,13 +6,13 @@ using Toggl.Giskard.Extensions;
 
 namespace Toggl.Giskard.Bindings
 {
-    public sealed class ViewMarginTargetBinding : MvxAndroidTargetBinding<View, int>
+    public sealed class ViewMarginTargetBinding : MvxAndroidTargetBinding<View, int?>
     {
         public const string BindingName = "Margin";
 
         private readonly BoundMargin boundMargin;
 
-        public override MvxBindingMode DefaultMode => MvxBindingMode.Default;
+        public override MvxBindingMode DefaultMode => MvxBindingMode.OneWay;
 
         public ViewMarginTargetBinding(View target, BoundMargin boundMargin = BoundMargin.All)
                 : base(target)
@@ -20,12 +20,13 @@ namespace Toggl.Giskard.Bindings
             this.boundMargin = boundMargin;
         }
 
-        protected override void SetValueImpl(View target, int value)
+        protected override void SetValueImpl(View target, int? value)
         {
+            if (value == null) return;
             var marginParams = Target.LayoutParameters as ViewGroup.MarginLayoutParams;
             if (marginParams == null) return;
 
-            var pixels = (int)value.DpToPixels(AndroidGlobals.ApplicationContext);
+            var pixels = (int)value.Value.DpToPixels(AndroidGlobals.ApplicationContext);
 
             var top = boundMargin.HasFlag(BoundMargin.Top) ? (int?)pixels : null;
             var left = boundMargin.HasFlag(BoundMargin.Left) ? (int?)pixels : null;

@@ -25,7 +25,7 @@ namespace Toggl.Daneel.ViewControllers
 
             prepareViews();
 
-            var timeConverter = new DateTimeToTimeConverter();
+            var timeConverter = new DateTimeToTimeValueConverter();
             var durationConverter = new TimeSpanToDurationValueConverter();
             var timeSpanToHeightConverter = new TimeSpanToViewHeightConverter(minDurationViewHeight, maxDurationViewHeight);
 

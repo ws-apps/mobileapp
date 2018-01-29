@@ -57,6 +57,11 @@ namespace Toggl.Foundation.Tests.Generators
         public SixParameterConstructorTestData() : base(6) { }
     }
 
+    public sealed class SevenParameterConstructorTestData : ConstructorTestData
+    {
+        public SevenParameterConstructorTestData() : base(7) { }
+    }
+
     public sealed class ConstructorTestDataTests
     {
         public sealed class TheGeneratedSequence

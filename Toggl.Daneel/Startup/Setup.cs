@@ -62,6 +62,7 @@ namespace Toggl.Daneel
                 version,
                 new Database(), 
                 new TimeService(Scheduler.Default),
+                new MailService((ITopViewControllerProvider)Presenter),
                 new GoogleService(),
                 environment,
                 new PlatformConstants()

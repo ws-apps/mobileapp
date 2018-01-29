@@ -290,4 +290,11 @@ categorize your tracked time.</value>
     <data name="WorkspaceChangedAlertMessage">
         <value>Your project and time entry will be allocated under the selected workspace.</value>
     </data>
+    <data name="NoEmailErrorTitle">
+        <value>Oops! Seems like your email
+account is not set up</value>
+    </data>
+    <data name="NoEmailErrorMessage">
+        <value>Go to “Settings > Mail > Add Account” to set up an email account or send us your feedback to support@toggl.com</value>
+    </data>
 </root>

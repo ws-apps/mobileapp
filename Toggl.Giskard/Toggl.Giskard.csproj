@@ -218,7 +218,12 @@
     <Compile Include="Activities\StartTimeEntryActivity.cs" />
     <Compile Include="Extensions\VisibilityExtensions.cs" />
     <Compile Include="Activities\BrowserActivity.cs" />
+    <Compile Include="Services\MailService.cs" />
     <Compile Include="Extensions\CircularRevealAnimation.cs" />
+    <Compile Include="TemplateSelectors\StartTimeEntrySuggestionsTemplateSelector.cs" />
+    <Compile Include="Views\StartTimeEntryRecyclerView.cs" />
+    <Compile Include="Adapters\StartTimeEntryRecyclerAdapter.cs" />
+    <Compile Include="Adapters\SegmentedRecyclerAdapter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\AndroidManifest.xml" />
@@ -422,6 +427,7 @@
     <AndroidResource Include="Resources\layout\StartTimeEntryActivityWorkspaceHeader.axml" />
     <AndroidResource Include="Resources\layout\StartTimeEntryActivityNoEntityCell.axml" />
     <AndroidResource Include="Resources\layout\StartTimeEntryActivityEmptyCell.axml" />
+    <AndroidResource Include="Resources\values\Dimen.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Toggl.Foundation\Toggl.Foundation.csproj">
