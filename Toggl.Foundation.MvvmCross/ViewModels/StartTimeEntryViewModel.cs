@@ -73,9 +73,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public string CurrentQuery { get; private set; }
 
-        public bool IsEditingDuration { get; private set; }
-
-        public bool IsEditingStartDate { get; private set; }
+        public bool IsEditingTime { get; private set; }
 
         public bool IsSuggestingTags { get; private set; }
 
@@ -110,9 +108,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public IMvxAsyncCommand DoneCommand { get; }
 
-        public IMvxAsyncCommand ChangeDurationCommand { get; }
-
-        public IMvxAsyncCommand ChangeStartTimeCommand { get; }
+        public IMvxAsyncCommand ChangeTimeCommand { get; }
 
         public IMvxCommand ToggleBillableCommand { get; }
 
@@ -146,8 +142,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             DoneCommand = new MvxAsyncCommand(done);
             ToggleBillableCommand = new MvxCommand(toggleBillable);
             CreateCommand = new MvxAsyncCommand(create);
-            ChangeDurationCommand = new MvxAsyncCommand(changeDuration);
-            ChangeStartTimeCommand = new MvxAsyncCommand(changeStartTime);
+            ChangeTimeCommand = new MvxAsyncCommand(changeTime);
             ToggleTagSuggestionsCommand = new MvxCommand(toggleTagSuggestions);
             ToggleProjectSuggestionsCommand = new MvxCommand(toggleProjectSuggestions);
             SelectSuggestionCommand = new MvxAsyncCommand<AutocompleteSuggestion>(selectSuggestion);
@@ -415,36 +410,29 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         private void toggleBillable() => IsBillable = !IsBillable;
 
-        private async Task changeStartTime()
+        private async Task changeTime()
         {
-            IsEditingStartDate = true;
+            IsEditingTime = true;
 
-            var currentTime = timeService.CurrentDateTime;
-            var minDate = currentTime.AddHours(-MaxTimeEntryDurationInHours);
-
-            var parameters = DatePickerParameters.WithDates(StartTime, minDate, currentTime);
-            StartTime = await navigationService
-                .Navigate<SelectDateTimeViewModel, DatePickerParameters, DateTimeOffset>(parameters)
-                .ConfigureAwait(false);
-
-            IsEditingStartDate = false;
-        }
-
-        private Task back() => navigationService.Close(this);
-
-        private async Task changeDuration()
-        {
-            IsEditingDuration = true;
-
-            var currentDuration = DurationParameter.WithStartAndDuration(StartTime, null);
+            var duration = StopTime.HasValue ? StopTime - StartTime : null;
+            var currentDuration = DurationParameter.WithStartAndDuration(StartTime, duration);
             var selectedDuration = await navigationService
                 .Navigate<EditDurationViewModel, DurationParameter, DurationParameter>(currentDuration)
                 .ConfigureAwait(false);
 
             StartTime = selectedDuration.Start;
 
-            IsEditingDuration = false;
+            if (selectedDuration.Duration.HasValue)
+            {
+                StopTime = StartTime + selectedDuration.Duration;
+                ElapsedTime = selectedDuration.Duration.Value;
+                elapsedTimeDisposable.Dispose();
+            }
+
+            IsEditingTime = false;
         }
+
+        private Task back() => navigationService.Close(this);
 
         private async Task done()
         {
@@ -453,6 +441,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 {
                     TaskId = TextFieldInfo.TaskId,
                     StartTime = StartTime,
+                    Duration = StopTime - StartTime,
                     Billable = IsBillable,
                     UserId = user.Id,
                     WorkspaceId = TextFieldInfo.WorkspaceId ?? user.DefaultWorkspaceId,

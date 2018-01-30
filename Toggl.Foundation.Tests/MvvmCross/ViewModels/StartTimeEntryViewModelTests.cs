@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -429,94 +430,6 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             }
         }
 
-        public sealed class TheChangeStartTimeCommand : StartTimeEntryViewModelTest
-        {
-            [Property]
-            public void CallsTheSelectDateTimeViewModelWithAMinDateThatAllowsUpTo999HoursOfDuration(DateTimeOffset now)
-            {
-                if (DateTimeOffset.MinValue.AddHours(MaxTimeEntryDurationInHours) <= now ||
-                    DateTimeOffset.MaxValue.AddHours(-1) >= now) return;
-
-                TimeService.CurrentDateTime.Returns(now);
-
-                var parameterToReturn = now.AddHours(-2);
-                NavigationService
-                    .Navigate<SelectDateTimeViewModel, DatePickerParameters, DateTimeOffset>(
-                        Arg.Any<DatePickerParameters>())
-                    .Returns(parameterToReturn);
-                ViewModel.Prepare(now);
-
-                ViewModel.ChangeStartTimeCommand.ExecuteAsync().Wait();
-
-                NavigationService
-                    .Received()
-                    .Navigate<SelectDateTimeViewModel, DatePickerParameters, DateTimeOffset>(
-                        Arg.Is<DatePickerParameters>(p => p.MinDate == now.AddHours(-MaxTimeEntryDurationInHours)));
-            }
-
-            [Property]
-            public void CallsTheSelectDateTimeViewModelWithAMaxDateEqualToTheCurrentDate(DateTimeOffset now)
-            {
-                if (DateTimeOffset.MinValue.AddHours(MaxTimeEntryDurationInHours) <= now ||
-                    DateTimeOffset.MaxValue.AddHours(-1) >= now) return;
-
-                TimeService.CurrentDateTime.Returns(now);
-
-                var parameterToReturn = now.AddHours(-2);
-                NavigationService
-                    .Navigate<SelectDateTimeViewModel, DatePickerParameters, DateTimeOffset>(
-                        Arg.Any<DatePickerParameters>())
-                    .Returns(parameterToReturn);
-                ViewModel.Prepare(now);
-
-                ViewModel.ChangeStartTimeCommand.ExecuteAsync().Wait();
-
-
-                NavigationService
-                    .Received()
-                    .Navigate<SelectDateTimeViewModel, DatePickerParameters, DateTimeOffset>(
-                        Arg.Is<DatePickerParameters>(p => p.MaxDate == now));
-            }
-
-            [Property]
-            public void SetsTheStartDateToTheValueReturnedByTheSelectDateTimeDialogViewModel(DateTimeOffset now)
-            {
-                if (DateTimeOffset.MinValue.AddHours(MaxTimeEntryDurationInHours) <= now ||
-                    DateTimeOffset.MaxValue.AddHours(-1) >= now) return;
-
-                var parameterToReturn = now.AddHours(-2);
-                NavigationService
-                    .Navigate<SelectDateTimeViewModel, DatePickerParameters, DateTimeOffset>(Arg.Any<DatePickerParameters>())
-                    .Returns(parameterToReturn);
-                ViewModel.Prepare(now);
-
-                ViewModel.ChangeStartTimeCommand.ExecuteAsync().Wait();
-
-                ViewModel.StartTime.Should().Be(parameterToReturn);
-            }
-
-            [Property]
-            public void SetsTheIsEditingStartDateToTrueWhileTheViewDoesNotReturnAndThenSetsItBackToFalse(DateTimeOffset now)
-            {
-                if (DateTimeOffset.MinValue.AddHours(MaxTimeEntryDurationInHours) <= now ||
-                    DateTimeOffset.MaxValue.AddHours(-1) >= now) return;
-
-                var parameterToReturn = now.AddHours(-2);
-                var tcs = new TaskCompletionSource<DateTimeOffset>();
-                NavigationService
-                    .Navigate<SelectDateTimeViewModel, DatePickerParameters, DateTimeOffset>(Arg.Any<DatePickerParameters>())
-                    .Returns(tcs.Task);
-                ViewModel.Prepare(now);
-
-                var toWait = ViewModel.ChangeStartTimeCommand.ExecuteAsync();
-                ViewModel.IsEditingStartDate.Should().BeTrue();
-                tcs.SetResult(parameterToReturn);
-                toWait.Wait();
-
-                ViewModel.IsEditingStartDate.Should().BeFalse();
-            }
-        }
-
         public sealed class TheToggleProjectSuggestionsCommand : StartTimeEntryViewModelTest
         {
             public TheToggleProjectSuggestionsCommand()
@@ -686,10 +599,10 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             }
         }
 
-        public sealed class TheChangeDurationCommandCommand : StartTimeEntryViewModelTest
+        public sealed class TheChangeTimeCommand : StartTimeEntryViewModelTest
         {
             [Fact, LogIfTooSlow]
-            public async Task SetsTheStartDateToTheValueReturnedByTheSelectDateTimeDialogViewModel()
+            public async Task SetsTheStartDateToTheValueReturnedByTheEditDurationViewModel()
             {
                 var now = DateTimeOffset.UtcNow;
                 var parameterToReturn = DurationParameter.WithStartAndDuration(now.AddHours(-2), null);
@@ -698,7 +611,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     .Returns(parameterToReturn);
                 ViewModel.Prepare(now);
 
-                await ViewModel.ChangeDurationCommand.ExecuteAsync();
+                await ViewModel.ChangeTimeCommand.ExecuteAsync();
 
                 ViewModel.StartTime.Should().Be(parameterToReturn.Start);
             }
@@ -714,12 +627,40 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     .Returns(tcs.Task);
                 ViewModel.Prepare(now);
 
-                var toWait = ViewModel.ChangeDurationCommand.ExecuteAsync();
-                ViewModel.IsEditingDuration.Should().BeTrue();
+                var toWait = ViewModel.ChangeTimeCommand.ExecuteAsync();
+                ViewModel.IsEditingTime.Should().BeTrue();
                 tcs.SetResult(parameterToReturn);
                 await toWait;
 
-                ViewModel.IsEditingDuration.Should().BeFalse();
+                ViewModel.IsEditingTime.Should().BeFalse();
+            }
+
+            [Fact, LogIfTooSlow]
+            public async Task SetsTheStopDateToTheValueReturnedByTheEditDurationViewModelIfUserStoppsTheTimeEntry()
+            {
+                var now = DateTimeOffset.UtcNow;
+                var currentTimeSubject = new Subject<DateTimeOffset>();
+                var observable = currentTimeSubject.AsObservable().Replay();
+                observable.Connect();
+                TimeService.CurrentDateTimeObservable.Returns(observable);
+                var parameterToReturn = DurationParameter.WithStartAndDuration(now.AddHours(-2), TimeSpan.FromMinutes(30));
+                var tcs = new TaskCompletionSource<DurationParameter>();
+                NavigationService
+                    .Navigate<EditDurationViewModel, DurationParameter, DurationParameter>(Arg.Any<DurationParameter>())
+                    .Returns(tcs.Task);
+                ViewModel.Prepare(now);
+
+                var toWait = ViewModel.ChangeTimeCommand.ExecuteAsync();
+                ViewModel.IsEditingTime.Should().BeTrue();
+                tcs.SetResult(parameterToReturn);
+                await toWait;
+
+                ViewModel.IsEditingTime.Should().BeFalse();
+                ViewModel.ElapsedTime.Should().Be(parameterToReturn.Duration.Value);
+
+                currentTimeSubject.OnNext(now.AddHours(10));
+
+                ViewModel.ElapsedTime.Should().Be(parameterToReturn.Duration.Value);
             }
         }
 

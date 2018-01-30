@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13527"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -21,7 +21,6 @@
                 <outlet property="DescriptionRemainingLengthLabel" destination="Ibp-rp-GIs" id="PVJ-Me-AnQ"/>
                 <outlet property="DescriptionTextView" destination="R8W-w1-sEf" id="name-outlet-R8W-w1-sEf"/>
                 <outlet property="DoneButton" destination="Hya-nl-hcs" id="name-outlet-Hya-nl-hcs"/>
-                <outlet property="DurationButton" destination="lT7-d8-d3t" id="name-outlet-lT7-d8-d3t"/>
                 <outlet property="ProjectsButton" destination="qfx-lJ-emc" id="name-outlet-qfx-lJ-emc"/>
                 <outlet property="SuggestionsTableView" destination="04s-S8-twa" id="name-outlet-04s-S8-twa"/>
                 <outlet property="TagsButton" destination="H7M-A1-mmK" id="name-outlet-H7M-A1-mmK"/>
@@ -90,16 +89,12 @@
                             <rect key="frame" x="128" y="0.0" width="42" height="50"/>
                             <state key="normal" image="icDatetime"/>
                         </button>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lT7-d8-d3t">
-                            <rect key="frame" x="170" y="0.0" width="42" height="50"/>
-                            <state key="normal" image="duration"/>
-                        </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Hya-nl-hcs">
                             <rect key="frame" x="325" y="0.0" width="50" height="50"/>
                             <accessibility key="accessibilityConfiguration" label="StartTimeEntryDone"/>
                             <state key="normal" image="icDone"/>
                         </button>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="-15" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ibp-rp-GIs">
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="-15" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ibp-rp-GIs">
                             <rect key="frame" x="212" y="1" width="42" height="49"/>
                             <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="12"/>
                             <color key="textColor" red="0.96862745098039216" green="0.25098039215686274" blue="0.28627450980392155" alpha="1" colorSpace="calibratedRGB"/>
@@ -111,32 +106,26 @@
                         <constraint firstItem="Hya-nl-hcs" firstAttribute="width" secondItem="dU3-s1-ELa" secondAttribute="height" multiplier="1:1" id="05f-8r-PWq"/>
                         <constraint firstItem="4Tp-xX-rFB" firstAttribute="centerY" secondItem="Xnc-Zt-xWV" secondAttribute="centerY" id="0pD-l2-1EY"/>
                         <constraint firstItem="4Tp-xX-rFB" firstAttribute="width" secondItem="H7M-A1-mmK" secondAttribute="width" id="1RC-QU-4sg"/>
-                        <constraint firstItem="lT7-d8-d3t" firstAttribute="centerY" secondItem="4Tp-xX-rFB" secondAttribute="centerY" id="4Sr-sy-ow5"/>
                         <constraint firstItem="qfx-lJ-emc" firstAttribute="height" secondItem="dU3-s1-ELa" secondAttribute="height" id="57F-eo-fSD"/>
                         <constraint firstItem="Xnc-Zt-xWV" firstAttribute="height" secondItem="H7M-A1-mmK" secondAttribute="height" id="7QF-p9-duO"/>
                         <constraint firstAttribute="trailing" secondItem="2em-4m-f1y" secondAttribute="trailing" id="HMI-6t-ddi"/>
                         <constraint firstAttribute="height" constant="50" id="I0s-0r-NeA"/>
                         <constraint firstItem="Xnc-Zt-xWV" firstAttribute="leading" secondItem="H7M-A1-mmK" secondAttribute="trailing" id="LML-We-R2J"/>
-                        <constraint firstItem="Ibp-rp-GIs" firstAttribute="leading" secondItem="lT7-d8-d3t" secondAttribute="trailing" id="LZ6-Nt-KPI"/>
                         <constraint firstItem="H7M-A1-mmK" firstAttribute="width" secondItem="qfx-lJ-emc" secondAttribute="width" id="Lgi-ZT-Iqq"/>
                         <constraint firstItem="4Tp-xX-rFB" firstAttribute="leading" secondItem="Xnc-Zt-xWV" secondAttribute="trailing" id="R6H-v7-0xf"/>
-                        <constraint firstItem="Ibp-rp-GIs" firstAttribute="width" secondItem="lT7-d8-d3t" secondAttribute="width" id="RBe-2j-3xn"/>
                         <constraint firstItem="H7M-A1-mmK" firstAttribute="leading" secondItem="qfx-lJ-emc" secondAttribute="trailing" id="Ri0-zk-3nr"/>
                         <constraint firstItem="Xnc-Zt-xWV" firstAttribute="centerY" secondItem="H7M-A1-mmK" secondAttribute="centerY" id="Seh-3E-0rd"/>
                         <constraint firstItem="4Tp-xX-rFB" firstAttribute="height" secondItem="Xnc-Zt-xWV" secondAttribute="height" id="SqF-uV-74q"/>
                         <constraint firstItem="2em-4m-f1y" firstAttribute="top" secondItem="dU3-s1-ELa" secondAttribute="top" id="T6W-gD-PS2"/>
                         <constraint firstItem="H7M-A1-mmK" firstAttribute="centerY" secondItem="qfx-lJ-emc" secondAttribute="centerY" id="TTW-fb-T8a"/>
                         <constraint firstItem="Ibp-rp-GIs" firstAttribute="top" secondItem="2em-4m-f1y" secondAttribute="bottom" id="XO4-pe-uuD"/>
-                        <constraint firstItem="lT7-d8-d3t" firstAttribute="height" secondItem="4Tp-xX-rFB" secondAttribute="height" id="YHB-Ok-1qF"/>
                         <constraint firstItem="Hya-nl-hcs" firstAttribute="height" secondItem="dU3-s1-ELa" secondAttribute="height" id="b12-fm-KQu"/>
                         <constraint firstAttribute="trailing" secondItem="Hya-nl-hcs" secondAttribute="trailing" id="c5E-bE-Rmf"/>
                         <constraint firstItem="qfx-lJ-emc" firstAttribute="centerY" secondItem="dU3-s1-ELa" secondAttribute="centerY" id="cAA-Z2-S3c"/>
                         <constraint firstItem="2em-4m-f1y" firstAttribute="leading" secondItem="dU3-s1-ELa" secondAttribute="leading" id="cxV-jj-fOc"/>
                         <constraint firstAttribute="bottom" secondItem="Ibp-rp-GIs" secondAttribute="bottom" id="dTf-AH-52C"/>
                         <constraint firstItem="Hya-nl-hcs" firstAttribute="centerY" secondItem="dU3-s1-ELa" secondAttribute="centerY" id="lXh-tS-P07"/>
-                        <constraint firstItem="lT7-d8-d3t" firstAttribute="leading" secondItem="4Tp-xX-rFB" secondAttribute="trailing" id="ogn-ws-E2a"/>
                         <constraint firstItem="qfx-lJ-emc" firstAttribute="leading" secondItem="dU3-s1-ELa" secondAttribute="leading" constant="2" id="t2l-uP-lb6"/>
-                        <constraint firstItem="lT7-d8-d3t" firstAttribute="width" secondItem="4Tp-xX-rFB" secondAttribute="width" id="tk3-r1-pVZ"/>
                         <constraint firstItem="H7M-A1-mmK" firstAttribute="height" secondItem="qfx-lJ-emc" secondAttribute="height" id="yu9-x5-VRI"/>
                     </constraints>
                 </view>
@@ -175,7 +164,6 @@
         </view>
     </objects>
     <resources>
-        <image name="duration" width="13" height="16"/>
         <image name="icBillable" width="8" height="16"/>
         <image name="icClose" width="10" height="10"/>
         <image name="icDatetime" width="14" height="14"/>

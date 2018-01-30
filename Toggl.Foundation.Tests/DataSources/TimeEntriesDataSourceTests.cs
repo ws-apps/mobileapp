@@ -74,7 +74,7 @@ namespace Toggl.Foundation.Tests.DataSources
             }
 
             protected StartTimeEntryDTO CreateDto(DateTimeOffset startTime, string description, bool billable,
-                long? projectId, long? taskId = null) => new StartTimeEntryDTO
+                long? projectId, long? taskId = null, TimeSpan? duration = null) => new StartTimeEntryDTO
                 {
                     UserId = UserId,
                     TaskId = taskId,
@@ -82,7 +82,8 @@ namespace Toggl.Foundation.Tests.DataSources
                     StartTime = startTime,
                     Description = description,
                     Billable = billable,
-                    ProjectId = projectId
+                    ProjectId = projectId,
+                    Duration = duration
                 };
         }
 
@@ -211,6 +212,14 @@ namespace Toggl.Foundation.Tests.DataSources
                 var currentlyRunningTimeEntry = observer.Messages.Single().Value.Value;
                 await batchUpdateCalledWith(te => te.Start == currentlyRunningTimeEntry.Start);
 
+            }
+
+            [Fact, LogIfTooSlow]
+            public async ThreadingTask CreatesAStoppedTimeEntry()
+            {
+                await TimeEntriesSource.Start(CreateDto(ValidTime, ValidDescription, true, ProjectId, duration: TimeSpan.FromSeconds(5)));
+
+                await batchUpdateCalledWith(te => te.Duration.HasValue);
             }
 
             [Fact, LogIfTooSlow]

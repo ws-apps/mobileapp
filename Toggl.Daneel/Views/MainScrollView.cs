@@ -25,6 +25,7 @@ namespace Toggl.Daneel.Views
         private readonly UIColor syncCompletedColor = Color.Main.SyncCompleted.ToNativeColor();
 
         private SyncProgress syncProgress;
+        private bool wasReleased;
         private bool needsRefresh;
         private bool shouldCalculateOnDeceleration;
         private bool isSyncing => syncProgress == SyncProgress.Syncing;
@@ -59,6 +60,7 @@ namespace Toggl.Daneel.Views
             base.AwakeFromNib();
 
             Scrolled += onScrolled;
+            DraggingStarted += onDragStarted;
             DraggingEnded += onDragEnded;
             DecelerationEnded += onDecelerationEnded;
             ShouldScrollToTop = shouldScrollToTop;
@@ -70,13 +72,14 @@ namespace Toggl.Daneel.Views
             if (!disposing) return;
 
             Scrolled -= onScrolled;
+            DraggingStarted -= onDragStarted;
             DraggingEnded -= onDragEnded;
             DecelerationEnded -= onDecelerationEnded;
         }
 
         private void onScrolled(object sender, EventArgs e)
         {
-            if (!Dragging) return;
+            if (!Dragging || wasReleased) return;
 
             var offset = ContentOffset.Y;
             if (offset >= 0) return;
@@ -92,12 +95,18 @@ namespace Toggl.Daneel.Views
                 pullToRefreshColor);
         }
 
+        private void onDragStarted(object sender, EventArgs e)
+        {
+            wasReleased = false;
+        }
+
         private void onDragEnded(object sender, DraggingEventArgs e)
         {
             var offset = ContentOffset.Y;
             if (offset >= 0) return;
 
             shouldCalculateOnDeceleration = e.Decelerate;
+            wasReleased = true;
 
             if (shouldCalculateOnDeceleration) return;
             refreshIfNeeded();

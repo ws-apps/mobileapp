@@ -89,6 +89,12 @@ namespace Toggl.Foundation.Models
                 return this;
             }
 
+            public Builder SetDuration(TimeSpan? duration)
+            {
+                Duration = (long?)duration?.TotalSeconds;
+                return this;
+            }
+
             public Builder SetWorkspaceId(long workspaceId)
             {
                 WorkspaceId = workspaceId;

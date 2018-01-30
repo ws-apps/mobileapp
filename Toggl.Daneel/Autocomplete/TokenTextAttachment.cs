@@ -5,7 +5,7 @@ using MvvmCross.Plugins.Color.iOS;
 using Toggl.Foundation.MvvmCross.Helper;
 using UIKit;
 
-namespace Toggl.Daneel
+namespace Toggl.Daneel.Autocomplete
 {
     public sealed class TokenTextAttachment : NSTextAttachment
     {

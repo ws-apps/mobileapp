@@ -8,6 +8,7 @@ using FsCheck.Xunit;
 using Toggl.Foundation.MvvmCross.ViewModels.Calendar;
 using Toggl.Multivac;
 using Xunit;
+using Math = System.Math;
 
 namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 {

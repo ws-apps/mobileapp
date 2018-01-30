@@ -272,13 +272,17 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         
         private async Task editDuration()
         {
-            var currentDuration = DurationParameter.WithStartAndDuration(StartTime, Duration);
+            var duration = StopTime.HasValue ? Duration : (TimeSpan?)null;
+            var currentDuration = DurationParameter.WithStartAndDuration(StartTime, duration);
             var selectedDuration = await navigationService
                 .Navigate<EditDurationViewModel, DurationParameter, DurationParameter>(currentDuration)
                 .ConfigureAwait(false);
             
             StartTime = selectedDuration.Start;
-            StopTime = selectedDuration.Start + (selectedDuration.Duration ?? TimeSpan.Zero);
+            if (selectedDuration.Duration.HasValue)
+            {
+                StopTime = selectedDuration.Start + selectedDuration.Duration.Value;
+            }
         }
 
         private async Task selectTags()

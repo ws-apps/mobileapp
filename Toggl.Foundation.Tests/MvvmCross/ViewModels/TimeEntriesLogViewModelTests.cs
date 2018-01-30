@@ -390,6 +390,33 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 await DataSource.SyncManager.DidNotReceive().PushSync();
             }
             
+            [Fact, LogIfTooSlow]
+            public async ThreadingTask CannotBeExecutedTwiceInARow()
+            {
+                var timeEntryViewModel = createTimeEntryViewModel();
+                DataSource.TimeEntries.Start(Arg.Any<StartTimeEntryDTO>())
+                    .Returns(Observable.Never<IDatabaseTimeEntry>());
+
+                ViewModel.ContinueTimeEntryCommand.ExecuteAsync(timeEntryViewModel);
+                ViewModel.ContinueTimeEntryCommand.ExecuteAsync(timeEntryViewModel);
+
+                await DataSource.TimeEntries.Received(1).Start(Arg.Any<StartTimeEntryDTO>());
+            }
+
+            [Fact, LogIfTooSlow]
+            public async ThreadingTask CanBeExecutedForTheSecondTimeIfStartingTheFirstOneFinishesSuccessfully()
+            {
+                var timeEntryViewModel = createTimeEntryViewModel();
+                var timeEntry = Substitute.For<IDatabaseTimeEntry>();
+                DataSource.TimeEntries.Start(Arg.Any<StartTimeEntryDTO>())
+                    .Returns(Observable.Return(timeEntry));
+
+                await ViewModel.ContinueTimeEntryCommand.ExecuteAsync(timeEntryViewModel);
+                await ViewModel.ContinueTimeEntryCommand.ExecuteAsync(timeEntryViewModel);
+
+                await DataSource.TimeEntries.Received(2).Start(Arg.Any<StartTimeEntryDTO>());
+            }
+
             private TimeEntryViewModel createTimeEntryViewModel()
             {
                 var timeEntry = Substitute.For<IDatabaseTimeEntry>();

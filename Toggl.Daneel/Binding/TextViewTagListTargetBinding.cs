@@ -4,14 +4,13 @@ using System.Linq;
 using Foundation;
 using MvvmCross.Binding;
 using MvvmCross.Binding.Bindings.Target;
-using Toggl.Daneel.Extensions;
+using Toggl.Daneel.Autocomplete;
 using UIKit;
 using static Toggl.Multivac.Extensions.EnumerableExtensions;
 
 namespace Toggl.Daneel.Binding
 {
-    public sealed class TextViewTagListTargetBinding
-        : MvxTargetBinding<UITextView, IEnumerable<string>>
+    public sealed class TextViewTagListTargetBinding : MvxTargetBinding<UITextView, IEnumerable<string>>
     {
         private const int tokenLeftMargin = 3;
         private const int tokenRightMargin = 3;

@@ -27,6 +27,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private readonly IOnboardingStorage onboardingStorage;
         private readonly IMvxNavigationService navigationService;
 
+        private bool areContineButtonsEnabled = true;
+
         public bool IsWelcome { get; private set; }
 
         public MvxObservableCollection<TimeEntryViewModelCollection> TimeEntries { get; }
@@ -49,7 +51,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public IMvxAsyncCommand<TimeEntryViewModel> EditCommand { get; }
 
-        public IMvxAsyncCommand<TimeEntryViewModel> ContinueTimeEntryCommand { get; }
+        public MvxAsyncCommand<TimeEntryViewModel> ContinueTimeEntryCommand { get; }
 
         public TimeEntriesLogViewModel(ITogglDataSource dataSource, 
                                        ITimeService timeService,
@@ -67,7 +69,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             this.navigationService = navigationService;
 
             EditCommand = new MvxAsyncCommand<TimeEntryViewModel>(edit);
-            ContinueTimeEntryCommand = new MvxAsyncCommand<TimeEntryViewModel>(continueTimeEntry);
+            ContinueTimeEntryCommand = new MvxAsyncCommand<TimeEntryViewModel>(continueTimeEntry, _ => areContineButtonsEnabled);
         }
 
         public override async Task Initialize()
@@ -196,6 +198,9 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         private async Task continueTimeEntry(TimeEntryViewModel timeEntryViewModel)
         {
+            areContineButtonsEnabled = false;
+            ContinueTimeEntryCommand.RaiseCanExecuteChanged();
+
             await dataSource.User
                 .Current
                 .Select(user => new StartTimeEntryDTO
@@ -210,7 +215,12 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                     TagIds = timeEntryViewModel.TagIds
                 })
                 .SelectMany(dataSource.TimeEntries.Start)
-                .Do(_ => dataSource.SyncManager.PushSync());
+                .Do(_ => dataSource.SyncManager.PushSync())
+                .Do(_ =>
+                {
+                    areContineButtonsEnabled = true;
+                    ContinueTimeEntryCommand.RaiseCanExecuteChanged();
+                });
         }
     }
 }

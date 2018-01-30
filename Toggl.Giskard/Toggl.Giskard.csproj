@@ -224,6 +224,12 @@
     <Compile Include="Views\StartTimeEntryRecyclerView.cs" />
     <Compile Include="Adapters\StartTimeEntryRecyclerAdapter.cs" />
     <Compile Include="Adapters\SegmentedRecyclerAdapter.cs" />
+    <Compile Include="Autocomplete\AutocompleteTextWatcher.cs" />
+    <Compile Include="Autocomplete\TokenExtensions.cs" />
+    <Compile Include="Autocomplete\TokenSpan.cs" />
+    <Compile Include="Bindings\EditTextTextFieldInfoTargetBinding.cs" />
+    <Compile Include="Autocomplete\ProjectTokenSpan.cs" />
+    <Compile Include="Autocomplete\TagsTokenSpan.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\AndroidManifest.xml" />

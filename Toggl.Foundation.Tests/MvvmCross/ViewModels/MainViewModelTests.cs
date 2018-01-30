@@ -95,6 +95,20 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     Arg.Is<DateTimeOffset>(parameter => parameter == date)
                 ).Wait();
             }
+
+            [Fact, LogIfTooSlow]
+            public async Task CannotBeExecutedWhenThereIsARunningTimeEntry()
+            {
+                var timeEntry = Substitute.For<IDatabaseTimeEntry>();
+                var observable = Observable.Return(timeEntry);
+                DataSource.TimeEntries.CurrentlyRunningTimeEntry.Returns(observable);
+                ViewModel.Initialize().Wait();
+
+                ViewModel.StartTimeEntryCommand.ExecuteAsync().Wait();
+
+                await NavigationService.DidNotReceive()
+                    .Navigate<StartTimeEntryViewModel, DateTimeOffset>(Arg.Any<DateTimeOffset>());
+            }
         }
 
         public sealed class TheOpenSettingsCommand : MainViewModelTest
@@ -126,6 +140,18 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
         public sealed class TheStopTimeEntryCommand : MainViewModelTest
         {
+            private ISubject<IDatabaseTimeEntry> subject;
+
+            public TheStopTimeEntryCommand()
+            {
+                var timeEntry = Substitute.For<IDatabaseTimeEntry>();
+                subject = new BehaviorSubject<IDatabaseTimeEntry>(timeEntry);
+                var observable = subject.AsObservable();
+                DataSource.TimeEntries.CurrentlyRunningTimeEntry.Returns(observable);
+
+                ViewModel.Initialize().Wait();
+            }
+
             [Fact, LogIfTooSlow]
             public async Task CallsTheStopMethodOnTheDataSource()
             {
@@ -148,7 +174,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [Fact, LogIfTooSlow]
             public async Task InitiatesPushSync()
             {
-                ViewModel.StopTimeEntryCommand.Execute();
+                await ViewModel.StopTimeEntryCommand.ExecuteAsync();
 
                 await DataSource.SyncManager.Received().PushSync();
             }
@@ -159,9 +185,98 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 DataSource.TimeEntries.Stop(Arg.Any<DateTimeOffset>())
                     .Returns(Observable.Throw<IDatabaseTimeEntry>(new Exception()));
 
-                ViewModel.StopTimeEntryCommand.Execute();
+                Action stopTimeEntry = () => ViewModel.StopTimeEntryCommand.ExecuteAsync().Wait();
 
+                stopTimeEntry.ShouldThrow<Exception>();
                 await DataSource.SyncManager.DidNotReceive().PushSync();
+            }
+
+            [Fact, LogIfTooSlow]
+            public async Task CannotBeExecutedTwiceInARowInFastSuccession()
+            {
+                var taskA = ViewModel.StopTimeEntryCommand.ExecuteAsync();
+                var taskB = ViewModel.StopTimeEntryCommand.ExecuteAsync();
+
+                Task.WaitAll(taskA, taskB);
+
+                await DataSource.TimeEntries.Received(1).Stop(Arg.Any<DateTimeOffset>());
+            }
+
+            [Fact, LogIfTooSlow]
+            public async Task CannotBeExecutedTwiceInARow()
+            {
+                await ViewModel.StopTimeEntryCommand.ExecuteAsync();
+                subject.OnNext(null);
+                await ViewModel.StopTimeEntryCommand.ExecuteAsync();
+
+                await DataSource.TimeEntries.Received(1).Stop(Arg.Any<DateTimeOffset>());
+            }
+
+            [Fact, LogIfTooSlow]
+            public async Task CannotBeExecutedWhenNoTimeEntryIsRunning()
+            {
+                subject.OnNext(null);
+
+                await ViewModel.StopTimeEntryCommand.ExecuteAsync();
+
+                await DataSource.TimeEntries.DidNotReceive().Stop(Arg.Any<DateTimeOffset>());
+            }
+
+            [Fact, LogIfTooSlow]
+            public async Task CanBeExecutedForTheSecondTimeIfAnotherTimeEntryIsStartedInTheMeantime()
+            {
+                var secondTimeEntry = Substitute.For<IDatabaseTimeEntry>();
+                
+                await ViewModel.StopTimeEntryCommand.ExecuteAsync();
+                subject.OnNext(secondTimeEntry);
+                await ViewModel.StopTimeEntryCommand.ExecuteAsync();
+
+                await DataSource.TimeEntries.Received(2).Stop(Arg.Any<DateTimeOffset>());
+            }
+        }
+
+        public sealed class TheEditTimeEntryCommand : MainViewModelTest
+        {
+            [Fact, LogIfTooSlow]
+            public async Task NavigatesToTheEditTimeEntryViewModel()
+            {
+                var timeEntry = Substitute.For<IDatabaseTimeEntry>();
+                var observable = Observable.Return(timeEntry);
+                DataSource.TimeEntries.CurrentlyRunningTimeEntry.Returns(observable);
+                ViewModel.Initialize().Wait();
+
+                await ViewModel.EditTimeEntryCommand.ExecuteAsync();
+
+                await NavigationService.Received()
+                    .Navigate<EditTimeEntryViewModel, long>(Arg.Any<long>());
+            }
+
+            [Property]
+            public void PassesTheCurrentDateToTheStartTimeEntryViewModel(long id)
+            {
+                var timeEntry = Substitute.For<IDatabaseTimeEntry>();
+                timeEntry.Id.Returns(id);
+                var observable = Observable.Return(timeEntry);
+                DataSource.TimeEntries.CurrentlyRunningTimeEntry.Returns(observable);
+                ViewModel.Initialize().Wait();
+
+                ViewModel.EditTimeEntryCommand.ExecuteAsync().Wait();
+
+                NavigationService.Received()
+                    .Navigate<EditTimeEntryViewModel, long>(Arg.Is(id)).Wait();
+            }
+
+            [Fact, LogIfTooSlow]
+            public async Task CannotBeExecutedWhenThereIsNoRunningTimeEntry()
+            {
+                var observable = Observable.Return<IDatabaseTimeEntry>(null);
+                DataSource.TimeEntries.CurrentlyRunningTimeEntry.Returns(observable);
+                ViewModel.Initialize().Wait();
+
+                ViewModel.EditTimeEntryCommand.ExecuteAsync().Wait();
+
+                await NavigationService.DidNotReceive()
+                    .Navigate<EditTimeEntryViewModel, long>(Arg.Any<long>());
             }
         }
 

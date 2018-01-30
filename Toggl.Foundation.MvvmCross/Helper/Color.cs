@@ -142,6 +142,23 @@ namespace Toggl.Foundation.MvvmCross.Helper
             public static readonly MvxColor DescriptionCharacterCounter = new MvxColor(247, 64, 73);
         }
 
+        public static class EditDuration
+        {
+            public static readonly MvxColor SetButton = lightishGreen;
+            public static readonly MvxColor EditedTime = lightishGreen;
+            public static readonly MvxColor NotEditedTime = black;
+
+            public static class Wheel
+            {
+                public static readonly MvxColor Background = new MvxColor(244, 244, 244);
+                public static readonly MvxColor Shadow = new MvxColor(0, 0, 0);
+                public static readonly MvxColor Duration = new MvxColor(181, 188, 192);
+                public static readonly MvxColor Cap = new MvxColor(255, 255, 255);
+                public static readonly MvxColor ThickMinuteSegment = new MvxColor(188, 196, 199);
+                public static readonly MvxColor ThinMinuteSegment = new MvxColor(230, 235, 237);
+            }
+        }
+
         public static class ModalDialog
         {
             public static readonly MvxColor BackgroundOverlay = new MvxColor(181, 188, 192);

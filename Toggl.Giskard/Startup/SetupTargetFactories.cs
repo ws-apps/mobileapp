@@ -1,6 +1,7 @@
-﻿﻿using Android.Views;
+﻿using Android.Views;
 using MvvmCross.Binding.Bindings.Target.Construction;
 using Toggl.Giskard.Bindings;
+using Toggl.Giskard.Views;
 using Android.Widget;
 
 namespace Toggl.Giskard
@@ -30,6 +31,11 @@ namespace Toggl.Giskard
             registry.RegisterCustomBindingFactory<EditText>(
                 EditTextFocusTargetBinding.BindingName,
                 view => new EditTextFocusTargetBinding(view)
+            );
+
+            registry.RegisterCustomBindingFactory<EditText>(
+                EditTextTextFieldInfoTargetBinding.BindingName,
+                view => new EditTextTextFieldInfoTargetBinding(view)
             );
 
             registry.RegisterCustomBindingFactory<View>(

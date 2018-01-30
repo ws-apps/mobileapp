@@ -184,6 +184,33 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 await DataSource.SyncManager.DidNotReceive().PushSync();
             }
 
+            [Fact, LogIfTooSlow]
+            public async Task CannotBeExecutedTwiceInARow()
+            {
+                var suggestion = createSuggestion();
+                DataSource.TimeEntries.Start(Arg.Any<StartTimeEntryDTO>())
+                    .Returns(Observable.Never<IDatabaseTimeEntry>());
+
+                ViewModel.StartTimeEntryCommand.ExecuteAsync(suggestion);
+                ViewModel.StartTimeEntryCommand.ExecuteAsync(suggestion);
+
+                await DataSource.TimeEntries.Received(1).Start(Arg.Any<StartTimeEntryDTO>());
+            }
+
+            [Fact, LogIfTooSlow]
+            public async Task CanBeExecutedForTheSecondTimeIfStartingTheFirstOneFinishesSuccessfully()
+            {
+                var suggestion = createSuggestion();
+                var timeEntry = Substitute.For<IDatabaseTimeEntry>();
+                DataSource.TimeEntries.Start(Arg.Any<StartTimeEntryDTO>())
+                    .Returns(Observable.Return(timeEntry));
+
+                await ViewModel.StartTimeEntryCommand.ExecuteAsync(suggestion);
+                await ViewModel.StartTimeEntryCommand.ExecuteAsync(suggestion);
+
+                await DataSource.TimeEntries.Received(2).Start(Arg.Any<StartTimeEntryDTO>());
+            }
+
             private Suggestion createSuggestion()
             {
                 var timeEntry = Substitute.For<IDatabaseTimeEntry>();

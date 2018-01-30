@@ -19,5 +19,7 @@ namespace Toggl.Foundation.DTOs
         public long[] TagIds { get; set; }
 
         public DateTimeOffset StartTime { get; set; }
+
+        public TimeSpan? Duration { get; set; }
     }
 }

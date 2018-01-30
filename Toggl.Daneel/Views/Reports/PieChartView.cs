@@ -4,8 +4,8 @@ using System.Linq;
 using System.Collections.ObjectModel;
 using CoreGraphics;
 using Foundation;
-using Toggl.Daneel.Extensions;
 using Toggl.Foundation.Reports;
+using Toggl.Multivac.Extensions;
 using MvvmCross.Platform.UI;
 using MvvmCross.Plugins.Color.iOS;
 

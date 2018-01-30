@@ -124,10 +124,6 @@ namespace Toggl.Foundation.Sync
         private IObservable<SyncState> startSyncIfNeededAndObserve()
         {
             startSyncIfNeeded();
-            if (IsRunningSync)
-            {
-                progress.OnNext(SyncProgress.Syncing);
-            }
 
             return syncStatesUntilAndIncludingSleep();
         }
@@ -138,6 +134,11 @@ namespace Toggl.Foundation.Sync
 
             var state = isFrozen ? Sleep : queue.Dequeue();
             IsRunningSync = state != Sleep;
+
+            if (IsRunningSync && progress.FirstAsync().Wait() != SyncProgress.Syncing)
+            {
+                progress.OnNext(SyncProgress.Syncing);
+            }
 
             orchestrator.Start(state);
         }

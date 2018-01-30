@@ -48,6 +48,9 @@ namespace Toggl.Multivac.Extensions
             return sb.ToString();
         }
 
+        public static string TruncatedAt(this string self, int location)
+            => self.Length <= location ? self : $"{self.UnicodeSafeSubstring(0, location - 3)}...";
+
         public static int LengthInBytes(this string self)
             => Encoding.UTF8.GetByteCount(self);
 

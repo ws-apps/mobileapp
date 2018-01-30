@@ -22,6 +22,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         private IDisposable emptyDatabaseDisposable;
 
+        private bool areStartButtonsEnabled = true;
+
         public MvxObservableCollection<Suggestion> Suggestions { get; }
             = new MvxObservableCollection<Suggestion>();
 
@@ -29,7 +31,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public bool ShowWelcomeBack => !IsNewUser && !Suggestions.Any();
 
-        public IMvxAsyncCommand<Suggestion> StartTimeEntryCommand { get; set; }
+        public MvxAsyncCommand<Suggestion> StartTimeEntryCommand { get; set; }
 
         public SuggestionsViewModel(
             ITogglDataSource dataSource,
@@ -47,7 +49,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             this.onboardingStorage = onboardingStorage;
             this.suggestionProviders = suggestionProviders;
 
-            StartTimeEntryCommand = new MvxAsyncCommand<Suggestion>(startTimeEntry);
+            StartTimeEntryCommand = new MvxAsyncCommand<Suggestion>(startTimeEntry, _ => areStartButtonsEnabled);
         }
 
         public async override Task Initialize()
@@ -85,6 +87,9 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         private async Task startTimeEntry(Suggestion suggestion)
         {
+            areStartButtonsEnabled = false;
+            StartTimeEntryCommand.RaiseCanExecuteChanged();
+
             await dataSource.User
                 .Current
                 .Select(user => new StartTimeEntryDTO
@@ -97,7 +102,12 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                     StartTime = timeService.CurrentDateTime
                 })
                 .SelectMany(dataSource.TimeEntries.Start)
-                .Do(_ => dataSource.SyncManager.PushSync());
+                .Do(_ => dataSource.SyncManager.PushSync())
+                .Do(_ =>
+                {
+                    areStartButtonsEnabled = true;
+                    StartTimeEntryCommand.RaiseCanExecuteChanged();
+                });
         }
     }
 }

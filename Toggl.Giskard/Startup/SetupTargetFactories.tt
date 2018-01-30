@@ -1,10 +1,11 @@
-﻿﻿<#@ template language="C#" hostspecific="True"
+﻿<#@ template language="C#" hostspecific="True"
 #><#@ assembly name="System.Core"
 #><#@ import namespace="System.IO"
 #><#@ import namespace="System.Linq"
 #>using Android.Views;
 using MvvmCross.Binding.Bindings.Target.Construction;
 using Toggl.Giskard.Bindings;
+using Toggl.Giskard.Views;
 using Android.Widget;
 
 namespace Toggl.Giskard

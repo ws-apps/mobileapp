@@ -47,9 +47,19 @@
         android:background="@android:color/white"
         android:layout_height="@dimen/startTimeEntryToolbarHeight"
         android:layout_width="match_parent">
+        <ImageView
+            local:MvxBind="Click BackCommand"
+            android:clickable="true"
+            android:src="@drawable/arrow_back"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp" />
         <EditText
             android:id="@+id/StartTimeEntryDescriptionTextField"
-            local:MvxBind="Text TextFieldInfo.Text"
+            local:MvxBind="TextFieldInfo TextFieldInfo"
             android:maxLines="1"
             android:textSize="19sp"
             android:singleLine="true"
@@ -61,12 +71,12 @@
             android:hint="@string/StartTimeEntryHint"
             android:textColorHint="@color/defaultText"
             android:inputType="textNoSuggestions|textVisiblePassword"
-            android:layout_alignParentBottom="true"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:layout_marginBottom="16dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true" />
         <ImageView
             local:MvxBind="Click ToggleBillableCommand; DrawableId BillableDrawable(IsBillable); Visibility Visibility(IsBillableAvailable), CommandParameter=true"
             android:id="@+id/StartTimeEntryToolbarBillable"

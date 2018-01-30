@@ -7,6 +7,7 @@ using Toggl.Daneel.Views.Reports;
 using Toggl.Foundation.MvvmCross.ViewModels.Calendar.QuickSelectShortcuts;
 using Toggl.Multivac;
 using UIKit;
+using Math = System.Math;
 
 namespace Toggl.Daneel.ViewSources
 {

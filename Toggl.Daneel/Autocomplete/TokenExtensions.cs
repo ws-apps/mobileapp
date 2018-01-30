@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 
-namespace Toggl.Daneel.Extensions
+namespace Toggl.Daneel.Autocomplete
 {
     public static class TokenExtensions
     {
@@ -61,9 +61,6 @@ namespace Toggl.Daneel.Extensions
 
             return result;
         }
-
-        public static string TruncatedAt(this string self, int location)
-            => self.Length <= location ? self : $"{self.UnicodeSafeSubstring(0, location - 3)}...";
 
         public static TokenTextAttachment GetTagToken(this string tag, int leftMargin, int rightMargin)
             => new TokenTextAttachment(

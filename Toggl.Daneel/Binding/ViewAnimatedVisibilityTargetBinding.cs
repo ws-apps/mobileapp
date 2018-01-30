@@ -21,6 +21,8 @@ namespace Toggl.Daneel.Binding
 
         protected override void SetValue(bool value)
         {
+            if (Target.Hidden != value) return;
+
             Target.Transform = CGAffineTransform.MakeTranslation(0, 20);
 
             AnimationExtensions.Animate(

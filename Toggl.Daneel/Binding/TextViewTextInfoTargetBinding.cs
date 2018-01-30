@@ -1,61 +1,66 @@
 ﻿using System;
 using Foundation;
-using MvvmCross.Binding;
-using MvvmCross.Binding.Bindings.Target;
-using MvvmCross.Platform.Core;
-using Toggl.Daneel.Extensions;
+using Toggl.Daneel.Autocomplete;
 using Toggl.Daneel.Views;
 using Toggl.Foundation.Autocomplete;
+using Toggl.Foundation.MvvmCross.Autocomplete;
 using UIKit;
 
 namespace Toggl.Daneel.Binding
 {
-    public sealed class TextViewTextInfoTargetBinding : MvxTargetBinding<UITextView, TextFieldInfo>
+    public sealed class TextViewTextInfoTargetBinding : BaseTextFieldInfoTargetBinding<UITextView>
     {
         public const string BindingName = "TextFieldInfo";
         private const string selectedTextRangeChangedKey = "selectedTextRange";
 
-        private bool isSelectingText;
+        private readonly TextViewPlaceholderManager placeholder;
+        private readonly IDisposable selectedTextRangeDisposable;
+        private readonly AutocompleteTextViewDelegate textViewInfoDelegate = new AutocompleteTextViewDelegate();
+
         private TextFieldInfo textFieldInfo = TextFieldInfo.Empty;
 
-        private readonly IDisposable selectedTextRangeDisposable;
-        private readonly TextViewInfoDelegate infoDelegate = new TextViewInfoDelegate();
-
-        public override MvxBindingMode DefaultMode => MvxBindingMode.TwoWay;
-
-        private TextViewPlaceholderManager placeholder;
+        protected override IAutocompleteEventProvider EventProvider { get; }
 
         public TextViewTextInfoTargetBinding(UITextView target)
             : base(target)
         {
-            Target.Delegate = infoDelegate;
-
-            infoDelegate.TagDeleted += onTagDeleted;
-            infoDelegate.TextChanged += onTextChanged;
-            infoDelegate.ProjectDeleted += onProjectDeleted;
+            EventProvider = textViewInfoDelegate;
+            Target.Delegate = textViewInfoDelegate;
            
             placeholder = new TextViewPlaceholderManager(target);
-            infoDelegate.TextViewDidChange += placeholder.UpdateVisibility;
-
+            textViewInfoDelegate.TextViewDidChange += placeholder.UpdateVisibility;
             selectedTextRangeDisposable = Target.AddObserver(
                 selectedTextRangeChangedKey,
                 NSKeyValueObservingOptions.OldNew,
-                onSelectedTextRangeChanged
+                _ => textViewInfoDelegate.RaisePositionChanged()
             );
         }
 
-        protected override void SetValue(TextFieldInfo value)
+        protected override string GetCurrentTimeEntryDescription()
+            => Target.GetDescription();
+
+        protected override int GetCurrentCursorPosition()
+            => (int)Target.SelectedRange.Location;
+
+        protected override bool CheckIfSelectingText()
+            => Target.SelectedRange.Length > 0;
+
+        protected override void UpdateTarget(TextFieldInfo textFieldInfo)
         {
-            setTextFieldInfo(value);
+            if (!Target.IsFirstResponder || Target.BeginningOfDocument == null)
+                return;
 
-            if (isSelectingText || !Target.IsFirstResponder || Target.BeginningOfDocument == null) return;
+            Target.AttributedText = textFieldInfo.GetAttributedText();
 
-            Target.AttributedText = value.GetAttributedText();
-
-            var positionToSet = Target.GetPosition(Target.BeginningOfDocument, value.CursorPosition);
+            var positionToSet = Target.GetPosition(Target.BeginningOfDocument, textFieldInfo.CursorPosition);
             Target.SelectedTextRange = Target.GetTextRange(positionToSet, positionToSet);
 
             placeholder.UpdateVisibility();
+        }
+
+        protected override void MarkViewForRedrawing()
+        {
+            Target.SetNeedsDisplay();
         }
 
         protected override void Dispose(bool isDisposing)
@@ -65,129 +70,8 @@ namespace Toggl.Daneel.Binding
             if (!isDisposing) return;
 
             Target.Delegate = null;
-
             selectedTextRangeDisposable?.Dispose();
-
-            infoDelegate.TagDeleted -= onTagDeleted;
-            infoDelegate.TextChanged -= onTextChanged;
-            infoDelegate.ProjectDeleted -= onProjectDeleted;
-        }
-
-        private void onTextChanged(object sender, EventArgs e)
-            => queueValueChange();
-
-        private void onSelectedTextRangeChanged(NSObservedChange change)
-            => queueValueChange();
-
-        private void onProjectDeleted(object sender, EventArgs e)
-        {
-            onTextFieldInfoChanged(
-                textFieldInfo
-                    .RemoveProjectInfo()
-                    .WithTextAndCursor(textFieldInfo.Text, textFieldInfo.Text.Length));
-        }
-
-        private void onTagDeleted(object sender, TextViewInfoDelegate.TagDeletedEventArgs e)
-        {
-            onTextFieldInfoChanged(
-                textFieldInfo
-                    .RemoveTag(textFieldInfo.Tags[e.TagIndex])
-                    .WithTextAndCursor(textFieldInfo.Text, e.CursorPosition));
-        }
-
-        private void queueValueChange()
-        {
-            isSelectingText = Target.SelectedRange.Length > 0;
-            var reportedCursorPosition = (int)Target.SelectedRange.Location;
-
-            var newDescription = Target.GetDescription();
-            var descriptionLength = newDescription.Length;
-
-            var isEditingInTokenRegion = newDescription != textFieldInfo.Text && reportedCursorPosition > newDescription.Length;
-            var newCursorPosition = isEditingInTokenRegion ? newDescription.Length : reportedCursorPosition;
-
-            onTextFieldInfoChanged(textFieldInfo.WithTextAndCursor(newDescription, newCursorPosition));
-        }
-
-        private void onTextFieldInfoChanged(TextFieldInfo info)
-        {
-            setTextFieldInfo(info);
-            FireValueChanged(info);
-        }
-
-        private void setTextFieldInfo(TextFieldInfo info)
-        {
-            if (textFieldInfo.Text != info.Text
-             || textFieldInfo.ProjectName != info.ProjectName
-             || textFieldInfo.Tags.Length != info.Tags.Length)
-                Target.SetNeedsDisplay();
-
-            textFieldInfo = info;
-        }
-
-        private sealed class TextViewInfoDelegate : NSObject, IUITextViewDelegate
-        {
-            public class TagDeletedEventArgs : EventArgs
-            {
-                public int CursorPosition { get; }
-
-                public int TagIndex { get; }
-
-                public TagDeletedEventArgs(nint cursorPosition, nint tagIndex)
-                {
-                    TagIndex = (int)tagIndex;
-                    CursorPosition = (int)cursorPosition;
-                }
-            }
-
-            public event Action TextViewDidChange;
-            public event EventHandler TextChanged;
-            public event EventHandler ProjectDeleted;
-            public event EventHandler<TagDeletedEventArgs> TagDeleted;
-
-            [Export("textViewDidChange:")]
-            public void DidChange(UITextView textView)
-            {
-                TextViewDidChange?.Invoke();
-
-                // When the `MarkedTextRange` property of the UITextView is not null
-                // then it means that the user is in the middle of inputting a multistage character.
-                // Hold off on editing the attributedText until they are done.
-                // Source: https://stackoverflow.com/questions/31430308/uitextview-attributedtext-with-japanese-keyboard-repeats-input
-                if (textView.MarkedTextRange != null) return;
-
-                TextChanged.Raise(this);
-            }
-
-            [Export("textView:shouldChangeTextInRange:replacementText:")]
-            public bool ShouldChangeCharacters(UITextView textView, NSRange range, string text)
-            {
-                if (!isPressingBackspace(range, text))
-                    return true;
-
-                var cursorPosition = range.Location;
-                var attrs = textView.AttributedText.GetAttributes(cursorPosition, out var attrRange);
-
-                var isDeletingProject = attrs.ObjectForKey(TokenExtensions.Project) != null;
-                if (isDeletingProject)
-                {
-                    ProjectDeleted.Raise(this);
-                    return false;
-                }
-
-                var tagIndex = attrs.ObjectForKey(TokenExtensions.TagIndex) as NSNumber;
-                var isDeletingTag = tagIndex != null;
-                if (isDeletingTag)
-                {
-                    TagDeleted?.Invoke(this, new TagDeletedEventArgs(cursorPosition, tagIndex.Int32Value));
-                    return false;
-                }
-
-                return true;
-            }
-
-            private static bool isPressingBackspace(NSRange range, string text)
-                => range.Length == 1 && text.Length == 0;
+            textViewInfoDelegate.TextViewDidChange -= placeholder.UpdateVisibility;
         }
     }
 }

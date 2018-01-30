@@ -10,10 +10,10 @@ namespace Toggl.Foundation.MvvmCross.Converters
     {
         protected override string Convert(DateTimeOffset value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value.Date == DateTime.Now.Date)
+            if (value.ToLocalTime().Date == DateTimeOffset.Now.Date)
                 return Resources.Today;
             
-            if (value.Date.AddDays(1) == DateTime.Now.Date)
+            if (value.ToLocalTime().Date.AddDays(1) == DateTimeOffset.Now.Date)
                 return Resources.Yesterday;
 
             return $"{value:ddd, dd MMM}";

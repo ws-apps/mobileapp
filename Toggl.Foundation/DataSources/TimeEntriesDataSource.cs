@@ -99,6 +99,7 @@ namespace Toggl.Foundation.DataSources
                 .SetTagIds(dto.TagIds)
                 .SetTaskId(dto.TaskId)
                 .SetStart(dto.StartTime)
+                .SetDuration(dto.Duration)
                 .SetBillable(dto.Billable)
                 .SetProjectId(dto.ProjectId)
                 .SetDescription(dto.Description)

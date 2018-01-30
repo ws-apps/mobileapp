@@ -20,6 +20,9 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
     public sealed class MainViewModel : MvxViewModel
     {
         private bool isWelcome = false;
+
+        private bool isStopButtonEnabled = false;
+
         private CompositeDisposable disposeBag = new CompositeDisposable();
 
         private readonly ITimeService timeService;
@@ -85,9 +88,9 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             RefreshCommand = new MvxCommand(refresh);
             OpenReportsCommand = new MvxAsyncCommand(openReports);
             OpenSettingsCommand = new MvxAsyncCommand(openSettings);
-            EditTimeEntryCommand = new MvxAsyncCommand(editTimeEntry);
-            StopTimeEntryCommand = new MvxAsyncCommand(stopTimeEntry);
-            StartTimeEntryCommand = new MvxAsyncCommand(startTimeEntry);
+            EditTimeEntryCommand = new MvxAsyncCommand(editTimeEntry, () => CurrentTimeEntryId.HasValue);
+            StopTimeEntryCommand = new MvxAsyncCommand(stopTimeEntry, () => isStopButtonEnabled);
+            StartTimeEntryCommand = new MvxAsyncCommand(startTimeEntry, () => CurrentTimeEntryId.HasValue == false);
         }
 
         public override async Task Initialize()
@@ -140,6 +143,12 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             CurrentTimeEntryClient = timeEntry?.Project?.Client?.Name ?? "";
 
             ChangePresentation(new CardVisibilityHint(CurrentTimeEntryId != null));
+
+            isStopButtonEnabled = timeEntry != null;
+
+            StopTimeEntryCommand.RaiseCanExecuteChanged();
+            StartTimeEntryCommand.RaiseCanExecuteChanged();
+            EditTimeEntryCommand.RaiseCanExecuteChanged();
         }
 
         private void refresh()
@@ -161,6 +170,9 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         private async Task stopTimeEntry()
         {
+            isStopButtonEnabled = false;
+            StopTimeEntryCommand.RaiseCanExecuteChanged();
+
             await dataSource.TimeEntries.Stop(timeService.CurrentDateTime)
                 .Do(_ => dataSource.SyncManager.PushSync());
 
