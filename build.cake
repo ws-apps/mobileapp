@@ -49,11 +49,6 @@ private Action BuildSolution(string configuration, string platform = "", bool up
         Configuration = configuration
     };
 
-    if (!string.IsNullOrEmpty(platform))
-    {
-        buildSettings = buildSettings.WithProperty("Platform", platform);
-    }
-
     if (!uploadSymbols) 
         return () => MSBuild(togglSolution, buildSettings);
 
@@ -62,6 +57,20 @@ private Action BuildSolution(string configuration, string platform = "", bool up
         MSBuild(togglSolution, buildSettings);
         UploadSymbols();
     };
+}
+
+private Action GenerateApk(string configuration)
+{
+    const string droidProject = "./Toggl.Giskard/Toggl.Giskard.csproj";
+    var buildSettings = new MSBuildSettings 
+    {
+        Verbosity = Bitrise.IsRunningOnBitrise ? Verbosity.Verbose : Verbosity.Minimal,
+        Configuration = configuration
+    };
+
+    buildSettings.WithTarget("SignAndroidPackage");
+
+    return () => MSBuild(droidProject, buildSettings);
 }
 
 private void UploadSymbols()
@@ -241,7 +250,8 @@ Task("Nuget")
 
 Task("Build.Tests.All")
     .IsDependentOn("Nuget")
-    .Does(BuildSolution("Debug"));
+    .Does(BuildSolution("Debug"))
+    .Does(GenerateApk("Debug"));
 
 Task("Build.Tests.Unit")
     .IsDependentOn("Nuget")
@@ -253,7 +263,8 @@ Task("Build.Tests.Integration")
 
 Task("Build.Tests.UI")
     .IsDependentOn("Nuget")
-    .Does(BuildSolution("Debug"));
+    .Does(BuildSolution("Debug"))
+    .Does(GenerateApk("Debug"));
 
 //iOS Builds
 Task("Build.Release.iOS.AdHoc")
