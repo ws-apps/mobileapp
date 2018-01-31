@@ -71,7 +71,7 @@ namespace Toggl.Daneel.Views
 
             //Special case for deleting whole text. Otherwise the counter would
             //remain as editable text
-            if (range.Length > 0 && range.Length == Text.Length)
+            if (range.Length > 0 && range.Length == Text.Length && text == "")
             {
                 Text = "";
                 selectedRange = SelectedRange = new NSRange(0, 0);
@@ -115,7 +115,7 @@ namespace Toggl.Daneel.Views
             //Don't allow putting the cursor in the red counter
             if (SelectedRange.Length == 0)
             {
-                if (SelectedRange.Location > counterStart)
+                if (SelectedRange.Location > counterStart && RemainingLength < 0)
                     SelectedRange = new NSRange(counterStart, 0);
                 return;
             }

@@ -18,6 +18,7 @@ namespace Toggl.Foundation
         public IMailService MailService { get; internal set; }
         public IGoogleService GoogleService { get; internal set; }
         public ApiEnvironment ApiEnvironment { get; internal set; }
+        public IAnalyticsService AnalyticsService { get; internal set; }
         public IBackgroundService BackgroundService { get; internal set; }
         public IPlatformConstants PlatformConstants { get; internal set; }
 
@@ -29,6 +30,7 @@ namespace Toggl.Foundation
             IMailService mailService,
             IGoogleService googleService,
             ApiEnvironment apiEnvironment,
+            IAnalyticsService analyticsService,
             IPlatformConstants platformConstants)
         {
             Ensure.Argument.IsNotNull(version, nameof(version));
@@ -37,6 +39,7 @@ namespace Toggl.Foundation
             Ensure.Argument.IsNotNull(timeService, nameof(timeService));
             Ensure.Argument.IsNotNull(mailService, nameof(mailService));
             Ensure.Argument.IsNotNull(googleService, nameof(googleService));
+            Ensure.Argument.IsNotNull(analyticsService, nameof(analyticsService));
             Ensure.Argument.IsNotNull(platformConstants, nameof(platformConstants));
 
             var userAgent = new UserAgent(clientName, version);
@@ -50,6 +53,7 @@ namespace Toggl.Foundation
                 GoogleService = googleService,
                 ApiEnvironment = apiEnvironment,
                 Version = Version.Parse(version),
+                AnalyticsService = analyticsService,
                 BackgroundService = new BackgroundService(timeService),
                 PlatformConstants = platformConstants,
                 ApiFactory = new ApiFactory(apiEnvironment, userAgent)

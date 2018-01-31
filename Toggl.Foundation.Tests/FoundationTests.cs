@@ -15,7 +15,7 @@ namespace Toggl.Foundation.Tests
         public class TheCreateMethod
         {
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(SevenParameterConstructorTestData))]
+            [ClassData(typeof(EightParameterConstructorTestData))]
             public void ThrowsIfAnyOfTheArgumentsIsNull(
                 bool useClientName,
                 bool useVersion,
@@ -23,6 +23,7 @@ namespace Toggl.Foundation.Tests
                 bool useTimeService,
                 bool useMailService,
                 bool useGoogleService,
+                bool useAnalyticsService,
                 bool usePlatformConstants)
             {
                 var version = useVersion ? "1.0" : null;
@@ -31,6 +32,7 @@ namespace Toggl.Foundation.Tests
                 var timeService = useTimeService ? Substitute.For<ITimeService>() : null;
                 var mailService = useMailService ? Substitute.For<IMailService>() : null;
                 var googleService = useGoogleService ? Substitute.For<IGoogleService>() : null;
+                var analyticsService = useAnalyticsService ? Substitute.For<IAnalyticsService>() : null;
                 var platformConstants = usePlatformConstants ? Substitute.For<IPlatformConstants>() : null;
 
                 Action tryingToConstructWithEmptyParameters =
@@ -42,6 +44,7 @@ namespace Toggl.Foundation.Tests
                         mailService,
                         googleService,
                         ApiEnvironment.Staging,
+                        analyticsService,
                         platformConstants
                     );
 

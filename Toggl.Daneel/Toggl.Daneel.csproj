@@ -744,6 +744,7 @@
     <Compile Include="Autocomplete\AutocompleteTextViewDelegate.cs" />
     <Compile Include="Autocomplete\TokenTextAttachment.cs" />
     <Compile Include="Autocomplete\TokenExtensions.cs" />
+    <Compile Include="Services\AnalyticsService.cs" />
     <Compile Include="Views\AutocompleteTextViewPlaceholder.cs" />
     <Compile Include="Views\AutocompleteTextView.cs" />
   </ItemGroup>

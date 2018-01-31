@@ -65,6 +65,7 @@ namespace Toggl.Daneel
                 new MailService((ITopViewControllerProvider)Presenter),
                 new GoogleService(),
                 environment,
+                new AnalyticsService(),
                 new PlatformConstants()
             );
 

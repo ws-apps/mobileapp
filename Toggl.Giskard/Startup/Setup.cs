@@ -60,6 +60,7 @@ namespace Toggl.Giskard
                 new MailService(),
                 new GoogleService(),
                 environment,
+                new AnalyticsService(),
                 new PlatformConstants()
             );
 
