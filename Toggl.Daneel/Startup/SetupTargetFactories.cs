@@ -12,6 +12,11 @@ namespace Toggl.Daneel
         {
             base.FillTargetFactories(registry);
 
+            registry.RegisterCustomBindingFactory<AutocompleteTextView>(
+                AutocompleteTextViewTextInfoTargetBinding.BindingName,
+                view => new AutocompleteTextViewTextInfoTargetBinding(view)
+            );
+
             registry.RegisterCustomBindingFactory<UIBarButtonItem>(
                 BarButtonAnimatedEnabledTargetBinding.BindingName,
                 view => new BarButtonAnimatedEnabledTargetBinding(view)
@@ -70,11 +75,6 @@ namespace Toggl.Daneel
             registry.RegisterCustomBindingFactory<UITextView>(
                 TextViewTagListTargetBinding.BindingName,
                 view => new TextViewTagListTargetBinding(view)
-            );
-
-            registry.RegisterCustomBindingFactory<UITextView>(
-                TextViewTextInfoTargetBinding.BindingName,
-                view => new TextViewTextInfoTargetBinding(view)
             );
 
             registry.RegisterCustomBindingFactory<TextViewWithPlaceholder>(

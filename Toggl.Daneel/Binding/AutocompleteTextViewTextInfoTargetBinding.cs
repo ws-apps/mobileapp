@@ -8,31 +8,27 @@ using UIKit;
 
 namespace Toggl.Daneel.Binding
 {
-    public sealed class TextViewTextInfoTargetBinding : BaseTextFieldInfoTargetBinding<UITextView>
+    public sealed class AutocompleteTextViewTextInfoTargetBinding : BaseTextFieldInfoTargetBinding<AutocompleteTextView>
     {
         public const string BindingName = "TextFieldInfo";
         private const string selectedTextRangeChangedKey = "selectedTextRange";
 
-        private readonly TextViewPlaceholderManager placeholder;
         private readonly IDisposable selectedTextRangeDisposable;
-        private readonly AutocompleteTextViewDelegate textViewInfoDelegate = new AutocompleteTextViewDelegate();
 
         private TextFieldInfo textFieldInfo = TextFieldInfo.Empty;
 
         protected override IAutocompleteEventProvider EventProvider { get; }
 
-        public TextViewTextInfoTargetBinding(UITextView target)
+        public AutocompleteTextViewTextInfoTargetBinding(AutocompleteTextView target)
             : base(target)
         {
-            EventProvider = textViewInfoDelegate;
-            Target.Delegate = textViewInfoDelegate;
-           
-            placeholder = new TextViewPlaceholderManager(target);
-            textViewInfoDelegate.TextViewDidChange += placeholder.UpdateVisibility;
+            EventProvider = target.AutocompleteTextViewInfoDelegate;
+            Target.Delegate = target.AutocompleteTextViewInfoDelegate;
+
             selectedTextRangeDisposable = Target.AddObserver(
                 selectedTextRangeChangedKey,
                 NSKeyValueObservingOptions.OldNew,
-                _ => textViewInfoDelegate.RaisePositionChanged()
+                _ => target.AutocompleteTextViewInfoDelegate.RaisePositionChanged()
             );
         }
 
@@ -54,8 +50,6 @@ namespace Toggl.Daneel.Binding
 
             var positionToSet = Target.GetPosition(Target.BeginningOfDocument, textFieldInfo.CursorPosition);
             Target.SelectedTextRange = Target.GetTextRange(positionToSet, positionToSet);
-
-            placeholder.UpdateVisibility();
         }
 
         protected override void MarkViewForRedrawing()
@@ -69,9 +63,7 @@ namespace Toggl.Daneel.Binding
 
             if (!isDisposing) return;
 
-            Target.Delegate = null;
             selectedTextRangeDisposable?.Dispose();
-            textViewInfoDelegate.TextViewDidChange -= placeholder.UpdateVisibility;
         }
     }
 }

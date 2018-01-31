@@ -7,6 +7,9 @@ namespace Toggl.Daneel.Extensions
     public static class ViewBindingExtensions
     {
 
+        public static string BindTextFieldInfo(this AutocompleteTextView self)
+            => AutocompleteTextViewTextInfoTargetBinding.BindingName;
+
         public static string BindAnimatedEnabled(this UIBarButtonItem self)
             => BarButtonAnimatedEnabledTargetBinding.BindingName;
 
@@ -42,9 +45,6 @@ namespace Toggl.Daneel.Extensions
 
         public static string BindTags(this UITextView self)
             => TextViewTagListTargetBinding.BindingName;
-
-        public static string BindTextFieldInfo(this UITextView self)
-            => TextViewTextInfoTargetBinding.BindingName;
 
         public static string BindText(this TextViewWithPlaceholder self)
             => TextViewWithPlaceholderTextTargetBinding.BindingName;

@@ -7,20 +7,26 @@ using MvvmCross.Core.ViewModels;
 using Toggl.Foundation.DataSources;
 using Toggl.Foundation.MvvmCross.Parameters;
 using Toggl.Foundation.MvvmCross.Services;
+using Toggl.Foundation.Services;
 using Toggl.Foundation.Sync;
 using Toggl.Multivac;
+using Toggl.Ultrawave.Network;
 
 namespace Toggl.Foundation.MvvmCross.ViewModels
 {
     [Preserve(AllMembers = true)]
     public sealed class SettingsViewModel : MvxViewModel
     {
+        private const string feedbackRecipient = "support@toggl.com";
+
         private readonly CompositeDisposable disposeBag = new CompositeDisposable();
 
         private readonly ITogglDataSource dataSource;
         private readonly IDialogService dialogService;
         private readonly IPlatformConstants platformConstants;
         private readonly IMvxNavigationService navigationService;
+        private readonly IMailService mailService;
+        private readonly UserAgent userAgent;
 
         private long workspaceId;
 
@@ -56,7 +62,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public IMvxCommand EditProfileCommand { get; }
 
-        public IMvxCommand SubmitFeedbackCommand { get; }
+        public IMvxAsyncCommand SubmitFeedbackCommand { get; }
 
         public IMvxCommand EditSubscriptionCommand { get; }
 
@@ -67,17 +73,23 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         public IMvxCommand ToggleUseTwentyFourHourClockCommand { get; }
 
         public SettingsViewModel(
+            UserAgent userAgent,
+            IMailService mailService,
             ITogglDataSource dataSource,
-            IMvxNavigationService navigationService,
             IDialogService dialogService,
-            IPlatformConstants platformConstants)
+            IPlatformConstants platformConstants,
+            IMvxNavigationService navigationService)
         {
+            Ensure.Argument.IsNotNull(userAgent, nameof(userAgent));
             Ensure.Argument.IsNotNull(dataSource, nameof(dataSource));
+            Ensure.Argument.IsNotNull(mailService, nameof(mailService));
             Ensure.Argument.IsNotNull(dialogService, nameof(dialogService));
             Ensure.Argument.IsNotNull(navigationService, nameof(navigationService));
             Ensure.Argument.IsNotNull(platformConstants, nameof(platformConstants));
 
+            this.userAgent = userAgent;
             this.dataSource = dataSource;
+            this.mailService = mailService;
             this.dialogService = dialogService;
             this.navigationService = navigationService;
             this.platformConstants = platformConstants;
@@ -98,7 +110,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             LogoutCommand = new MvxAsyncCommand(maybeLogout);
             EditProfileCommand = new MvxCommand(editProfile);
             EditWorkspaceCommand = new MvxAsyncCommand(editWorkspace);
-            SubmitFeedbackCommand = new MvxCommand(submitFeedback);
+            SubmitFeedbackCommand = new MvxAsyncCommand(submitFeedback);
             EditSubscriptionCommand = new MvxCommand(editSubscription);
             ToggleAddMobileTagCommand = new MvxCommand(toggleAddMobileTag);
             ToggleUseTwentyFourHourClockCommand = new MvxCommand(toggleUseTwentyFourHourClock);
@@ -143,7 +155,29 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             await dataSource.SyncManager.PushSync();
         }
 
-        public void submitFeedback() => throw new NotImplementedException();
+        private async Task submitFeedback()
+        {
+            var version = userAgent.ToString();
+            var phone = platformConstants.PhoneModel;
+            var os = platformConstants.OperatingSystem;
+            //2 leading newlines, so user user can type something above this info
+            var message = $"\n\nVersion: {version}\nPhone: {phone}\nOS: {os}";
+
+            var mailResult = await mailService.Send(
+                feedbackRecipient,
+                platformConstants.FeedbackEmailSubject,
+                message
+            );
+
+            if (mailResult.Success || string.IsNullOrEmpty(mailResult.ErrorTitle))
+                return;
+
+            await dialogService.Alert(
+                mailResult.ErrorTitle,
+                mailResult.ErrorMessage,
+                Resources.Ok
+            );
+        }
 
         public void editSubscription() => throw new NotImplementedException();
 

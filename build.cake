@@ -115,6 +115,38 @@ private TemporaryFileTransformation GetIosAnalyticsServicesConfigurationTransfor
     };
 }
 
+private TemporaryFileTransformation GetIosCrashConfigurationTransformation()
+{
+    const string path = "Toggl.Daneel/Startup/AppDelegate.cs";
+    var appCenterId = EnvironmentVariable("TOGGL_APP_CENTER_ID_IOS");
+
+    var filePath = GetFiles(path).Single();
+    var file = TransformTextFile(filePath).ToString();
+
+    return new TemporaryFileTransformation
+    { 
+        Path = path, 
+        Original = file,
+        Temporary = file.Replace("{TOGGL_APP_CENTER_ID_IOS}", appCenterId)
+    };
+}
+
+private TemporaryFileTransformation GetDroidCrashConfigurationTransformation()
+{
+    const string path = "Toggl.Giskard/Startup/SplashScreen.cs";
+    var appCenterId = EnvironmentVariable("TOGGL_APP_CENTER_ID_DROID");
+
+    var filePath = GetFiles(path).Single();
+    var file = TransformTextFile(filePath).ToString();
+
+    return new TemporaryFileTransformation
+    { 
+        Path = path, 
+        Original = file,
+        Temporary = file.Replace("{TOGGL_APP_CENTER_ID_DROID}", appCenterId)
+    };
+}
+
 private TemporaryFileTransformation GetIosInfoConfigurationTransformation()
 {
     const string path = "Toggl.Daneel/Info.plist";
@@ -148,9 +180,11 @@ private TemporaryFileTransformation GetIntegrationTestsConfigurationTransformati
 
 var transformations = new List<TemporaryFileTransformation> 
 {
+    GetIosInfoConfigurationTransformation(),
+    GetIosCrashConfigurationTransformation(),
+    GetDroidCrashConfigurationTransformation(),
     GetIntegrationTestsConfigurationTransformation(),
-    GetIosAnalyticsServicesConfigurationTransformation(),
-    GetIosInfoConfigurationTransformation()
+    GetIosAnalyticsServicesConfigurationTransformation()
 };
 
 private string[] GetUnitTestProjects() => new []

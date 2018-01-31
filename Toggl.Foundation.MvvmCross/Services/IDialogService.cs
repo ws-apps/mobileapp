@@ -13,5 +13,7 @@ namespace Toggl.Foundation.MvvmCross.Services
         Task<string> ShowMultipleChoiceDialog(
             string cancelText,
             params MultipleChoiceDialogAction[] actions);
+
+        Task<object> Alert(string title, string message, string buttonTitle);
     }
 }

@@ -21,11 +21,15 @@ namespace Toggl.Daneel.Extensions
         var className = Path.GetFileName(file).Replace(".cs", ""); 
         var lines = File.ReadAllLines(file);
 
-        var declarationLine = lines.FirstOrDefault(line => line.Contains("MvxTargetBinding<"));
+        var declarationLine = lines.FirstOrDefault(line => line.Contains("TargetBinding<"));
         if (declarationLine == null) continue;
 
         var beginAt = declarationLine.IndexOf("<") + 1;
-        var length = declarationLine.IndexOf(", ") - beginAt;
+        var endAt = declarationLine.IndexOf(", ");
+        if (endAt < 0)
+            endAt = declarationLine.IndexOf(">");
+
+        var length = endAt - beginAt;
         var viewName = declarationLine.Substring(beginAt, length);
 
         var bindingLine = lines.FirstOrDefault(line => line.Contains("const string BindingName"));

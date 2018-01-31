@@ -60,7 +60,7 @@ namespace Toggl.Daneel
             var foundation = Foundation.Foundation.Create(
                 clientName, 
                 version,
-                new Database(), 
+                new Database(),
                 new TimeService(Scheduler.Default),
                 new MailService((ITopViewControllerProvider)Presenter),
                 new GoogleService(),

@@ -69,5 +69,21 @@ namespace Toggl.Daneel.Services
 
             return tcs.Task;
         }
+
+        public Task<object> Alert(string title, string message, string buttonTitle)
+        {
+            var tcs = new TaskCompletionSource<object>();
+
+            var alert = UIAlertController.Create(title, message, UIAlertControllerStyle.Alert);
+            var alertAction = UIAlertAction.Create(buttonTitle, UIAlertActionStyle.Default, _ => tcs.SetResult(null));
+
+            alert.AddAction(alertAction);
+
+            topViewControllerProvider
+                .TopViewController
+                .PresentViewController(alert, true, null);
+
+            return tcs.Task;
+        }
     }
 }

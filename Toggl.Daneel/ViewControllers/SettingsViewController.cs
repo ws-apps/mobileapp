@@ -129,7 +129,6 @@ namespace Toggl.Daneel.ViewControllers
             SubscriptionView.Hidden = true;
             TwentyFourHourClockView.Hidden = true;
             AddMobileTagView.Hidden = true;
-            FeedbackView.Hidden = true;
             RateView.Hidden = true;
             UpdateView.Hidden = true;
             HelpView.Hidden = true;

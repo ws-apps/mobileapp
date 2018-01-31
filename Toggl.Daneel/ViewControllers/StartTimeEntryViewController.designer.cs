@@ -41,7 +41,7 @@ namespace Toggl.Daneel.ViewControllers
 
 		[Outlet]
 		[GeneratedCode ("iOS Designer", "1.0")]
-		UIKit.UITextView DescriptionTextView { get; set; }
+		Toggl.Daneel.Views.AutocompleteTextView DescriptionTextView { get; set; }
 
 		[Outlet]
 		[GeneratedCode ("iOS Designer", "1.0")]
@@ -52,7 +52,7 @@ namespace Toggl.Daneel.ViewControllers
 		UIKit.UIButton DurationButton { get; set; }
 
 		[Outlet]
-		UIKit.UILabel PlaceholderLabel { get; set; }
+		Toggl.Daneel.Views.AutocompleteTextViewPlaceholder Placeholder { get; set; }
 
 		[Outlet]
 		[GeneratedCode ("iOS Designer", "1.0")]
@@ -72,11 +72,6 @@ namespace Toggl.Daneel.ViewControllers
 		
 		void ReleaseDesignerOutlets ()
 		{
-			if (PlaceholderLabel != null) {
-				PlaceholderLabel.Dispose ();
-				PlaceholderLabel = null;
-			}
-
 			if (BillableButton != null) {
 				BillableButton.Dispose ();
 				BillableButton = null;
@@ -125,6 +120,11 @@ namespace Toggl.Daneel.ViewControllers
 			if (DurationButton != null) {
 				DurationButton.Dispose ();
 				DurationButton = null;
+			}
+
+			if (Placeholder != null) {
+				Placeholder.Dispose ();
+				Placeholder = null;
 			}
 
 			if (ProjectsButton != null) {

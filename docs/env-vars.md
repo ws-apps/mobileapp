@@ -15,6 +15,10 @@ Below is a list of all the environment variables you need to configure before bu
 `TOGGL_STORAGE_BUCKET`
 `TOGGL_GOOGLE_APP_ID`
 
+- App Center crash tracking :boom:
+`TOGGL_APP_CENTER_ID_IOS`
+`TOGGL_APP_CENTER_ID_DROID`
+
 # new 'puter who dis? :computer:
 
 To configure this on a macOS:
@@ -36,6 +40,8 @@ export TOGGL_PROJECT_ID=""
 export TOGGL_STORAGE_BUCKET=""
 export TOGGL_GOOGLE_APP_ID=""
 export TOGGL_DATABASE_URL=""
+export TOGGL_APP_CENTER_ID_IOS=""
+export TOGGL_APP_CENTER_ID_DROID=""
 ```
 
 Finish it off with:
@@ -43,3 +49,5 @@ Finish it off with:
 ```
 $ source ~/.bash_profile
 ```
+
+NOTE: Replace `bash_profile` with `zshrc` if you're using `zsh`

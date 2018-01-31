@@ -13,6 +13,7 @@ using Toggl.Foundation.MvvmCross.Converters;
 using Toggl.Foundation.MvvmCross.Helper;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using UIKit;
+using Toggl.Foundation;
 
 namespace Toggl.Daneel.ViewControllers
 {
@@ -166,6 +167,9 @@ namespace Toggl.Daneel.ViewControllers
             TimeLabel.Font = TimeLabel.Font.GetMonospacedDigitFont();
             DescriptionTextView.TintColor = Color.StartTimeEntry.Cursor.ToNativeColor();
             DescriptionTextView.BecomeFirstResponder();
+
+            Placeholder.TextView = DescriptionTextView;
+            Placeholder.Text = Resources.StartTimeEntryPlaceholder;
         }
 
         private IEnumerable<UIButton> getButtons()

@@ -31,5 +31,10 @@ namespace Toggl.Giskard.Services
         {
             throw new System.NotImplementedException();
         }
+
+        Task<object> IDialogService.Alert(string title, string message, string buttonTitle)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }
