@@ -247,6 +247,7 @@
     <Compile Include="Autocomplete\TagsTokenSpan.cs" />
     <Compile Include="Views\StartTimeEntryRecyclerViewHolder.cs" />
     <Compile Include="Services\AnalyticsService.cs" />
+    <Compile Include="Bindings\FabVisibilityTargetBinding.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\AndroidManifest.xml" />

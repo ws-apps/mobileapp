@@ -146,8 +146,7 @@
         android:layout_height="wrap_content"
         android:layout_above="@id/LoginTermsOfServiceLabel" />
     <android.support.design.widget.FloatingActionButton
-        android:contentDescription="Next Button"
-        local:MvxBind="Click NextCommand;"
+        local:MvxBind="Click NextCommand; FabVisibility NextIsEnabled"
         android:src="@drawable/next_light"
         local:elevation="4dp"
         local:borderWidth="0dp"

@@ -3,6 +3,7 @@ using MvvmCross.Binding.Bindings.Target.Construction;
 using Toggl.Giskard.Bindings;
 using Toggl.Giskard.Views;
 using Android.Widget;
+using Android.Support.Design.Widget;
 
 namespace Toggl.Giskard
 {
@@ -46,6 +47,11 @@ namespace Toggl.Giskard
             registry.RegisterCustomBindingFactory<View>(
                 ViewMarginTargetBinding.BindingName,
                 view => new ViewMarginTargetBinding(view)
+            );
+
+            registry.RegisterCustomBindingFactory<FloatingActionButton>(
+                FabVisibilityTargetBinding.BindingName,
+                view => new FabVisibilityTargetBinding(view)
             );
         }
     }
