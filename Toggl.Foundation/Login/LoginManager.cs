@@ -2,6 +2,7 @@
 using System.Reactive.Linq;
 using Toggl.Foundation.DataSources;
 using Toggl.Foundation.Models;
+using Toggl.Foundation.Shortcuts;
 using Toggl.Multivac;
 using Toggl.Multivac.Models;
 using Toggl.PrimeRadiant;
@@ -16,6 +17,7 @@ namespace Toggl.Foundation.Login
         private readonly IApiFactory apiFactory;
         private readonly ITogglDatabase database;
         private readonly IGoogleService googleService;
+        private readonly IApplicationShortcutCreator shortcutCreator;
         private readonly IAccessRestrictionStorage accessRestrictionStorage;
         private readonly Func<ITogglApi, ITogglDataSource> createDataSource;
 
@@ -23,6 +25,7 @@ namespace Toggl.Foundation.Login
             IApiFactory apiFactory,
             ITogglDatabase database,
             IGoogleService googleService,
+            IApplicationShortcutCreator shortcutCreator,
             IAccessRestrictionStorage accessRestrictionStorage,
             Func<ITogglApi, ITogglDataSource> createDataSource)
         {
@@ -30,12 +33,14 @@ namespace Toggl.Foundation.Login
             Ensure.Argument.IsNotNull(apiFactory, nameof(apiFactory));
             Ensure.Argument.IsNotNull(accessRestrictionStorage, nameof(accessRestrictionStorage));
             Ensure.Argument.IsNotNull(googleService, nameof(googleService));
+            Ensure.Argument.IsNotNull(shortcutCreator, nameof(shortcutCreator));
             Ensure.Argument.IsNotNull(createDataSource, nameof(createDataSource));
 
             this.database = database;
             this.apiFactory = apiFactory;
             this.accessRestrictionStorage = accessRestrictionStorage;
             this.googleService = googleService;
+            this.shortcutCreator = shortcutCreator;
             this.createDataSource = createDataSource;
         }
 
@@ -53,7 +58,8 @@ namespace Toggl.Foundation.Login
                     .SelectMany(_ => apiFactory.CreateApiWith(credentials).User.Get())
                     .Select(User.Clean)
                     .SelectMany(database.User.Create)
-                    .Select(dataSourceFromUser);
+                    .Select(dataSourceFromUser)
+                    .Do(_ => shortcutCreator.OnLogin());
         }
 
         public IObservable<ITogglDataSource> LoginWithGoogle()
@@ -65,7 +71,8 @@ namespace Toggl.Foundation.Login
                 .SelectMany(api => api.User.GetWithGoogle())
                 .Select(User.Clean)
                 .SelectMany(database.User.Create)
-                .Select(dataSourceFromUser);
+                .Select(dataSourceFromUser)
+                .Do(_ => shortcutCreator.OnLogin());
 
         public IObservable<ITogglDataSource> SignUp(Email email, Password password)
         {
@@ -79,7 +86,8 @@ namespace Toggl.Foundation.Login
                     .SelectMany(_ => apiFactory.CreateApiWith(Credentials.None).User.SignUp(email, password))
                     .Select(User.Clean)
                     .SelectMany(database.User.Create)
-                    .Select(dataSourceFromUser);
+                    .Select(dataSourceFromUser)
+                    .Do(_ => shortcutCreator.OnLogin());
         }
 
         public IObservable<ITogglDataSource> SignUpWithGoogle()
@@ -89,7 +97,8 @@ namespace Toggl.Foundation.Login
                 .SelectMany(apiFactory.CreateApiWith(Credentials.None).User.SignUpWithGoogle)
                 .Select(User.Clean)
                 .SelectMany(database.User.Create)
-                .Select(dataSourceFromUser);
+                .Select(dataSourceFromUser)
+                .Do(_ => shortcutCreator.OnLogin());
 
         public IObservable<string> ResetPassword(Email email)
         {
@@ -105,6 +114,7 @@ namespace Toggl.Foundation.Login
                 .Single()
                 .Select(dataSourceFromUser)
                 .Catch(Observable.Return<ITogglDataSource>(null))
+                .Do(_ => shortcutCreator.OnLogin())
                 .Wait();
 
         public IObservable<ITogglDataSource> RefreshToken(Password password)
@@ -120,7 +130,8 @@ namespace Toggl.Foundation.Login
                 .SelectMany(api => api.User.Get())
                 .Select(User.Clean)
                 .SelectMany(database.User.Update)
-                .Select(dataSourceFromUser);
+                .Select(dataSourceFromUser)
+                .Do(_ => shortcutCreator.OnLogin());
         }
 
         private ITogglDataSource dataSourceFromUser(IUser user)

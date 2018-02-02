@@ -5,6 +5,7 @@ using System.Reactive.Linq;
 using Toggl.Foundation.Autocomplete;
 using Toggl.Foundation.Reports;
 using Toggl.Foundation.Services;
+using Toggl.Foundation.Shortcuts;
 using Toggl.Foundation.Sync;
 using Toggl.Multivac;
 using Toggl.Multivac.Extensions;
@@ -18,6 +19,7 @@ namespace Toggl.Foundation.DataSources
         private readonly ITogglDatabase database;
         private readonly IApiErrorHandlingService apiErrorHandlingService;
         private readonly IBackgroundService backgroundService;
+        private readonly IApplicationShortcutCreator shortcutCreator;
 
         private readonly TimeSpan minimumTimeInBackgroundForFullSync;
 
@@ -33,7 +35,8 @@ namespace Toggl.Foundation.DataSources
             IApiErrorHandlingService apiErrorHandlingService,
             IBackgroundService backgroundService,
             Func<ITogglDataSource, ISyncManager> createSyncManager,
-            TimeSpan minimumTimeInBackgroundForFullSync)
+            TimeSpan minimumTimeInBackgroundForFullSync,
+            IApplicationShortcutCreator shortcutCreator)
         {
             Ensure.Argument.IsNotNull(api, nameof(api));
             Ensure.Argument.IsNotNull(database, nameof(database));
@@ -41,10 +44,12 @@ namespace Toggl.Foundation.DataSources
             Ensure.Argument.IsNotNull(apiErrorHandlingService, nameof(apiErrorHandlingService));
             Ensure.Argument.IsNotNull(backgroundService, nameof(backgroundService));
             Ensure.Argument.IsNotNull(createSyncManager, nameof(createSyncManager));
+            Ensure.Argument.IsNotNull(shortcutCreator, nameof(shortcutCreator));
 
             this.database = database;
             this.apiErrorHandlingService = apiErrorHandlingService;
             this.backgroundService = backgroundService;
+            this.shortcutCreator = shortcutCreator;
 
             this.minimumTimeInBackgroundForFullSync = minimumTimeInBackgroundForFullSync;
 
@@ -54,7 +59,7 @@ namespace Toggl.Foundation.DataSources
             Workspaces = new WorkspacesDataSource(database);
             Clients = new ClientsDataSource(database.IdProvider, database.Clients, timeService);
             Projects = new ProjectsDataSource(database.IdProvider, database.Projects, timeService);
-            TimeEntries = new TimeEntriesDataSource(database.IdProvider, database.TimeEntries, timeService);
+            TimeEntries = new TimeEntriesDataSource(database.IdProvider, shortcutCreator, database.TimeEntries, timeService);
 
             AutocompleteProvider = new AutocompleteProvider(database);
             SyncManager = createSyncManager(this);
@@ -111,6 +116,7 @@ namespace Toggl.Foundation.DataSources
                 .Do(_ => isLoggedIn = false)
                 .Do(_ => stopSyncingOnSignal())
                 .SelectMany(_ => database.Clear())
+                .Do(_ => shortcutCreator.OnLogout())
                 .FirstAsync();
 
         private IObservable<bool> hasUnsyncedData<TModel>(IRepository<TModel> repository)

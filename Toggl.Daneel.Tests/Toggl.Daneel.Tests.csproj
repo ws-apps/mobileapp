@@ -125,6 +125,25 @@
       <HintPath>..\packages\FluentAssertions.4.19.4\lib\netstandard1.3\FluentAssertions.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Realm.DataBinding">
+      <HintPath>..\packages\Realm.DataBinding.1.2.0\lib\Xamarin.iOS10\Realm.DataBinding.dll</HintPath>
+    </Reference>
+    <Reference Include="Remotion.Linq">
+      <HintPath>..\packages\Remotion.Linq.2.1.2\lib\portable-net45+win+wpa81+wp80\Remotion.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.4.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="Realm">
+      <HintPath>..\packages\Realm.Database.2.1.0\lib\netstandard1.4\Realm.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\netstandard1.3\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Realm.Sync">
+      <HintPath>..\packages\Realm.2.1.0\lib\netstandard1.4\Realm.Sync.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Contents.json" />
@@ -140,6 +159,7 @@
     <None Include="Info.plist" />
     <None Include="Entitlements.plist" />
     <None Include="packages.config" />
+    <None Include="FodyWeavers.xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Main.cs" />
@@ -148,15 +168,44 @@
     <Compile Include="ViewController.designer.cs">
       <DependentUpon>ViewController.cs</DependentUpon>
     </Compile>
+    <Compile Include="ApplicationShortcutCreatorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Toggl.Daneel\Toggl.Daneel.csproj">
       <Project>{8CE4E64C-5719-4660-96AC-CF2ABA3A335E}</Project>
       <Name>Toggl.Daneel</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Toggl.Foundation\Toggl.Foundation.csproj">
+      <Project>{09D75C0B-3367-4678-97EF-6EADE64AF09C}</Project>
+      <Name>Toggl.Foundation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Toggl.Foundation.MvvmCross\Toggl.Foundation.MvvmCross.csproj">
+      <Project>{CB2B0786-217F-455A-9349-0FC69468D3B6}</Project>
+      <Name>Toggl.Foundation.MvvmCross</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Toggl.Multivac\Toggl.Multivac.csproj">
+      <Project>{6AF7BE5E-AF9D-4EA7-AF7F-28D07B8DEF24}</Project>
+      <Name>Toggl.Multivac</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Toggl.PrimeRadiant\Toggl.PrimeRadiant.csproj">
+      <Project>{3A603451-31B2-4975-9366-3212BEA78F57}</Project>
+      <Name>Toggl.PrimeRadiant</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Toggl.PrimeRadiant.Realm\Toggl.PrimeRadiant.Realm.csproj">
+      <Project>{7716BCE9-A3D4-4359-A02E-94380BDF83C7}</Project>
+      <Name>Toggl.PrimeRadiant.Realm</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Toggl.Ultrawave\Toggl.Ultrawave.csproj">
+      <Project>{5ACEB155-9DD4-4309-BCC9-997A09950393}</Project>
+      <Name>Toggl.Ultrawave</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <Import Project="..\packages\Xamarin.Forms.2.5.0.91635\build\netstandard1.0\Xamarin.Forms.targets" Condition="Exists('..\packages\Xamarin.Forms.2.5.0.91635\build\netstandard1.0\Xamarin.Forms.targets')" />
   <Import Project="..\packages\xunit.runner.devices.2.3.2\build\xamarinios10\xunit.runner.devices.targets" Condition="Exists('..\packages\xunit.runner.devices.2.3.2\build\xamarinios10\xunit.runner.devices.targets')" />
   <Import Project="..\packages\xunit.core.2.3.1\build\xunit.core.targets" Condition="Exists('..\packages\xunit.core.2.3.1\build\xunit.core.targets')" />
+  <Import Project="..\packages\Fody.2.2.0\build\netstandard1.2\Fody.targets" Condition="Exists('..\packages\Fody.2.2.0\build\netstandard1.2\Fody.targets')" />
+  <Import Project="..\packages\NETStandard.Library.2.0.0\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('..\packages\NETStandard.Library.2.0.0\build\netstandard2.0\NETStandard.Library.targets')" />
+  <Import Project="..\packages\Realm.Database.2.1.0\build\Realm.Database.targets" Condition="Exists('..\packages\Realm.Database.2.1.0\build\Realm.Database.targets')" />
+  <Import Project="..\packages\Realm.2.1.0\build\Realm.targets" Condition="Exists('..\packages\Realm.2.1.0\build\Realm.targets')" />
 </Project>

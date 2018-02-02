@@ -27,6 +27,11 @@ namespace Toggl.Daneel
                 view => new BarButtonCommandTargetBinding(view)
             );
 
+            registry.RegisterCustomBindingFactory<UIButton>(
+                ButtonImageTargetBinding.BindingName,
+                view => new ButtonImageTargetBinding(view)
+            );
+
             registry.RegisterCustomBindingFactory<UIDatePicker>(
                 DatePickerDateTimeOffsetTargetBinding.BindingName,
                 view => new DatePickerDateTimeOffsetTargetBinding(view)

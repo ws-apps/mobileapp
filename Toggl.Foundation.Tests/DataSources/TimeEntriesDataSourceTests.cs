@@ -10,6 +10,7 @@ using Toggl.Foundation.DataSources;
 using Toggl.Foundation.DTOs;
 using Toggl.Foundation.Exceptions;
 using Toggl.Foundation.Models;
+using Toggl.Foundation.Shortcuts;
 using Toggl.Foundation.Tests.Generators;
 using Toggl.Multivac.Models;
 using Toggl.PrimeRadiant;
@@ -59,9 +60,11 @@ namespace Toggl.Foundation.Tests.DataSources
 
             protected ITimeService TimeService { get; } = Substitute.For<ITimeService>();
 
+            protected IApplicationShortcutCreator ApplicationShortcutCreator { get; } = Substitute.For<IApplicationShortcutCreator>();
+
             public TimeEntryDataSourceTest()
             {
-                TimeEntriesSource = new TimeEntriesDataSource(IdProvider, Repository, TimeService);
+                TimeEntriesSource = new TimeEntriesDataSource(IdProvider, ApplicationShortcutCreator, Repository, TimeService);
 
                 IdProvider.GetNextIdentifier().Returns(-1);
                 Repository.GetById(Arg.Is(DatabaseTimeEntry.Id)).Returns(Observable.Return(DatabaseTimeEntry));
@@ -90,15 +93,20 @@ namespace Toggl.Foundation.Tests.DataSources
         public sealed class TheConstructor : TimeEntryDataSourceTest
         {
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(ThreeParameterConstructorTestData))]
-            public void ThrowsIfAnyOfTheArgumentsIsNull(bool useIdProvider, bool useRepository, bool useTimeService)
+            [ClassData(typeof(FourParameterConstructorTestData))]
+            public void ThrowsIfAnyOfTheArgumentsIsNull(
+                bool useIdProvider,
+                bool useRepository,
+                bool useTimeService,
+                bool useShortcutCreator)
             {
                 var idProvider = useIdProvider ? IdProvider : null;
                 var repository = useRepository ? Repository : null;
                 var timeService = useTimeService ? TimeService : null;
+                var shortcutCreator = useShortcutCreator ? ApplicationShortcutCreator : null;
 
                 Action tryingToConstructWithEmptyParameters =
-                    () => new TimeEntriesDataSource(idProvider, repository, timeService);
+                    () => new TimeEntriesDataSource(idProvider, shortcutCreator, repository, timeService);
 
                 tryingToConstructWithEmptyParameters
                     .ShouldThrow<ArgumentNullException>();
@@ -240,6 +248,23 @@ namespace Toggl.Foundation.Tests.DataSources
                     Arg.Is<IEnumerable<(long, IDatabaseTimeEntry Entity)>>(enumerable => predicate(enumerable.First().Entity)),
                     Arg.Any<Func<IDatabaseTimeEntry, IDatabaseTimeEntry, ConflictResolutionMode>>(),
                     Arg.Any<IRivalsResolver<IDatabaseTimeEntry>>());
+            }
+
+            [Fact, LogIfTooSlow]
+            public async ThreadingTask NotifiesShortcutCreatorAboutNewEntry()
+            {
+                var dto = CreateDto(ValidTime, ValidDescription, true, ProjectId, TaskId);
+                var timeEntry = await TimeEntriesSource.Start(dto);
+
+                ApplicationShortcutCreator
+                    .Received()
+                    .OnTimeEntryStarted(
+                        Arg.Is<ITimeEntry>(te =>
+                            te.Description == dto.Description
+                            && te.Start == dto.StartTime
+                            && te.Billable == dto.Billable
+                            && te.ProjectId == dto.ProjectId
+                            && te.TaskId == dto.TaskId));
             }
         }
 

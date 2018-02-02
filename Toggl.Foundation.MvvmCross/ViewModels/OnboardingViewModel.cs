@@ -6,6 +6,7 @@ using MvvmCross.Platform.UI;
 using PropertyChanged;
 using Toggl.Foundation.Login;
 using Toggl.Foundation.MvvmCross.Helper;
+using Toggl.Foundation.Services;
 using Toggl.Multivac;
 using Toggl.PrimeRadiant.Settings;
 
@@ -19,6 +20,16 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         public const int SummaryPage = 2;
         public const int LoginPage = 3;
 
+        private static readonly string[] pageNames =
+        {
+            nameof(TrackPage),
+            nameof(LogPage),
+            #if DEBUG
+            nameof(SummaryPage),
+            #endif
+            nameof(LoginPage)
+        };
+
         private static readonly (MvxColor BackgroundColor, MvxColor BorderColor)[] PageInfo =
         {
             (Color.Onboarding.TrackPageBackgroundColor, Color.Onboarding.TrackPageBorderColor),
@@ -29,10 +40,11 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             (Color.Onboarding.LoginPageBackgroundColor, MvxColors.Transparent)
         };
 
-        private readonly IMvxNavigationService navigationService;
+        private readonly IAnalyticsService analyticsService;
         private readonly IOnboardingStorage onboardingStorage;
+        private readonly IMvxNavigationService navigationService;
 
-        private bool[] pagesVisited = new bool[PageInfo.Length];
+        private readonly bool[] pagesVisited = new bool[PageInfo.Length];
 
         private int currentPage;
         public int CurrentPage 
@@ -85,11 +97,14 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public OnboardingViewModel(
             IMvxNavigationService navigationService,
-            IOnboardingStorage onboardingStorage)
+            IOnboardingStorage onboardingStorage,
+            IAnalyticsService analyticsService)
         {
+            Ensure.Argument.IsNotNull(analyticsService, nameof(analyticsService));
             Ensure.Argument.IsNotNull(navigationService, nameof(navigationService));
             Ensure.Argument.IsNotNull(onboardingStorage, nameof(onboardingStorage));
 
+            this.analyticsService = analyticsService;
             this.navigationService = navigationService;
             this.onboardingStorage = onboardingStorage;
 
@@ -124,7 +139,10 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         }
 
         private void skip()
-            => CurrentPage = PageInfo.Length - 1;
+        {
+            analyticsService.TrackOnboardingSkipEvent(pageNames[CurrentPage]);
+            CurrentPage = PageInfo.Length - 1;
+        }
 
         private bool nextCanExecute() => !IsLastPage;
 

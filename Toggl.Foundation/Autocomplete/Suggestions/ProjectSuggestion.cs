@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Toggl.Multivac;
 using Toggl.PrimeRadiant.Models;
 
 namespace Toggl.Foundation.Autocomplete.Suggestions
 {
+    [Preserve(AllMembers = true)]
     public sealed class ProjectSuggestion : AutocompleteSuggestion
     {
         public static ProjectSuggestion NoProject(long workspaceId, string workspaceName)

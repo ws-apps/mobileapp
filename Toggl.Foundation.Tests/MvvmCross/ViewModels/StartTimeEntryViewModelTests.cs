@@ -14,6 +14,7 @@ using Toggl.Foundation.MvvmCross.Parameters;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using Toggl.Foundation.Tests.Generators;
 using Toggl.Multivac;
+using Toggl.Multivac.Extensions;
 using Toggl.PrimeRadiant.Models;
 using Xunit;
 using static Toggl.Foundation.Helper.Constants;
@@ -38,6 +39,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             protected const string Description = "Testing Toggl mobile apps";
 
             protected IAutocompleteProvider AutocompleteProvider { get; } = Substitute.For<IAutocompleteProvider>();
+
+            protected StartTimeEntryParameters DefaultParameter { get; } = new StartTimeEntryParameters(DateTimeOffset.UtcNow, "", null);
 
             protected StartTimeEntryViewModelTest()
             {
@@ -80,14 +83,52 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
         public sealed class ThePrepareMethod : StartTimeEntryViewModelTest
         {
-            [Fact, LogIfTooSlow]
-            public void SetsTheDateAccordingToTheDateParameterReceived()
+            [Property]
+            public void SetsTheDateAccordingToTheDateParameterReceived(DateTimeOffset date, string placeholder, TimeSpan? duration)
             {
-                var date = DateTimeOffset.UtcNow;
+                var parameter = new StartTimeEntryParameters(date, placeholder, duration);
 
-                ViewModel.Prepare(date);
+                ViewModel.Prepare(parameter);
 
                 ViewModel.StartTime.Should().BeSameDateAs(date);
+                ViewModel.PlaceholderText.Should().Be(placeholder);
+                ViewModel.Duration.Should().Be(duration);
+            }
+
+            [Fact]
+            public void DoesNotStartTheTimerWhenDurationIsNotNull()
+            {
+                var observable = Substitute.For<IConnectableObservable<DateTimeOffset>>();
+                TimeService.CurrentDateTimeObservable.Returns(observable);
+                var duration = TimeSpan.FromSeconds(130);
+                var parameter = new StartTimeEntryParameters(DateTimeOffset.Now, "", duration);
+
+                ViewModel.Prepare(parameter);
+
+                TimeService.CurrentDateTimeObservable.DidNotReceiveWithAnyArgs().Subscribe(null);
+            }
+
+            [Fact]
+            public void StarsTheTimerWhenDurationIsNull()
+            {
+                var observable = Substitute.For<IConnectableObservable<DateTimeOffset>>();
+                TimeService.CurrentDateTimeObservable.Returns(observable);
+                var parameter = new StartTimeEntryParameters(DateTimeOffset.Now, "", null);
+
+                ViewModel.Prepare(parameter);
+
+                TimeService.CurrentDateTimeObservable.ReceivedWithAnyArgs().Subscribe(null);
+            }
+
+            [Fact]
+            public void SetsTheElapsedTimeToTheValueOfTheDurationParameter()
+            {
+                var duration = TimeSpan.FromSeconds(130);
+                var parameter = new StartTimeEntryParameters(DateTimeOffset.Now, "", duration);
+
+                ViewModel.Prepare(parameter);
+
+                ViewModel.ElapsedTime.Should().Be(duration);
             }
         }
 
@@ -104,7 +145,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     .Returns(Observable.Return(workspace));
                 DataSource.Workspaces.WorkspaceHasFeature(10, WorkspaceFeatureId.Pro)
                     .Returns(Observable.Return(billableValue));
-                ViewModel.Prepare(DateTimeOffset.UtcNow);
+                var parameter = new StartTimeEntryParameters(DateTimeOffset.UtcNow, "", null);
+                ViewModel.Prepare(parameter);
 
                 await ViewModel.Initialize();
 
@@ -196,7 +238,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                         .Query(Arg.Is<QueryInfo>(info => info.SuggestionType == AutocompleteSuggestionType.Projects))
                               .Returns(Observable.Return(new ProjectSuggestion[] { projectSuggestion }));
 
-                    ViewModel.Prepare(DateTimeOffset.Now);
+                    ViewModel.Prepare(DefaultParameter);
                 }
 
                 [Fact, LogIfTooSlow]
@@ -242,7 +284,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                         .Query(Arg.Is<QueryInfo>(info => info.SuggestionType == AutocompleteSuggestionType.Tags))
                         .Returns(Observable.Return(new TagSuggestion[] { tagSuggestion }));
 
-                    ViewModel.Prepare(DateTimeOffset.Now);
+                    ViewModel.Prepare(DefaultParameter);
                 }
 
                 [Fact, LogIfTooSlow]
@@ -285,7 +327,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     DataSource.Projects.GetById(Arg.Any<long>()).Returns(Observable.Return(project));
                     ViewModel.TextFieldInfo = TextFieldInfo.Empty.WithTextAndCursor($"@{currentQuery}", 15);
 
-                    ViewModel.Prepare(DateTimeOffset.UtcNow);
+                    ViewModel.Prepare(DefaultParameter);
                 }
 
                 [Fact, LogIfTooSlow]
@@ -337,7 +379,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 {
                     ViewModel.TextFieldInfo = TextFieldInfo.Empty.WithTextAndCursor($"#{currentQuery}", 1);
 
-                    ViewModel.Prepare(DateTimeOffset.UtcNow);
+                    ViewModel.Prepare(DefaultParameter);
                 }
 
                 [Fact, LogIfTooSlow]
@@ -448,7 +490,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [Fact, LogIfTooSlow]
             public void StartProjectSuggestionEvenIfTheProjectHasAlreadyBeenSelected()
             {
-                ViewModel.Prepare(DateTimeOffset.UtcNow);
+                ViewModel.Prepare(DefaultParameter);
                 ViewModel.TextFieldInfo = TextFieldInfo.Empty
                     .WithTextAndCursor(Description, Description.Length)
                     .WithProjectInfo(WorkspaceId, ProjectId, ProjectName, ProjectColor);
@@ -461,7 +503,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [Fact, LogIfTooSlow]
             public void SetsTheIsSuggestingProjectsPropertyToTrueIfNotInProjectSuggestionMode()
             {
-                ViewModel.Prepare(DateTimeOffset.UtcNow);
+                ViewModel.Prepare(DefaultParameter);
 
                 ViewModel.ToggleProjectSuggestionsCommand.Execute();
 
@@ -473,7 +515,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             {
                 const string description = "Testing Toggl Apps";
                 var expected = $"{description} @";
-                ViewModel.Prepare(DateTimeOffset.UtcNow);
+                ViewModel.Prepare(DefaultParameter);
                 ViewModel.TextFieldInfo = TextFieldInfo.Empty.WithTextAndCursor(description, description.Length);
 
                 ViewModel.ToggleProjectSuggestionsCommand.Execute();
@@ -492,7 +534,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [InlineData("Testing Toggl Apps @some query @query")]
             public void SetsTheIsSuggestingProjectsPropertyToFalseIfAlreadyInProjectSuggestionMode(string description)
             {
-                ViewModel.Prepare(DateTimeOffset.UtcNow);
+                ViewModel.Prepare(DefaultParameter);
                 ViewModel.TextFieldInfo = TextFieldInfo.Empty.WithTextAndCursor(description, description.Length);
 
                 ViewModel.ToggleProjectSuggestionsCommand.Execute();
@@ -512,7 +554,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             public void RemovesTheAtSymbolFromTheDescriptionTextIfAlreadyInProjectSuggestionMode(
                 string description, string expected)
             {
-                ViewModel.Prepare(DateTimeOffset.UtcNow);
+                ViewModel.Prepare(DefaultParameter);
                 ViewModel.TextFieldInfo = TextFieldInfo.Empty.WithTextAndCursor(description, description.Length);
 
                 ViewModel.ToggleProjectSuggestionsCommand.Execute();
@@ -537,7 +579,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [Fact, LogIfTooSlow]
             public void SetsTheIsSuggestingTagsPropertyToTrueIfNotInTagSuggestionMode()
             {
-                ViewModel.Prepare(DateTimeOffset.UtcNow);
+                ViewModel.Prepare(DefaultParameter);
 
                 ViewModel.ToggleTagSuggestionsCommand.Execute();
 
@@ -549,7 +591,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             {
                 const string description = "Testing Toggl Apps";
                 var expected = $"{description} #";
-                ViewModel.Prepare(DateTimeOffset.UtcNow);
+                ViewModel.Prepare(DefaultParameter);
                 ViewModel.TextFieldInfo = TextFieldInfo.Empty.WithTextAndCursor(description, description.Length);
 
                 ViewModel.ToggleTagSuggestionsCommand.Execute();
@@ -568,7 +610,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [InlineData("Testing Toggl Apps #some query #query")]
             public void SetsTheIsSuggestingTagsPropertyToFalseIfAlreadyInTagSuggestionMode(string description)
             {
-                ViewModel.Prepare(DateTimeOffset.UtcNow);
+                ViewModel.Prepare(DefaultParameter);
                 ViewModel.TextFieldInfo = TextFieldInfo.Empty.WithTextAndCursor(description, description.Length);
 
                 ViewModel.ToggleTagSuggestionsCommand.Execute();
@@ -588,7 +630,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             public void RemovesTheHashtagSymbolFromTheDescriptionTextIfAlreadyInTagSuggestionMode(
                 string description, string expected)
             {
-                ViewModel.Prepare(DateTimeOffset.UtcNow);
+                ViewModel.Prepare(DefaultParameter);
                 ViewModel.TextFieldInfo = TextFieldInfo.Empty
                     .WithProjectInfo(WorkspaceId, ProjectId, ProjectName, ProjectColor)
                     .WithTextAndCursor(description, description.Length);
@@ -605,11 +647,12 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             public async Task SetsTheStartDateToTheValueReturnedByTheEditDurationViewModel()
             {
                 var now = DateTimeOffset.UtcNow;
+                var parameter = new StartTimeEntryParameters(now, "", null);
                 var parameterToReturn = DurationParameter.WithStartAndDuration(now.AddHours(-2), null);
                 NavigationService
                     .Navigate<EditDurationViewModel, DurationParameter, DurationParameter>(Arg.Any<DurationParameter>())
                     .Returns(parameterToReturn);
-                ViewModel.Prepare(now);
+                ViewModel.Prepare(parameter);
 
                 await ViewModel.ChangeTimeCommand.ExecuteAsync();
 
@@ -620,12 +663,13 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             public async Task SetsTheIsEditingDurationDateToTrueWhileTheViewDoesNotReturnAndThenSetsItBackToFalse()
             {
                 var now = DateTimeOffset.UtcNow;
+                var parameter = new StartTimeEntryParameters(now, "", null);
                 var parameterToReturn = DurationParameter.WithStartAndDuration(now.AddHours(-2), null);
                 var tcs = new TaskCompletionSource<DurationParameter>();
                 NavigationService
                     .Navigate<EditDurationViewModel, DurationParameter, DurationParameter>(Arg.Any<DurationParameter>())
                     .Returns(tcs.Task);
-                ViewModel.Prepare(now);
+                ViewModel.Prepare(parameter);
 
                 var toWait = ViewModel.ChangeTimeCommand.ExecuteAsync();
                 ViewModel.IsEditingTime.Should().BeTrue();
@@ -640,6 +684,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             {
                 var now = DateTimeOffset.UtcNow;
                 var currentTimeSubject = new Subject<DateTimeOffset>();
+                var parameter = new StartTimeEntryParameters(now, "", null);
                 var observable = currentTimeSubject.AsObservable().Replay();
                 observable.Connect();
                 TimeService.CurrentDateTimeObservable.Returns(observable);
@@ -648,7 +693,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 NavigationService
                     .Navigate<EditDurationViewModel, DurationParameter, DurationParameter>(Arg.Any<DurationParameter>())
                     .Returns(tcs.Task);
-                ViewModel.Prepare(now);
+                ViewModel.Prepare(parameter);
 
                 var toWait = ViewModel.ChangeTimeCommand.ExecuteAsync();
                 ViewModel.IsEditingTime.Should().BeTrue();
@@ -693,7 +738,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                          .GetById(projectId)
                          .Returns(Observable.Return(project));
 
-                    ViewModel.Prepare(startDate);
+                    var parameter = new StartTimeEntryParameters(startDate, "", null);
+                    ViewModel.Prepare(parameter);
                 }
 
                 [Fact, LogIfTooSlow]
@@ -887,6 +933,28 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     await DataSource.TimeEntries.Received().Start(Arg.Is<StartTimeEntryDTO>(dto =>
                         dto.Description == trimmed
                     ));
+                }
+
+                [Property]
+                public void DoesNotCreateARunningTimeEntryWhenDurationIsNotNull(TimeSpan duration)
+                {
+                    var parameter = new StartTimeEntryParameters(DateTimeOffset.Now, "", duration);
+
+                    ViewModel.Prepare(parameter);
+                    ViewModel.DoneCommand.ExecuteAsync().Wait();
+
+                    DataSource.TimeEntries.Received().Start(Arg.Is<StartTimeEntryDTO>(dto => dto.Duration.HasValue));
+                }
+
+                [Fact]
+                public void CreatesARunningTimeEntryWhenDurationIsNull()
+                {
+                    var parameter = new StartTimeEntryParameters(DateTimeOffset.Now, "", null);
+
+                    ViewModel.Prepare(parameter);
+                    ViewModel.DoneCommand.ExecuteAsync().Wait();
+
+                    DataSource.TimeEntries.Received().Start(Arg.Is<StartTimeEntryDTO>(dto => dto.Duration.HasValue == false));
                 }
 
                 private TagSuggestion tagSuggestionFromInt(int i)
@@ -1213,7 +1281,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                         new TimeEntrySuggestion(timeEntryB) 
                     });
                 AutocompleteProvider.Query(Arg.Any<QueryInfo>()).Returns(suggestions);
-                ViewModel.Prepare(DateTimeOffset.Now);
+                ViewModel.Prepare(DefaultParameter);
                 ViewModel.TextFieldInfo =
                     TextFieldInfo.Empty.WithProjectInfo(WorkspaceId, ProjectId, ProjectName, ProjectColor);
 
@@ -1234,7 +1302,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [InlineData("abc #def")]
             public void DoesNotChangeSuggestionsWhenOnlyTheCursorMovesForward(string text)
             {
-                ViewModel.Prepare(DateTimeOffset.Now);
+                ViewModel.Prepare(DefaultParameter);
                 ViewModel.TextFieldInfo = TextFieldInfo.Empty.WithTextAndCursor(text, text.Length);
                 AutocompleteProvider.ClearReceivedCalls();
 
@@ -1249,7 +1317,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             public void ChangesSuggestionsWhenTheCursorMovesBackBehindTheOldCursorPosition(string text)
             {
                 var extendedText = text + "x";
-                ViewModel.Prepare(DateTimeOffset.Now);
+                ViewModel.Prepare(DefaultParameter);
                 ViewModel.TextFieldInfo = TextFieldInfo.Empty.WithTextAndCursor(extendedText, text.Length);
                 ViewModel.TextFieldInfo = ViewModel.TextFieldInfo.WithTextAndCursor(extendedText, 0);
                 AutocompleteProvider.ClearReceivedCalls();
@@ -1264,7 +1332,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [InlineData("abc #def")]
             public void ChangesSuggestionsWhenTheCursorMovesBeforeTheQuerySymbolAndUserStartsTyping(string text)
             {
-                ViewModel.Prepare(DateTimeOffset.Now);
+                ViewModel.Prepare(DefaultParameter);
                 ViewModel.TextFieldInfo = TextFieldInfo.Empty.WithTextAndCursor(text, text.Length);
                 ViewModel.TextFieldInfo = ViewModel.TextFieldInfo.WithTextAndCursor(text, 0);
                 AutocompleteProvider.ClearReceivedCalls();
@@ -1352,7 +1420,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [InlineData("x")]
             public async Task ReturnsTrueWhenSuggestingTagsAndUserHasNoTags(string query)
             {
-                ViewModel.Prepare(DateTimeOffset.UtcNow);
+                ViewModel.Prepare(DefaultParameter);
                 await ViewModel.Initialize();
                 ViewModel.TextFieldInfo = TextFieldInfo
                     .Empty
@@ -1373,7 +1441,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     .Range(0, tagCount)
                     .Select(_ => Substitute.For<IDatabaseTag>());
                 DataSource.Tags.GetAll().Returns(Observable.Return(tags));
-                ViewModel.Prepare(DateTimeOffset.UtcNow);
+                ViewModel.Prepare(DefaultParameter);
                 await ViewModel.Initialize();
                 ViewModel.TextFieldInfo = TextFieldInfo
                     .Empty
@@ -1394,7 +1462,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 DataSource
                     .Tags.Create(Arg.Any<string>(), Arg.Any<long>())
                     .Returns(Observable.Return(tag));
-                ViewModel.Prepare(DateTimeOffset.UtcNow);
+                ViewModel.Prepare(DefaultParameter);
                 await ViewModel.Initialize();
                 ViewModel.TextFieldInfo = TextFieldInfo
                     .Empty

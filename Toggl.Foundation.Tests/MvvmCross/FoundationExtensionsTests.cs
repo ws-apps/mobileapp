@@ -6,6 +6,7 @@ using Toggl.Foundation.Login;
 using Toggl.Foundation.MvvmCross;
 using Toggl.Foundation.MvvmCross.Services;
 using Toggl.Foundation.Services;
+using Toggl.Foundation.Shortcuts;
 using Toggl.Foundation.Tests.Generators;
 using Toggl.PrimeRadiant;
 using Toggl.PrimeRadiant.Settings;
@@ -35,7 +36,6 @@ namespace Toggl.Foundation.Tests.MvvmCross
 
                 Action tryingToConstructWithEmptyParameters =
                     () => foundation.RegisterServices(
-                            0,
                             dialogService,
                             browserService,
                             keyValueStorage,
@@ -60,9 +60,18 @@ namespace Toggl.Foundation.Tests.MvvmCross
                 var backgroundService = Substitute.For<IBackgroundService>();
                 var keyValueStorage = Substitute.For<IKeyValueStorage>();
                 var apiErrorHandlingService = Substitute.For<IApiErrorHandlingService>();
+                var applicationShortcutCreator = Substitute.For<IApplicationShortcutCreator>();
                 var settingsService = new SettingsStorage(Version.Parse(version), keyValueStorage);
-                var foundationMvvmCross = new FoundationMvvmCross(apiFactory, database, timeService, googleService,
-                    backgroundService, settingsService, NavigationService, apiErrorHandlingService);
+                var foundationMvvmCross = new FoundationMvvmCross(
+                    apiFactory,
+                    database,
+                    timeService,
+                    googleService,
+                    applicationShortcutCreator,
+                    backgroundService,
+                    settingsService,
+                    NavigationService,
+                    apiErrorHandlingService);
                 timeService.CurrentDateTime.Returns(now);
                 keyValueStorage.GetString("LastAccessDate").Returns(now.AddDays(-60).ToString());
 

@@ -4,7 +4,7 @@ using MvvmCross.Droid.Views;
 
 namespace Toggl.Giskard
 {
-    [Activity(Label = "Toggl.Giskard", MainLauncher = true, Icon = "@mipmap/icon",
+    [Activity(Label = "Toggl", MainLauncher = true, Icon = "@mipmap/ic_launcher", 
         Theme = "@style/Theme.Splash", NoHistory = true, ScreenOrientation = ScreenOrientation.Portrait)]
     public class SplashScreen : MvxSplashScreenActivity
     {

@@ -49,6 +49,10 @@ namespace Toggl.Daneel.ViewControllers
                       .For(v => v.BindTap())
                       .To(vm => vm.EditWorkspaceCommand);
 
+            bindingSet.Bind(ManualModeView)
+                      .For(v => v.BindTap())
+                      .To(vm => vm.ToggleManualModeCommand);
+
             bindingSet.Bind(SubscriptionView)
                       .For(v => v.BindTap())
                       .To(vm => vm.EditSubscriptionCommand);
@@ -110,6 +114,10 @@ namespace Toggl.Daneel.ViewControllers
             bindingSet.Bind(TwentyFourHourClockSwitch)
                       .For(v => v.BindAnimatedOn())
                       .To(vm => vm.UseTwentyFourHourClock);
+
+            bindingSet.Bind(ManualModeSwitch)
+                      .For(v => v.BindAnimatedOn())
+                      .To(vm => vm.IsManualModeEnabled);
 
             bindingSet.Apply();
         }

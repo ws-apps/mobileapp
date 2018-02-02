@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using FsCheck.Xunit;
 using NSubstitute;
+using Toggl.Foundation.MvvmCross.Parameters;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using Toggl.Foundation.Sync;
 using Toggl.Foundation.Tests.Generators;
@@ -20,7 +21,11 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             protected ISubject<SyncProgress> ProgressSubject { get; } = new Subject<SyncProgress>();
 
             protected override MainViewModel CreateViewModel()
-                => new MainViewModel(DataSource, TimeService, OnboardingStorage, NavigationService);
+            {
+                var vm = new MainViewModel(DataSource, TimeService, OnboardingStorage, NavigationService);
+                vm.Prepare();
+                return vm;
+            }
 
             protected override void AdditionalSetup()
             {
@@ -52,6 +57,12 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 tryingToConstructWithEmptyParameters
                     .ShouldThrow<ArgumentNullException>();
             }
+
+            [Fact]
+            public void IsNotInManualModeByDefault()
+            {
+                ViewModel.IsInManualMode.Should().BeFalse();
+            }
         }
 
         public sealed class TheViewAppearedMethod : MainViewModelTest
@@ -75,13 +86,28 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
         public sealed class TheStartTimeEntryCommand : MainViewModelTest
         {
+            public TheStartTimeEntryCommand()
+            {
+                TimeService.CurrentDateTime.Returns(DateTimeOffset.Now);
+            }
+
             [Fact, LogIfTooSlow]
             public async Task NavigatesToTheStartTimeEntryViewModel()
             {
                 await ViewModel.StartTimeEntryCommand.ExecuteAsync();
 
                 await NavigationService.Received()
-                    .Navigate<StartTimeEntryViewModel, DateTimeOffset>(Arg.Any<DateTimeOffset>());
+                   .Navigate<StartTimeEntryViewModel, StartTimeEntryParameters>(Arg.Any<StartTimeEntryParameters>());
+            }
+
+            [Fact, LogIfTooSlow]
+            public async Task NavigatesToTheStartTimeEntryViewModelWhenInManualMode()
+            {
+                ViewModel.IsInManualMode = true;
+                await ViewModel.StartTimeEntryCommand.ExecuteAsync();
+
+                await NavigationService.Received()
+                   .Navigate<StartTimeEntryViewModel, StartTimeEntryParameters>(Arg.Any<StartTimeEntryParameters>());
             }
 
             [Property]
@@ -91,8 +117,63 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
                 ViewModel.StartTimeEntryCommand.ExecuteAsync().Wait();
 
-                NavigationService.Received().Navigate<StartTimeEntryViewModel, DateTimeOffset>(
-                    Arg.Is<DateTimeOffset>(parameter => parameter == date)
+                NavigationService.Received().Navigate<StartTimeEntryViewModel, StartTimeEntryParameters>(
+                    Arg.Is<StartTimeEntryParameters>(parameter => parameter.StartTime == date)
+                ).Wait();
+            }
+
+            [Fact]
+            public void PassesTheAppropriatePlaceholderToTheStartTimeEntryViewModel()
+            {
+                ViewModel.StartTimeEntryCommand.ExecuteAsync().Wait();
+
+                NavigationService.Received().Navigate<StartTimeEntryViewModel, StartTimeEntryParameters>(
+                    Arg.Is<StartTimeEntryParameters>(parameter => parameter.PlaceholderText == "What are you working on?")
+                ).Wait();
+            }
+
+            [Fact]
+            public void PassesNullDurationToTheStartTimeEntryViewModel()
+            {
+                ViewModel.StartTimeEntryCommand.ExecuteAsync().Wait();
+
+                NavigationService.Received().Navigate<StartTimeEntryViewModel, StartTimeEntryParameters>(
+                    Arg.Is<StartTimeEntryParameters>(parameter => parameter.Duration.HasValue == false)
+                ).Wait();
+            }
+
+            [Property]
+            public void PassesTheCurrentDateMinusThirtyMinutesToTheStartTimeEntryViewModelWhenInManualMode(DateTimeOffset date)
+            {
+                TimeService.CurrentDateTime.Returns(date);
+
+                ViewModel.IsInManualMode = true;
+                ViewModel.StartTimeEntryCommand.ExecuteAsync().Wait();
+
+                NavigationService.Received().Navigate<StartTimeEntryViewModel, StartTimeEntryParameters>(
+                    Arg.Is<StartTimeEntryParameters>(parameter => parameter.StartTime == date.Subtract(TimeSpan.FromMinutes(30)))
+                ).Wait();
+            }
+
+            [Fact]
+            public void PassesTheAppropriatePlaceholderToTheStartTimeEntryViewModelWhenInManualMode()
+            {
+                ViewModel.IsInManualMode = true;
+                ViewModel.StartTimeEntryCommand.ExecuteAsync().Wait();
+
+                NavigationService.Received().Navigate<StartTimeEntryViewModel, StartTimeEntryParameters>(
+                    Arg.Is<StartTimeEntryParameters>(parameter => parameter.PlaceholderText == "What have you done?")
+                ).Wait();
+            }
+
+            [Fact]
+            public void PassesThirtyMinutesOfDurationToTheStartTimeEntryViewModelWhenInManualMode()
+            {
+                ViewModel.IsInManualMode = true;
+                ViewModel.StartTimeEntryCommand.ExecuteAsync().Wait();
+
+                NavigationService.Received().Navigate<StartTimeEntryViewModel, StartTimeEntryParameters>(
+                    Arg.Is<StartTimeEntryParameters>(parameter => parameter.Duration.HasValue == true && (int)parameter.Duration.Value.TotalMinutes == 30)
                 ).Wait();
             }
 
@@ -107,7 +188,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 ViewModel.StartTimeEntryCommand.ExecuteAsync().Wait();
 
                 await NavigationService.DidNotReceive()
-                    .Navigate<StartTimeEntryViewModel, DateTimeOffset>(Arg.Any<DateTimeOffset>());
+                    .Navigate<StartTimeEntryViewModel, StartTimeEntryParameters>(Arg.Any<StartTimeEntryParameters>());
             }
         }
 

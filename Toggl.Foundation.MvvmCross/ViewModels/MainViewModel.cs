@@ -13,6 +13,7 @@ using Toggl.Foundation.Sync;
 using Toggl.Multivac;
 using Toggl.PrimeRadiant.Models;
 using Toggl.PrimeRadiant.Settings;
+using Toggl.Foundation.MvvmCross.Parameters;
 
 namespace Toggl.Foundation.MvvmCross.ViewModels
 {
@@ -57,6 +58,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public bool SpiderIsVisible { get; set; } = true;
 
+        public bool IsInManualMode { get; set; } = false;
+
         public IMvxAsyncCommand StartTimeEntryCommand { get; }
 
         public IMvxAsyncCommand StopTimeEntryCommand { get; }
@@ -68,6 +71,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         public IMvxAsyncCommand OpenReportsCommand { get; }
 
         public IMvxCommand RefreshCommand { get; }
+
+        public IMvxCommand ToggleManualMode { get; }
 
         public MainViewModel(
             ITogglDataSource dataSource,
@@ -165,8 +170,13 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             await navigationService.Navigate<ReportsViewModel, long>(user.DefaultWorkspaceId);
         }
 
-        private Task startTimeEntry() =>
-            navigationService.Navigate<StartTimeEntryViewModel, DateTimeOffset>(timeService.CurrentDateTime);
+        private Task startTimeEntry()
+        {
+            var parameter = IsInManualMode
+                ? StartTimeEntryParameters.ForManualMode(timeService.CurrentDateTime)
+                : StartTimeEntryParameters.ForTimerMode(timeService.CurrentDateTime); 
+            return navigationService.Navigate<StartTimeEntryViewModel, StartTimeEntryParameters>(parameter);
+        }
 
         private async Task stopTimeEntry()
         {

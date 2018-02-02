@@ -21,7 +21,7 @@ using static Toggl.Foundation.Helper.Constants;
 namespace Toggl.Foundation.MvvmCross.ViewModels
 {
     [Preserve(AllMembers = true)]
-    public sealed class StartTimeEntryViewModel : MvxViewModel<DateTimeOffset>
+    public sealed class StartTimeEntryViewModel : MvxViewModel<StartTimeEntryParameters>
     {
         //Fields
         private readonly ITimeService timeService;
@@ -91,6 +91,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public bool IsEditingTags { get; private set; } = false;
 
+        public string PlaceholderText { get; private set; }
+
         public bool ShouldShowNoTagsInfoMessage
             => IsSuggestingTags && !hasAnyTags;
 
@@ -99,7 +101,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public DateTimeOffset StartTime { get; private set; }
 
-        public DateTimeOffset? StopTime { get; private set; }
+        public TimeSpan? Duration { get; private set; }
 
         public MvxObservableCollection<WorkspaceGroupedCollection<AutocompleteSuggestion>> Suggestions { get; }
             = new MvxObservableCollection<WorkspaceGroupedCollection<AutocompleteSuggestion>>();
@@ -304,12 +306,20 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             TextFieldInfo = TextFieldInfo.ClearTags();
         }
 
-        public override void Prepare(DateTimeOffset parameter)
+        public override void Prepare(StartTimeEntryParameters parameter)
         {
-            StartTime = parameter;
+            StartTime = parameter.StartTime;
+            Duration = parameter.Duration;
 
-            elapsedTimeDisposable =
-                timeService.CurrentDateTimeObservable.Subscribe(currentTime => ElapsedTime = currentTime - StartTime);
+            if (Duration.HasValue)
+            {
+                ElapsedTime = Duration.Value;
+            }
+            else
+            {
+                elapsedTimeDisposable =
+                    timeService.CurrentDateTimeObservable.Subscribe(currentTime => ElapsedTime = currentTime - StartTime);
+            }
 
             var queryByTypeObservable =
                 queryByTypeSubject
@@ -325,6 +335,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                     .SelectMany(dataSource.AutocompleteProvider.Query)
                     .Merge(queryByTypeObservable)
                     .Subscribe(onSuggestions);
+
+            PlaceholderText = parameter.PlaceholderText;
         }
 
         public async override Task Initialize()
@@ -414,8 +426,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         {
             IsEditingTime = true;
 
-            var duration = StopTime.HasValue ? StopTime - StartTime : null;
-            var currentDuration = DurationParameter.WithStartAndDuration(StartTime, duration);
+            var currentDuration = DurationParameter.WithStartAndDuration(StartTime, Duration);
             var selectedDuration = await navigationService
                 .Navigate<EditDurationViewModel, DurationParameter, DurationParameter>(currentDuration)
                 .ConfigureAwait(false);
@@ -424,9 +435,9 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
             if (selectedDuration.Duration.HasValue)
             {
-                StopTime = StartTime + selectedDuration.Duration;
+                Duration = selectedDuration.Duration;
                 ElapsedTime = selectedDuration.Duration.Value;
-                elapsedTimeDisposable.Dispose();
+                elapsedTimeDisposable?.Dispose();
             }
 
             IsEditingTime = false;
@@ -441,7 +452,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 {
                     TaskId = TextFieldInfo.TaskId,
                     StartTime = StartTime,
-                    Duration = StopTime - StartTime,
+                    Duration = Duration,
                     Billable = IsBillable,
                     UserId = user.Id,
                     WorkspaceId = TextFieldInfo.WorkspaceId ?? user.DefaultWorkspaceId,

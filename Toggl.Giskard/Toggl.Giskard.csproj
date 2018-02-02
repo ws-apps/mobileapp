@@ -232,6 +232,7 @@
     <Compile Include="Activities\BrowserActivity.cs" />
     <Compile Include="Services\MailService.cs" />
     <Compile Include="Extensions\CircularRevealAnimation.cs" />
+    <Compile Include="ApplicationShortcutCreator.cs" />
     <Compile Include="TemplateSelectors\StartTimeEntrySuggestionsTemplateSelector.cs" />
     <Compile Include="Views\StartTimeEntryRecyclerView.cs" />
     <Compile Include="Adapters\StartTimeEntryRecyclerAdapter.cs" />
@@ -244,6 +245,7 @@
     <Compile Include="Bindings\EditTextTextFieldInfoTargetBinding.cs" />
     <Compile Include="Autocomplete\ProjectTokenSpan.cs" />
     <Compile Include="Autocomplete\TagsTokenSpan.cs" />
+    <Compile Include="Views\StartTimeEntryRecyclerViewHolder.cs" />
     <Compile Include="Services\AnalyticsService.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -257,11 +259,17 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\values\Strings.xml" />
-    <AndroidResource Include="Resources\mipmap-hdpi\Icon.png" />
-    <AndroidResource Include="Resources\mipmap-mdpi\Icon.png" />
-    <AndroidResource Include="Resources\mipmap-xhdpi\Icon.png" />
-    <AndroidResource Include="Resources\mipmap-xxhdpi\Icon.png" />
-    <AndroidResource Include="Resources\mipmap-xxxhdpi\Icon.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_launcher.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_launcher.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_launcher.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_launcher.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_launcher.png" />
+    <AndroidResource Include="Resources\mipmap-anydpi-v26\ic_launcher.xml" />
+    <AndroidResource Include="Resources\drawable-hdpi\ic_launcher.png" />
+    <AndroidResource Include="Resources\drawable-mdpi\ic_launcher.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\ic_launcher.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\ic_launcher.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\ic_launcher.png" />
     <AndroidResource Include="Resources\layout\MainActivity.axml" />
     <AndroidResource Include="Resources\layout\OnboardingActivity.axml" />
     <AndroidResource Include="Resources\layout\LoginActivity.axml" />

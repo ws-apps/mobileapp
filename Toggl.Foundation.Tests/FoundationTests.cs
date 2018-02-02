@@ -2,11 +2,13 @@
 using FluentAssertions;
 using NSubstitute;
 using Toggl.Foundation.Login;
+using Toggl.Foundation.Shortcuts;
 using Toggl.Foundation.Services;
 using Toggl.Foundation.Tests.Generators;
 using Toggl.PrimeRadiant;
 using Toggl.Ultrawave;
 using Xunit;
+using Toggl.Foundation.Suggestions;
 
 namespace Toggl.Foundation.Tests
 {
@@ -15,7 +17,7 @@ namespace Toggl.Foundation.Tests
         public class TheCreateMethod
         {
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(EightParameterConstructorTestData))]
+            [ClassData(typeof(TenParameterConstructorTestData))]
             public void ThrowsIfAnyOfTheArgumentsIsNull(
                 bool useClientName,
                 bool useVersion,
@@ -24,7 +26,9 @@ namespace Toggl.Foundation.Tests
                 bool useMailService,
                 bool useGoogleService,
                 bool useAnalyticsService,
-                bool usePlatformConstants)
+                bool usePlatformConstants,
+                bool useApplicationShortcutCreator,
+                bool useSuggestionProviderContainer)
             {
                 var version = useVersion ? "1.0" : null;
                 var clientName = useClientName ? "Some Client" : null;
@@ -34,6 +38,8 @@ namespace Toggl.Foundation.Tests
                 var googleService = useGoogleService ? Substitute.For<IGoogleService>() : null;
                 var analyticsService = useAnalyticsService ? Substitute.For<IAnalyticsService>() : null;
                 var platformConstants = usePlatformConstants ? Substitute.For<IPlatformConstants>() : null;
+                var applicationShortcutCreator = useApplicationShortcutCreator ? Substitute.For<IApplicationShortcutCreator>() : null;
+                var suggestionProviderContainer = useSuggestionProviderContainer ? Substitute.For<ISuggestionProviderContainer>() : null;
 
                 Action tryingToConstructWithEmptyParameters =
                     () => Foundation.Create(
@@ -45,7 +51,9 @@ namespace Toggl.Foundation.Tests
                         googleService,
                         ApiEnvironment.Staging,
                         analyticsService,
-                        platformConstants
+                        platformConstants,
+                        applicationShortcutCreator,
+                        suggestionProviderContainer
                     );
 
                 tryingToConstructWithEmptyParameters

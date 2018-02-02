@@ -179,6 +179,12 @@ namespace Toggl.Foundation {
             }
         }
         
+        public static string ManualTimeEntryPlaceholder {
+            get {
+                return ResourceManager.GetString("ManualTimeEntryPlaceholder", resourceCulture);
+            }
+        }
+        
         public static string Settings {
             get {
                 return ResourceManager.GetString("Settings", resourceCulture);
@@ -578,6 +584,30 @@ namespace Toggl.Foundation {
         public static string WorkspaceChangedAlertMessage {
             get {
                 return ResourceManager.GetString("WorkspaceChangedAlertMessage", resourceCulture);
+            }
+        }
+        
+        public static string Reports {
+            get {
+                return ResourceManager.GetString("Reports", resourceCulture);
+            }
+        }
+        
+        public static string StartTimeEntry {
+            get {
+                return ResourceManager.GetString("StartTimeEntry", resourceCulture);
+            }
+        }
+        
+        public static string MostRecentEntry {
+            get {
+                return ResourceManager.GetString("MostRecentEntry", resourceCulture);
+            }
+        }
+        
+        public static string TimeEntrySuggestion {
+            get {
+                return ResourceManager.GetString("TimeEntrySuggestion", resourceCulture);
             }
         }
         

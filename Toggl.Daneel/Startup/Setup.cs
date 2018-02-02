@@ -10,6 +10,7 @@ using Toggl.Daneel.Presentation;
 using Toggl.Daneel.Services;
 using Toggl.Foundation;
 using Toggl.Foundation.MvvmCross;
+using Toggl.Foundation.Suggestions;
 using Toggl.PrimeRadiant.Realm;
 using Toggl.Ultrawave;
 using UIKit;
@@ -56,25 +57,35 @@ namespace Toggl.Daneel
 
             const string clientName = "Daneel";
             var version = NSBundle.MainBundle.InfoDictionary["CFBundleShortVersionString"].ToString();
+            var database = new Database();
+            var timeService = new TimeService(Scheduler.Default);
+            var suggestionProviderContainer = new SuggestionProviderContainer(
+                new MostUsedTimeEntrySuggestionProvider(database, timeService, maxNumberOfSuggestions)
+            );
 
             var foundation = Foundation.Foundation.Create(
-                clientName, 
+                clientName,
                 version,
-                new Database(),
-                new TimeService(Scheduler.Default),
+                database,
+                timeService,
                 new MailService((ITopViewControllerProvider)Presenter),
                 new GoogleService(),
                 environment,
                 new AnalyticsService(),
-                new PlatformConstants()
+                new PlatformConstants(),
+                new ApplicationShortcutCreator(suggestionProviderContainer),
+                suggestionProviderContainer
             );
 
-            foundation.RegisterServices(maxNumberOfSuggestions,
-                                        new DialogService((ITopViewControllerProvider)Presenter),
-                                        new BrowserService(), new UserDefaultsStorage(),
-                                        navigationService, new OnePasswordService())
-                      .RevokeNewUserIfNeeded()
-                      .Initialize(app as App, Scheduler.Default);
+            foundation
+                .RegisterServices(
+                    new DialogService((ITopViewControllerProvider)Presenter),
+                    new BrowserService(),
+                    new UserDefaultsStorage(),
+                    navigationService,
+                    new OnePasswordService())
+                .RevokeNewUserIfNeeded()
+                .Initialize(app as App, Scheduler.Default);
         }
     }
 }

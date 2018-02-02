@@ -17,4 +17,5 @@
     <color name="playButtonRed">#E20505</color>
     <color name="runningEntryDescription">#000000</color>
     <color name="runningEntryTimer">#328FFF</color>
+	<color name="launcherBackgroundColor">#FFFF</color>
 </resources>

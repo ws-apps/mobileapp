@@ -89,6 +89,9 @@ namespace Toggl.Daneel.ViewControllers
                       .For(v => v.BindTextFieldInfo())
                       .To(vm => vm.TextFieldInfo);
 
+            bindingSet.Bind(Placeholder)
+                      .To(vm => vm.PlaceholderText);
+
             bindingSet.Bind(DescriptionRemainingLengthLabel)
                       .To(vm => vm.DescriptionRemainingBytes);
 

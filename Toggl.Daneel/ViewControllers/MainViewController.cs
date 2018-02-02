@@ -50,6 +50,10 @@ namespace Toggl.Daneel.ViewControllers
                 Color.Main.CurrentTimeEntryClientColor.ToNativeColor(),
                 true
             );
+            var startTimeEntryButtonManualModeIconConverter = new BoolToConstantValueConverter<UIImage>(
+                UIImage.FromBundle("manualIcon"),
+                UIImage.FromBundle("playIcon")
+            );
 
             var bindingSet = this.CreateBindingSet<MainViewController, MainViewModel>();
 
@@ -100,6 +104,12 @@ namespace Toggl.Daneel.ViewControllers
                                    v => v.CurrentTimeEntryTask,
                                    v => v.CurrentTimeEntryClient,
                                    v => v.CurrentTimeEntryProjectColor);
+
+            //The start button
+            bindingSet.Bind(StartTimeEntryButton)
+                      .For(v => v.BindImage())
+                      .To(vm => vm.IsInManualMode)
+                      .WithConversion(startTimeEntryButtonManualModeIconConverter);
 
             bindingSet.Apply();
         }

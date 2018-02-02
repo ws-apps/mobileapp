@@ -8,6 +8,7 @@ using MvvmCross.Platform.Platform;
 using MvvmCross.Platform.Plugins;
 using Toggl.Foundation;
 using Toggl.Foundation.MvvmCross;
+using Toggl.Foundation.Suggestions;
 using Toggl.Giskard.Presenters;
 using Toggl.Giskard.Services;
 using Toggl.PrimeRadiant.Realm;
@@ -49,27 +50,36 @@ namespace Toggl.Giskard
             const string clientName = "Giskard";
             var packageInfo = ApplicationContext.PackageManager.GetPackageInfo(ApplicationContext.PackageName, 0);
             var version = packageInfo.VersionName;
-
             var sharedPreferences = ApplicationContext.GetSharedPreferences(clientName, FileCreationMode.Private);
+            var database = new Database();
+            var timeService = new TimeService(Scheduler.Default);
+            var suggestionProviderContainer = new SuggestionProviderContainer(
+                new MostUsedTimeEntrySuggestionProvider(database, timeService, maxNumberOfSuggestions)
+            );
 
             var foundation = Foundation.Foundation.Create(
                 clientName,
                 version,
-                new Database(),
-                new TimeService(Scheduler.Default),
+                database,
+                timeService,
                 new MailService(),
                 new GoogleService(),
                 environment,
                 new AnalyticsService(),
-                new PlatformConstants()
+                new PlatformConstants(),
+                new ApplicationShortcutCreator(suggestionProviderContainer),
+                suggestionProviderContainer
             );
 
-            foundation.RegisterServices(maxNumberOfSuggestions,
-                                        new DialogService(), new BrowserService(), 
-                                        new SharedPreferencesStorage(sharedPreferences),
-                                        navigationService, new OnePasswordService())
-                      .RevokeNewUserIfNeeded()
-                      .Initialize(app as App, Scheduler.Default);
+            foundation
+                .RegisterServices(
+                    new DialogService(),
+                    new BrowserService(), 
+                    new SharedPreferencesStorage(sharedPreferences),
+                    navigationService,
+                    new OnePasswordService())
+               .RevokeNewUserIfNeeded()
+               .Initialize(app as App, Scheduler.Default);
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using System;
 using Toggl.Foundation.Login;
 using Toggl.Foundation.Services;
+using Toggl.Foundation.Shortcuts;
+using Toggl.Foundation.Suggestions;
 using Toggl.Multivac;
 using Toggl.PrimeRadiant;
 using Toggl.Ultrawave;
@@ -19,8 +21,10 @@ namespace Toggl.Foundation
         public IGoogleService GoogleService { get; internal set; }
         public ApiEnvironment ApiEnvironment { get; internal set; }
         public IAnalyticsService AnalyticsService { get; internal set; }
+        public IApplicationShortcutCreator ShortcutCreator { get; internal set; }
         public IBackgroundService BackgroundService { get; internal set; }
         public IPlatformConstants PlatformConstants { get; internal set; }
+        public ISuggestionProviderContainer SuggestionProviderContainer { get; internal set; }
 
         public static Foundation Create(
             string clientName,
@@ -31,7 +35,9 @@ namespace Toggl.Foundation
             IGoogleService googleService,
             ApiEnvironment apiEnvironment,
             IAnalyticsService analyticsService,
-            IPlatformConstants platformConstants)
+            IPlatformConstants platformConstants,
+            IApplicationShortcutCreator shortcutCreator,
+            ISuggestionProviderContainer suggestionProviderContainer)
         {
             Ensure.Argument.IsNotNull(version, nameof(version));
             Ensure.Argument.IsNotNull(database, nameof(database));
@@ -39,8 +45,10 @@ namespace Toggl.Foundation
             Ensure.Argument.IsNotNull(timeService, nameof(timeService));
             Ensure.Argument.IsNotNull(mailService, nameof(mailService));
             Ensure.Argument.IsNotNull(googleService, nameof(googleService));
+            Ensure.Argument.IsNotNull(shortcutCreator, nameof(shortcutCreator));
             Ensure.Argument.IsNotNull(analyticsService, nameof(analyticsService));
             Ensure.Argument.IsNotNull(platformConstants, nameof(platformConstants));
+            Ensure.Argument.IsNotNull(suggestionProviderContainer, nameof(suggestionProviderContainer));
 
             var userAgent = new UserAgent(clientName, version);
 
@@ -53,10 +61,12 @@ namespace Toggl.Foundation
                 GoogleService = googleService,
                 ApiEnvironment = apiEnvironment,
                 Version = Version.Parse(version),
+                ShortcutCreator = shortcutCreator,
                 AnalyticsService = analyticsService,
-                BackgroundService = new BackgroundService(timeService),
                 PlatformConstants = platformConstants,
-                ApiFactory = new ApiFactory(apiEnvironment, userAgent)
+                BackgroundService = new BackgroundService(timeService),
+                ApiFactory = new ApiFactory(apiEnvironment, userAgent),
+                SuggestionProviderContainer = suggestionProviderContainer
             };
 
             return foundation;

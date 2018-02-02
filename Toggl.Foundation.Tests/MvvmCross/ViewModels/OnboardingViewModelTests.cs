@@ -4,6 +4,7 @@ using FluentAssertions;
 using NSubstitute;
 using Toggl.Foundation.Login;
 using Toggl.Foundation.MvvmCross.ViewModels;
+using Toggl.Foundation.Services;
 using Toggl.Foundation.Tests.Generators;
 using Xunit;
 
@@ -13,22 +14,25 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
     {
         public abstract class OnboardingViewModelTest : BaseViewModelTests<OnboardingViewModel>
         {
+            protected IAnalyticsService AnalyticsService { get; } = Substitute.For<IAnalyticsService>();
+
             protected override OnboardingViewModel CreateViewModel()
-                => new OnboardingViewModel(NavigationService, OnboardingStorage);
+                => new OnboardingViewModel(NavigationService, OnboardingStorage, AnalyticsService);
         }
 
         public sealed class TheConstructor : OnboardingViewModelTest
         {
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(TwoParameterConstructorTestData))]
+            [ClassData(typeof(ThreeParameterConstructorTestData))]
             public void ThrowsIfAnyOfTheArgumentsIsNull(
-                bool useNavigationService, bool useOnboardingStorage)
+                bool useNavigationService, bool useOnboardingStorage, bool useAnalyticsService)
             {
+                var analyticsService = useAnalyticsService ? AnalyticsService : null;
                 var navigationService = useNavigationService ? NavigationService : null;
                 var onboardingStorage = useOnboardingStorage ? OnboardingStorage : null;
 
                 Action tryingToConstructWithEmptyParameters =
-                    () => new OnboardingViewModel(navigationService, onboardingStorage);
+                    () => new OnboardingViewModel(navigationService, onboardingStorage, analyticsService);
 
                 tryingToConstructWithEmptyParameters
                     .ShouldThrow<ArgumentNullException>();
@@ -99,6 +103,19 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 ViewModel.SkipCommand.Execute();
 
                 ViewModel.CurrentPage.Should().Be(OnboardingViewModel.LoginPage);
+            }
+
+            [Theory, LogIfTooSlow]
+            [InlineData(OnboardingViewModel.TrackPage, nameof(OnboardingViewModel.TrackPage))]
+            [InlineData(OnboardingViewModel.LogPage, nameof(OnboardingViewModel.LogPage))]
+            [InlineData(OnboardingViewModel.SummaryPage, nameof(OnboardingViewModel.SummaryPage))]
+            public void CallsTheAnalyticsServiceIndicatingTheCurrentPage(int page, string expectedPageName)
+            {
+                ViewModel.CurrentPage = page;
+
+                ViewModel.SkipCommand.Execute();
+
+                AnalyticsService.Received().TrackOnboardingSkipEvent(expectedPageName);
             }
         }
 

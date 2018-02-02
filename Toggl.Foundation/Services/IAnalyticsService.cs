@@ -3,7 +3,7 @@ namespace Toggl.Foundation.Services
 {
     public interface IAnalyticsService
     {
-        void TrackOnboardingSkipEvent(int page);
+        void TrackOnboardingSkipEvent(string pageName);
 
         void TrackLoginEvent();
         void TrackSignUpEvent();

@@ -16,6 +16,9 @@ namespace Toggl.Daneel.Extensions
         public static string BindCommand(this UIBarButtonItem self)
             => BarButtonCommandTargetBinding.BindingName;
 
+        public static string BindImage(this UIButton self)
+            => ButtonImageTargetBinding.BindingName;
+
         public static string BindDateTimeOffset(this UIDatePicker self)
             => DatePickerDateTimeOffsetTargetBinding.BindingName;
 

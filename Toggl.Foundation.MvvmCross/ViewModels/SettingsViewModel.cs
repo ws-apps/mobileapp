@@ -10,6 +10,7 @@ using Toggl.Foundation.MvvmCross.Services;
 using Toggl.Foundation.Services;
 using Toggl.Foundation.Sync;
 using Toggl.Multivac;
+using Toggl.PrimeRadiant.Settings;
 using Toggl.Ultrawave.Network;
 
 namespace Toggl.Foundation.MvvmCross.ViewModels
@@ -25,6 +26,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private readonly IDialogService dialogService;
         private readonly IPlatformConstants platformConstants;
         private readonly IMvxNavigationService navigationService;
+        private readonly IUserPreferences userPreferences;
         private readonly IMailService mailService;
         private readonly UserAgent userAgent;
 
@@ -43,6 +45,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         public bool UseTwentyFourHourClock { get; set; }
 
         public bool AddMobileTag { get; set; }
+
+        public bool IsManualModeEnabled { get; set; }
 
         public bool IsLoggingOut { get; private set; }
 
@@ -72,12 +76,15 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public IMvxCommand ToggleUseTwentyFourHourClockCommand { get; }
 
+        public IMvxCommand ToggleManualModeCommand { get; }
+
         public SettingsViewModel(
             UserAgent userAgent,
             IMailService mailService,
             ITogglDataSource dataSource,
             IDialogService dialogService,
             IPlatformConstants platformConstants,
+            IUserPreferences userPreferences,
             IMvxNavigationService navigationService)
         {
             Ensure.Argument.IsNotNull(userAgent, nameof(userAgent));
@@ -86,6 +93,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             Ensure.Argument.IsNotNull(dialogService, nameof(dialogService));
             Ensure.Argument.IsNotNull(navigationService, nameof(navigationService));
             Ensure.Argument.IsNotNull(platformConstants, nameof(platformConstants));
+            Ensure.Argument.IsNotNull(userPreferences, nameof(userPreferences));
 
             this.userAgent = userAgent;
             this.dataSource = dataSource;
@@ -93,6 +101,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             this.dialogService = dialogService;
             this.navigationService = navigationService;
             this.platformConstants = platformConstants;
+            this.userPreferences = userPreferences;
 
             disposeBag.Add(dataSource.SyncManager
                 .ProgressObservable
@@ -114,6 +123,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             EditSubscriptionCommand = new MvxCommand(editSubscription);
             ToggleAddMobileTagCommand = new MvxCommand(toggleAddMobileTag);
             ToggleUseTwentyFourHourClockCommand = new MvxCommand(toggleUseTwentyFourHourClock);
+            ToggleManualModeCommand = new MvxCommand(toggleManualMode);
         }
 
         public override async Task Initialize()
@@ -124,6 +134,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             Email = user.Email;
             workspaceId = workspace.Id;
             WorkspaceName = workspace.Name;
+            IsManualModeEnabled = userPreferences.IsManualModeEnabled();
         }
 
         public void rate() => throw new NotImplementedException();
@@ -185,6 +196,23 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public void toggleUseTwentyFourHourClock() => UseTwentyFourHourClock = !UseTwentyFourHourClock;
 
+        private void toggleManualMode()
+        {
+            IsManualModeEnabled = !IsManualModeEnabled;
+        }
+
+        private void OnIsManualModeEnabledChanged()
+        {
+            if (IsManualModeEnabled)
+            {
+                userPreferences.EnableTimerMode();
+            }
+            else
+            {
+                userPreferences.EnableManualMode();
+            }
+        }
+
         private Task back() => navigationService.Close(this);
 
         private async Task maybeLogout()
@@ -216,6 +244,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             IsLoggingOut = true;
             IsSynced = false;
             IsRunningSync = false;
+            userPreferences.Reset();
             await dataSource.Logout();
             await navigationService.Navigate<OnboardingViewModel>();
         }

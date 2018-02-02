@@ -6,7 +6,7 @@ using Toggl.Foundation.DataSources;
 using Toggl.Foundation.Login;
 using Toggl.Foundation.MvvmCross.Services;
 using Toggl.Foundation.Services;
-using Toggl.Foundation.Suggestions;
+using Toggl.Foundation.Shortcuts;
 using Toggl.Foundation.Sync;
 using Toggl.Multivac;
 using Toggl.PrimeRadiant;
@@ -33,11 +33,14 @@ namespace Toggl.Foundation.MvvmCross
 
         internal IBackgroundService BackgroundService { get; }
 
+        internal IApplicationShortcutCreator ShortcutCreator { get; }
+
         internal FoundationMvvmCross(
             IApiFactory apiFactory,
             ITogglDatabase database,
             ITimeService timeService,
             IGoogleService googleService,
+            IApplicationShortcutCreator shortcutCreator,
             IBackgroundService backgroundService,
             SettingsStorage settingsStorage,
             IMvxNavigationService navigationService,
@@ -47,6 +50,7 @@ namespace Toggl.Foundation.MvvmCross
             ApiFactory = apiFactory;
             TimeService = timeService;
             GoogleService = googleService;
+            ShortcutCreator = shortcutCreator;
             BackgroundService = backgroundService;
             SettingsStorage = settingsStorage;
             NavigationService = navigationService;
@@ -60,7 +64,6 @@ namespace Toggl.Foundation.MvvmCross
         private static readonly TimeSpan retryDelayLimit = TimeSpan.FromSeconds(60);
 
         public static FoundationMvvmCross RegisterServices(this Foundation self,
-            int maxNumberOfSuggestions,
             IDialogService dialogService,
             IBrowserService browserService,
             IKeyValueStorage keyValueStorage,
@@ -83,24 +86,27 @@ namespace Toggl.Foundation.MvvmCross
             Mvx.RegisterSingleton(browserService);
             Mvx.RegisterSingleton(self.UserAgent);
             Mvx.RegisterSingleton(self.TimeService);
+            Mvx.RegisterSingleton(self.ShortcutCreator);
             Mvx.RegisterSingleton(self.MailService);
             Mvx.RegisterSingleton(self.AnalyticsService);
             Mvx.RegisterSingleton(self.PlatformConstants);
+            Mvx.RegisterSingleton(self.SuggestionProviderContainer);
             Mvx.RegisterSingleton<IOnboardingStorage>(settingsStorage);
             Mvx.RegisterSingleton<IAccessRestrictionStorage>(settingsStorage);
+            Mvx.RegisterSingleton<IUserPreferences>(settingsStorage);
             Mvx.RegisterSingleton<IApiErrorHandlingService>(apiErrorHandlingService);
             Mvx.RegisterSingleton(passwordManagerService ?? new StubPasswordManagerService());
-            Mvx.RegisterSingleton<ISuggestionProviderContainer>(
-                new SuggestionProviderContainer(
-                    new MostUsedTimeEntrySuggestionProvider(self.Database, self.TimeService, maxNumberOfSuggestions)
-                )
-            );
 
-            var foundationMvvmCross = new FoundationMvvmCross(
-                self.ApiFactory, self.Database, timeService, self.GoogleService,
-                self.BackgroundService, settingsStorage, navigationService,
+            return new FoundationMvvmCross(
+                self.ApiFactory,
+                self.Database,
+                timeService,
+                self.GoogleService,
+                self.ShortcutCreator,
+                self.BackgroundService,
+                settingsStorage,
+                navigationService,
                 apiErrorHandlingService);
-            return foundationMvvmCross;
         }
 
         public static FoundationMvvmCross RevokeNewUserIfNeeded(this FoundationMvvmCross self)
@@ -124,11 +130,11 @@ namespace Toggl.Foundation.MvvmCross
                 TogglSyncManager.CreateSyncManager(self.Database, api, dataSource, self.TimeService, retryDelayLimit, scheduler);
 
             ITogglDataSource createDataSource(ITogglApi api)
-                => new TogglDataSource(api, self.Database, self.TimeService, self.ApiErrorHandlingService, self.BackgroundService, createSyncManager(api), TimeSpan.FromMinutes(5))
+            => new TogglDataSource(api, self.Database, self.TimeService, self.ApiErrorHandlingService, self.BackgroundService, createSyncManager(api), TimeSpan.FromMinutes(5), self.ShortcutCreator)
                     .RegisterServices();
 
             var loginManager =
-                new LoginManager(self.ApiFactory, self.Database, self.GoogleService, self.SettingsStorage, createDataSource);
+                new LoginManager(self.ApiFactory, self.Database, self.GoogleService, self.ShortcutCreator, self.SettingsStorage, createDataSource);
 
             app.Initialize(loginManager, self.NavigationService, self.SettingsStorage);
         }

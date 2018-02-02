@@ -17,7 +17,7 @@ namespace Toggl.Giskard.Services
         {
         }
 
-        public void TrackOnboardingSkipEvent(int page)
+        public void TrackOnboardingSkipEvent(string pageName)
         {
         }
 

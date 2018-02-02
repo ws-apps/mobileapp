@@ -44,6 +44,12 @@ namespace Toggl.Daneel.ViewControllers
 		UIKit.UIButton LogoutButton { get; set; }
 
 		[Outlet]
+		UIKit.UISwitch ManualModeSwitch { get; set; }
+
+		[Outlet]
+		UIKit.UIView ManualModeView { get; set; }
+
+		[Outlet]
 		UIKit.UILabel PlanLabel { get; set; }
 
 		[Outlet]
@@ -93,11 +99,6 @@ namespace Toggl.Daneel.ViewControllers
 		
 		void ReleaseDesignerOutlets ()
 		{
-			if (TopConstraint != null) {
-				TopConstraint.Dispose ();
-				TopConstraint = null;
-			}
-
 			if (AddMobileTagSwitch != null) {
 				AddMobileTagSwitch.Dispose ();
 				AddMobileTagSwitch = null;
@@ -193,6 +194,11 @@ namespace Toggl.Daneel.ViewControllers
 				SyncingView = null;
 			}
 
+			if (TopConstraint != null) {
+				TopConstraint.Dispose ();
+				TopConstraint = null;
+			}
+
 			if (TwentyFourHourClockSwitch != null) {
 				TwentyFourHourClockSwitch.Dispose ();
 				TwentyFourHourClockSwitch = null;
@@ -221,6 +227,16 @@ namespace Toggl.Daneel.ViewControllers
 			if (WorkspaceView != null) {
 				WorkspaceView.Dispose ();
 				WorkspaceView = null;
+			}
+
+			if (ManualModeView != null) {
+				ManualModeView.Dispose ();
+				ManualModeView = null;
+			}
+
+			if (ManualModeSwitch != null) {
+				ManualModeSwitch.Dispose ();
+				ManualModeSwitch = null;
 			}
 		}
 	}

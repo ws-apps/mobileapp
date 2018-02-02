@@ -1,9 +1,14 @@
 using System;
 using System.Linq;
 using Android.Runtime;
+using Android.Support.V7.Widget;
+using Android.Views;
+using MvvmCross.Binding.Droid.BindingContext;
 using MvvmCross.Core.ViewModels;
 using Toggl.Foundation.Autocomplete.Suggestions;
 using Toggl.Foundation.MvvmCross.Collections;
+using Toggl.Giskard.TemplateSelectors;
+using Toggl.Giskard.Views;
 
 namespace Toggl.Giskard.Adapters
 {
@@ -11,6 +16,8 @@ namespace Toggl.Giskard.Adapters
         : SegmentedRecyclerAdapter<WorkspaceGroupedCollection<AutocompleteSuggestion>, AutocompleteSuggestion>
     {
         public bool UseGrouping { get; set; }
+
+        public IMvxCommand<ProjectSuggestion> ToggleTasksCommand { get; set; }
 
         public StartTimeEntryRecyclerAdapter()
         {
@@ -29,5 +36,22 @@ namespace Toggl.Giskard.Adapters
 
         protected override MvxObservableCollection<WorkspaceGroupedCollection<AutocompleteSuggestion>> Collection
             => ItemsSource as MvxObservableCollection<WorkspaceGroupedCollection<AutocompleteSuggestion>>;
+
+        public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType)
+        {
+            if (viewType != StartTimeEntrySuggestionsTemplateSelector.ProjectSuggestion)
+                return base.OnCreateViewHolder(parent, viewType);
+
+            var itemBindingContext = new MvxAndroidBindingContext(parent.Context, BindingContext.LayoutInflaterHolder);
+            var inflatedView = InflateViewForHolder(parent, viewType, itemBindingContext);
+            var viewHolder = new StartTimeEntryRecyclerViewHolder(inflatedView, itemBindingContext)
+            {
+                Click = ItemClick,
+                LongClick = ItemLongClick,
+                ToggleTasksCommand = ToggleTasksCommand
+            };
+
+            return viewHolder;
+        }
     }
 }

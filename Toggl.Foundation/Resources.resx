@@ -85,6 +85,9 @@ Please try again.</value>
     <data name="StartTimeEntryPlaceholder">
         <value>What are you working on?</value>
     </data>
+    <data name="ManualTimeEntryPlaceholder">
+        <value>What have you done?</value>
+    </data>
     <data name="Settings">
         <value>Settings</value>
     </data>
@@ -289,6 +292,18 @@ categorize your tracked time.</value>
     </data>
     <data name="WorkspaceChangedAlertMessage">
         <value>Your project and time entry will be allocated under the selected workspace.</value>
+    </data>
+    <data name="Reports">
+        <value>Reports</value>
+    </data>
+    <data name="StartTimeEntry">
+        <value>Start a time entry</value>
+    </data>
+    <data name="MostRecentEntry">
+        <value>Most recent entry</value>
+    </data>
+    <data name="TimeEntrySuggestion">
+        <value>Time entry suggestion</value>
     </data>
     <data name="NoEmailErrorTitle">
         <value>Oops! Seems like your email

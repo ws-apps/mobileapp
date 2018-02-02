@@ -6,6 +6,7 @@ using FluentAssertions;
 using NSubstitute;
 using Toggl.Foundation.DataSources;
 using Toggl.Foundation.Login;
+using Toggl.Foundation.Shortcuts;
 using Toggl.Foundation.Tests.Generators;
 using Toggl.Multivac;
 using Toggl.Multivac.Extensions;
@@ -28,13 +29,14 @@ namespace Toggl.Foundation.Tests.Login
             protected static readonly Password Password = "theirobotmoviesucked123".ToPassword();
             protected static readonly Email Email = "susancalvin@psychohistorian.museum".ToEmail();
 
-            protected readonly IUser User = new User { Id = 10, ApiToken = "ABCDEFG" };
-            protected readonly ITogglApi Api = Substitute.For<ITogglApi>();
-            protected readonly IApiFactory ApiFactory = Substitute.For<IApiFactory>();
-            protected readonly ITogglDatabase Database = Substitute.For<ITogglDatabase>();
-            protected readonly IGoogleService GoogleService = Substitute.For<IGoogleService>();
-            protected readonly IAccessRestrictionStorage AccessRestrictionStorage = Substitute.For<IAccessRestrictionStorage>();
-            protected readonly ITogglDataSource DataSource = Substitute.For<ITogglDataSource>();
+            protected IUser User { get; } = new User { Id = 10, ApiToken = "ABCDEFG" };
+            protected ITogglApi Api { get; } = Substitute.For<ITogglApi>();
+            protected IApiFactory ApiFactory { get; } = Substitute.For<IApiFactory>();
+            protected ITogglDatabase Database { get; } = Substitute.For<ITogglDatabase>();
+            protected IGoogleService GoogleService { get; } = Substitute.For<IGoogleService>();
+            protected IAccessRestrictionStorage AccessRestrictionStorage { get; } = Substitute.For<IAccessRestrictionStorage>();
+            protected ITogglDataSource DataSource { get; } = Substitute.For<ITogglDataSource>();
+            protected IApplicationShortcutCreator ApplicationShortcutCreator { get; } = Substitute.For<IApplicationShortcutCreator>();
 
             protected readonly ILoginManager LoginManager;
 
@@ -42,7 +44,7 @@ namespace Toggl.Foundation.Tests.Login
 
             protected LoginManagerTest()
             {
-                LoginManager = new LoginManager(ApiFactory, Database, GoogleService, AccessRestrictionStorage, CreateDataSource);
+                LoginManager = new LoginManager(ApiFactory, Database, GoogleService, ApplicationShortcutCreator, AccessRestrictionStorage, CreateDataSource);
 
                 Api.User.Get().Returns(Observable.Return(User));
                 Api.User.GetWithGoogle().Returns(Observable.Return(User));
@@ -55,12 +57,13 @@ namespace Toggl.Foundation.Tests.Login
         public sealed class Constructor : LoginManagerTest
         {
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(FiveParameterConstructorTestData))]
+            [ClassData(typeof(SixParameterConstructorTestData))]
             public void ThrowsIfAnyOfTheArgumentsIsNull(
                 bool useApiFactory,
                 bool useDatabase,
                 bool useGoogleService,
                 bool useAccessRestrictionStorage,
+                bool useApplicationShortcutCreator,
                 bool useCreateDataSource)
             {
                 var database = useDatabase ? Database : null;
@@ -68,9 +71,10 @@ namespace Toggl.Foundation.Tests.Login
                 var googleService = useGoogleService ? GoogleService : null;
                 var accessRestrictionStorage = useAccessRestrictionStorage ? AccessRestrictionStorage : null;
                 var createDataSource = useCreateDataSource ? CreateDataSource : (Func<ITogglApi, ITogglDataSource>)null;
+                var shortcutCreator = useApplicationShortcutCreator ? ApplicationShortcutCreator : null;
 
                 Action tryingToConstructWithEmptyParameters =
-                    () => new LoginManager(apiFactory, database, googleService, accessRestrictionStorage, createDataSource);
+                    () => new LoginManager(apiFactory, database, googleService, shortcutCreator, accessRestrictionStorage, createDataSource);
 
                 tryingToConstructWithEmptyParameters
                     .ShouldThrow<ArgumentNullException>();
@@ -149,6 +153,14 @@ namespace Toggl.Foundation.Tests.Login
                 await LoginManager
                         .Login(Email, Password)
                         .SingleAsync();
+            }
+
+            [Fact, LogIfTooSlow]
+            public async Task NotifiesShortcutCreatorAboutLogin()
+            {
+                await LoginManager.Login(Email, Password);
+
+                ApplicationShortcutCreator.Received().OnLogin();
             }
         }
 
@@ -288,6 +300,14 @@ namespace Toggl.Foundation.Tests.Login
                         .SignUp(Email, Password)
                         .SingleAsync();
             }
+
+            [Fact, LogIfTooSlow]
+            public async Task NotifiesShortcutCreatorAboutLogin()
+            {
+                await LoginManager.SignUp(Email, Password);
+
+                ApplicationShortcutCreator.Received().OnLogin();
+            }
         }
         
         public sealed class TheRefreshTokenMethod : LoginManagerTest
@@ -402,6 +422,14 @@ namespace Toggl.Foundation.Tests.Login
                 await LoginManager
                         .LoginWithGoogle()
                         .SingleAsync();
+            }
+
+            [Fact, LogIfTooSlow]
+            public async Task NotifiesShortcutCreatorAboutLogin()
+            {
+                await LoginManager.LoginWithGoogle();
+
+                ApplicationShortcutCreator.Received().OnLogin();
             }
         }
     }

@@ -3,7 +3,7 @@ using Toggl.Multivac;
 
 namespace Toggl.PrimeRadiant.Settings
 {
-    public sealed class SettingsStorage : IAccessRestrictionStorage, IOnboardingStorage
+    public sealed class SettingsStorage : IAccessRestrictionStorage, IOnboardingStorage, IUserPreferences
     {
         private const string outdatedApiKey = "OutdatedApi";
         private const string outdatedClientKey = "OutdatedClient";
@@ -12,6 +12,8 @@ namespace Toggl.PrimeRadiant.Settings
         private const string isNewUserKey = "IsNewUser";
         private const string lastAccessDateKey = "LastAccessDate";
         private const string completedOnboardingKey = "CompletedOnboarding";
+
+        private const string preferManualMode = "PreferManualMode";
 
         private readonly Version version;
         private readonly IKeyValueStorage keyValueStorage;
@@ -87,6 +89,27 @@ namespace Toggl.PrimeRadiant.Settings
         public bool CompletedOnboarding() => keyValueStorage.GetBool(completedOnboardingKey);
 
         public string GetLastOpened() => keyValueStorage.GetString(lastAccessDateKey);
+
+        #endregion
+
+        #region IUserPreferences
+
+        public bool IsManualModeEnabled() => keyValueStorage.GetBool(preferManualMode);
+
+        public void EnableManualMode()
+        {
+            keyValueStorage.SetBool(preferManualMode, true);
+        }
+
+        public void EnableTimerMode()
+        {
+            keyValueStorage.SetBool(preferManualMode, false);
+        }
+
+        public void Reset()
+        {
+            EnableTimerMode();
+        }
 
         #endregion
     }

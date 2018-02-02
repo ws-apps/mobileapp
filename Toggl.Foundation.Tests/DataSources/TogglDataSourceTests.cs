@@ -21,6 +21,7 @@ using Toggl.Ultrawave.Exceptions;
 using Toggl.Ultrawave.Network;
 using ThreadingTask = System.Threading.Tasks.Task;
 using Toggl.Ultrawave;
+using Toggl.Foundation.Shortcuts;
 
 namespace Toggl.Foundation.Tests.DataSources
 {
@@ -37,11 +38,12 @@ namespace Toggl.Foundation.Tests.DataSources
             protected IApiErrorHandlingService ApiErrorHandlingService { get; } = Substitute.For<IApiErrorHandlingService>();
             protected ISubject<SyncProgress> ProgressSubject = new Subject<SyncProgress>();
             protected TimeSpan MinimumTimeInBackgroundForFullSync = TimeSpan.FromMinutes(5);
+            protected IApplicationShortcutCreator ApplicationShortcutCreator { get; } = Substitute.For<IApplicationShortcutCreator>();
 
             public TogglDataSourceTest()
             {
                 SyncManager.ProgressObservable.Returns(ProgressSubject.AsObservable());
-                DataSource = new TogglDataSource(Api, Database, TimeService, ApiErrorHandlingService, BackgroundService, _ => SyncManager, MinimumTimeInBackgroundForFullSync);
+                DataSource = new TogglDataSource(Api, Database, TimeService, ApiErrorHandlingService, BackgroundService, _ => SyncManager, MinimumTimeInBackgroundForFullSync, ApplicationShortcutCreator);
             }
         }
 
@@ -109,6 +111,14 @@ namespace Toggl.Foundation.Tests.DataSources
 
                 emitsUnitValue.Should().BeTrue();
                 completed.Should().BeTrue();
+            }
+
+            [Fact, LogIfTooSlow]
+            public async ThreadingTask NotifiesShortcutCreatorAboutLogout()
+            {
+                await DataSource.Logout();
+
+                ApplicationShortcutCreator.Received().OnLogout();
             }
         }
 

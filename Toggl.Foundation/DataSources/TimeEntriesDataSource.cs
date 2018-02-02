@@ -12,6 +12,7 @@ using Toggl.PrimeRadiant.Models;
 using Toggl.Foundation.DTOs;
 using Toggl.Foundation.Exceptions;
 using Toggl.Foundation.Sync.ConflictResolution;
+using Toggl.Foundation.Shortcuts;
 
 namespace Toggl.Foundation.DataSources
 {
@@ -21,6 +22,7 @@ namespace Toggl.Foundation.DataSources
 
         private readonly IIdProvider idProvider;
         private readonly ITimeService timeService;
+        private readonly IApplicationShortcutCreator shortcutCreator;
         private readonly IRepository<IDatabaseTimeEntry> repository;
         private readonly Subject<IDatabaseTimeEntry> timeEntryCreatedSubject = new Subject<IDatabaseTimeEntry>();
         private readonly Subject<(long Id, IDatabaseTimeEntry Entity)> timeEntryUpdatedSubject = new Subject<(long, IDatabaseTimeEntry)>();
@@ -38,15 +40,21 @@ namespace Toggl.Foundation.DataSources
 
         public IObservable<long> TimeEntryDeleted { get; }
 
-        public TimeEntriesDataSource(IIdProvider idProvider, IRepository<IDatabaseTimeEntry> repository, ITimeService timeService)
+        public TimeEntriesDataSource(
+            IIdProvider idProvider,
+            IApplicationShortcutCreator shortcutCreator,
+            IRepository<IDatabaseTimeEntry> repository,
+            ITimeService timeService)
         {
             Ensure.Argument.IsNotNull(idProvider, nameof(idProvider));
             Ensure.Argument.IsNotNull(repository, nameof(repository));
             Ensure.Argument.IsNotNull(timeService, nameof(timeService));
+            Ensure.Argument.IsNotNull(shortcutCreator, nameof(shortcutCreator));
 
             this.repository = repository;
             this.idProvider = idProvider;
             this.timeService = timeService;
+            this.shortcutCreator = shortcutCreator;
 
             TimeEntryCreated = timeEntryCreatedSubject.AsObservable();
             TimeEntryUpdated = timeEntryUpdatedSubject.AsObservable();
@@ -107,7 +115,8 @@ namespace Toggl.Foundation.DataSources
                 .SetAt(timeService.CurrentDateTime)
                 .SetSyncStatus(SyncStatus.SyncNeeded)
                 .Build()
-                .Apply(Create);
+                .Apply(Create)
+                .Do(shortcutCreator.OnTimeEntryStarted);
 
         public IObservable<IDatabaseTimeEntry> Stop(DateTimeOffset stopTime)
             => repository

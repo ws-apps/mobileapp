@@ -3,7 +3,9 @@ using Android.Content;
 using Android.Runtime;
 using Android.Util;
 using Android.Views;
+using MvvmCross.Core.ViewModels;
 using MvvmCross.Droid.Support.V7.RecyclerView;
+using Toggl.Foundation.Autocomplete.Suggestions;
 using Toggl.Giskard.Adapters;
 
 namespace Toggl.Giskard.Views
@@ -12,6 +14,12 @@ namespace Toggl.Giskard.Views
     public sealed class StartTimeEntryRecyclerView : MvxRecyclerView
     {
         public StartTimeEntryRecyclerAdapter StartTimeEntryRecyclerAdapter => Adapter as StartTimeEntryRecyclerAdapter;
+
+        public IMvxCommand<ProjectSuggestion> ToggleTasksCommand
+        {
+            get => StartTimeEntryRecyclerAdapter.ToggleTasksCommand;
+            set => StartTimeEntryRecyclerAdapter.ToggleTasksCommand = value;
+        }
 
         public bool UseGrouping
         {
