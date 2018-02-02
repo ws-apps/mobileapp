@@ -407,6 +407,22 @@
     <ImageAsset Include="Resources\Images.xcassets\manualIcon.imageset\manualIcon.png" />
     <ImageAsset Include="Resources\Images.xcassets\manualIcon.imageset\manualIcon%402x.png" />
     <ImageAsset Include="Resources\Images.xcassets\manualIcon.imageset\manualIcon%403x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\icBack.imageset\Contents.json" />
+    <ImageAsset Include="Resources\Images.xcassets\icBack.imageset\icBack.png" />
+    <ImageAsset Include="Resources\Images.xcassets\icBack.imageset\icBack%402x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\icBack.imageset\icBack%403x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\icStartLabel.imageset\Contents.json" />
+    <ImageAsset Include="Resources\Images.xcassets\icStartLabel.imageset\icStartLabel.png" />
+    <ImageAsset Include="Resources\Images.xcassets\icStartLabel.imageset\icStartLabel%402x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\icStartLabel.imageset\icStartLabel%403x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\icEndLabel.imageset\Contents.json" />
+    <ImageAsset Include="Resources\Images.xcassets\icEndLabel.imageset\icEndLabel.png" />
+    <ImageAsset Include="Resources\Images.xcassets\icEndLabel.imageset\icEndLabel%402x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\icEndLabel.imageset\icEndLabel%403x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\date.imageset\Contents.json" />
+    <ImageAsset Include="Resources\Images.xcassets\date.imageset\date.png" />
+    <ImageAsset Include="Resources\Images.xcassets\date.imageset\date%402x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\date.imageset\date%403x.png" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="LaunchScreen.storyboard" />

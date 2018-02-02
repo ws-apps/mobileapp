@@ -1,4 +1,5 @@
 ﻿using System;
+using static Toggl.Multivac.Math;
 
 namespace Toggl.Multivac.Extensions
 {
@@ -13,5 +14,10 @@ namespace Toggl.Multivac.Extensions
             var seconds = dateTime.UtcDateTime.Ticks / TimeSpan.TicksPerSecond;
             return seconds - unixEpochSeconds;
         }
+
+        public static DateTimeOffset RoundToClosestMinute(this DateTimeOffset time)
+            => time.Second >= (SecondsInAMinute / 2)
+                ? time + TimeSpan.FromSeconds(SecondsInAMinute - time.Second)
+                : time - TimeSpan.FromSeconds(time.Second);
     }
 }

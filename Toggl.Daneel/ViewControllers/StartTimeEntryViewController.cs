@@ -110,11 +110,6 @@ namespace Toggl.Daneel.ViewControllers
                       .For(v => v.TintColor)
                       .To(vm => vm.IsSuggestingProjects)
                       .WithConversion(buttonColorConverter);
-                      
-            bindingSet.Bind(DateTimeButton)
-                      .For(v => v.TintColor)
-                      .To(vm => vm.IsEditingTime)
-                      .WithConversion(buttonColorConverter);
 
             bindingSet.Bind(DoneButton)
                       .For(v => v.Enabled)
@@ -136,6 +131,7 @@ namespace Toggl.Daneel.ViewControllers
             bindingSet.Bind(DoneButton).To(vm => vm.DoneCommand);
             bindingSet.Bind(CloseButton).To(vm => vm.BackCommand);
             bindingSet.Bind(BillableButton).To(vm => vm.ToggleBillableCommand);
+            bindingSet.Bind(StartDateButton).To(vm => vm.SetStartDateCommand);
             bindingSet.Bind(DateTimeButton).To(vm => vm.ChangeTimeCommand);
             bindingSet.Bind(TagsButton).To(vm => vm.ToggleTagSuggestionsCommand);
             bindingSet.Bind(ProjectsButton).To(vm => vm.ToggleProjectSuggestionsCommand);
@@ -165,6 +161,7 @@ namespace Toggl.Daneel.ViewControllers
                           .ImageWithRenderingMode(UIImageRenderingMode.AlwaysTemplate),
                     UIControlState.Normal
                 );
+                button.TintColor = Color.StartTimeEntry.InactiveButton.ToNativeColor();
             }
 
             TimeLabel.Font = TimeLabel.Font.GetMonospacedDigitFont();
@@ -180,6 +177,8 @@ namespace Toggl.Daneel.ViewControllers
             yield return TagsButton;
             yield return ProjectsButton;
             yield return BillableButton;
+            yield return StartDateButton;
+            yield return DateTimeButton;
             yield return DateTimeButton;
         }
 

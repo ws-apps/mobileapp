@@ -37,7 +37,17 @@ namespace Toggl.Daneel.Views.EditDuration
 
         private readonly float shadowOpacity = 0.3f;
 
-        private readonly int feedbackEveryMinutes = 1;
+        private readonly nfloat triangleWidth = 9f / 128f;
+
+        private readonly nfloat triangleHeight = 10f / 128f;
+
+        private readonly nfloat triangleCenterHorizontalOffset = 1.4f / 128f;
+
+        private readonly nfloat squareHeight = 10f / 128f;
+
+        private readonly nfloat squareWidth = 10f / 128f;
+
+        private readonly nfloat suqareCenterHorizontalOffset = 0f;
 
         private double endPointsRadius => SmallRadius + (Radius - SmallRadius) / 2;
 
@@ -47,17 +57,15 @@ namespace Toggl.Daneel.Views.EditDuration
 
         private bool isRunning;
 
-        private bool isEnabled;
-
         private CGPoint startTimePosition;
 
         private CGPoint endTimePosition;
 
-        private CGPoint roundedStartTimePosition;
-
-        private CGPoint roundedEndTimePosition;
-
         private UITouch currentTouch;
+
+        private UIImage startHandleImage;
+
+        private UIImage endHandleImage;
 
         private UISelectionFeedbackGenerator feedbackGenerator;
 
@@ -71,9 +79,7 @@ namespace Toggl.Daneel.Views.EditDuration
 
         private double endTimeAngle => endTime.LocalDateTime.TimeOfDay.ToAngleOnTheDial().ToPositiveAngle();
 
-        private double roundedStartTimeAngle => StartTime.LocalDateTime.TimeOfDay.ToAngleOnTheDial().ToPositiveAngle();
-
-        private double roundedEndTimeAngle => EndTime.LocalDateTime.TimeOfDay.ToAngleOnTheDial().ToPositiveAngle();
+        private double editBothAtOnceStartTimeAngleOffset;
 
         public event EventHandler StartTimeChanged;
 
@@ -89,7 +95,7 @@ namespace Toggl.Daneel.Views.EditDuration
 
         public DateTimeOffset StartTime
         {
-            get => roundToLowerMinute(startTime);
+            get => startTime;
             set
             {
                 if (startTime == value) return;
@@ -101,7 +107,7 @@ namespace Toggl.Daneel.Views.EditDuration
 
         public DateTimeOffset EndTime
         {
-            get => roundToLowerMinute(endTime);
+            get => endTime;
             set
             {
                 if (endTime == value) return;
@@ -122,18 +128,26 @@ namespace Toggl.Daneel.Views.EditDuration
             }
         }
 
-        public bool IsEnabled
-        {
-            get => isEnabled;
-            set
-            {
-                isEnabled = value;
-                SetNeedsLayout();
-            }
-        }
-
         public WheelForegroundView(IntPtr handle) : base(handle)
         {
+        }
+
+        public override void AwakeFromNib()
+        {
+            base.AwakeFromNib();
+
+            startHandleImage = UIImage.FromBundle("icStartLabel");
+            endHandleImage = UIImage.FromBundle("icEndLabel");
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing == false) return;
+
+            startHandleImage.Dispose();
+            endHandleImage.Dispose();
         }
 
         public override void LayoutSubviews()
@@ -152,17 +166,14 @@ namespace Toggl.Daneel.Views.EditDuration
             var backgroundLayer = createBackgroundLayer();
             Layer.AddSublayer(backgroundLayer);
 
-            if (IsEnabled)
+            if (IsRunning == false)
             {
-                if (IsRunning == false)
-                {
-                    var endCap = createCap(roundedEndTimePosition);
-                    Layer.AddSublayer(endCap);
-                }
-
-                var startCap = createCap(roundedStartTimePosition);
-                Layer.AddSublayer(startCap);
+                var endCap = createCap(endTimePosition, endHandleImage, squareWidth, squareHeight, suqareCenterHorizontalOffset);
+                Layer.AddSublayer(endCap);
             }
+
+            var startCap = createCap(startTimePosition, startHandleImage, triangleWidth, triangleHeight, triangleCenterHorizontalOffset);
+            Layer.AddSublayer(startCap);
         }
 
         private void calculateEndPointPositions()
@@ -171,9 +182,6 @@ namespace Toggl.Daneel.Views.EditDuration
 
             startTimePosition = PointOnCircumference(center, startTimeAngle, endPointsRadius).ToCGPoint();
             endTimePosition = PointOnCircumference(center, endTimeAngle, endPointsRadius).ToCGPoint();
-
-            roundedStartTimePosition = PointOnCircumference(center, roundedStartTimeAngle, endPointsRadius).ToCGPoint();
-            roundedEndTimePosition = PointOnCircumference(center, roundedEndTimeAngle, endPointsRadius).ToCGPoint();
         }
 
         #region Touch interaction
@@ -181,8 +189,6 @@ namespace Toggl.Daneel.Views.EditDuration
         public override void TouchesBegan(NSSet touches, UIEvent evt)
         {
             base.TouchesBegan(touches, evt);
-
-            if (IsEnabled == false) return;
 
             var touch = findValidTouch(touches);
             if (touch != null)
@@ -209,8 +215,7 @@ namespace Toggl.Daneel.Views.EditDuration
                     previousAngle = endTimeAngle;
                     break;
                 default:
-                    var previousPosition = currentTouch.PreviousLocationInView(this);
-                    previousAngle = AngleBetween(previousPosition.ToMultivacPoint(), Center.ToMultivacPoint());
+                    previousAngle = startTimeAngle + editBothAtOnceStartTimeAngleOffset;
                     break;
             }
 
@@ -252,7 +257,9 @@ namespace Toggl.Daneel.Views.EditDuration
                     return touch;
                 }
 
-                if (IsRunning == false && isCloseEnough(position, endTimePosition))
+                if (IsRunning) continue;
+
+                if (isCloseEnough(position, endTimePosition))
                 {
                     updateType = WheelUpdateType.EditEndTime;
                     return touch;
@@ -261,6 +268,7 @@ namespace Toggl.Daneel.Views.EditDuration
                 if (isOnTheWheelBetweenStartAndStop(position))
                 {
                     updateType = WheelUpdateType.EditBothAtOnce;
+                    editBothAtOnceStartTimeAngleOffset = AngleBetween(position.ToMultivacPoint(), Center.ToMultivacPoint()) - startTimeAngle;
                     return touch;
                 }
             }
@@ -282,27 +290,32 @@ namespace Toggl.Daneel.Views.EditDuration
             }
 
             var angle = AngleBetween(point.ToMultivacPoint(), Center.ToMultivacPoint());
-            return isFullCircle
-                ? true
-                : angle.IsBetween(startTimeAngle, endTimeAngle);
+            return isFullCircle || angle.IsBetween(startTimeAngle, endTimeAngle);
         }
 
         private void updateEditedTime(TimeSpan diff)
         {
             var giveFeedback = false;
+            var duration = EndTime - StartTime;
 
             if (updateType == WheelUpdateType.EditStartTime
                 || updateType == WheelUpdateType.EditBothAtOnce)
             {
-                giveFeedback = shouldGiveFeedback(startTime, startTime + diff);
-                StartTime = startTime + diff;
+                var nextStartTime = (StartTime + diff).RoundToClosestMinute();
+                giveFeedback = nextStartTime != StartTime;
+                StartTime = nextStartTime;
             }
 
-            if (IsRunning == false
-                && (updateType == WheelUpdateType.EditEndTime || updateType == WheelUpdateType.EditBothAtOnce))
+            if (updateType == WheelUpdateType.EditEndTime)
             {
-                giveFeedback = giveFeedback || shouldGiveFeedback(endTime, endTime + diff);
-                EndTime = endTime + diff;
+                var nextEndTime = (EndTime + diff).RoundToClosestMinute();
+                giveFeedback = nextEndTime != EndTime;
+                EndTime = nextEndTime;
+            }
+
+            if (updateType == WheelUpdateType.EditBothAtOnce)
+            {
+                EndTime = StartTime + duration;
             }
 
             if (giveFeedback)
@@ -312,31 +325,11 @@ namespace Toggl.Daneel.Views.EditDuration
             }
         }
 
-        private bool shouldGiveFeedback(DateTimeOffset a, DateTimeOffset b)
-        {
-            if (a > b)
-                (a, b) = (b, a);
-
-            var minutes = a.Minute;
-            var minutesDifference = Math.Abs(a.Minute - b.Minute);
-            var minutesToTest = Math.Min(minutesDifference, feedbackEveryMinutes);
-            for (var i = 1; i <= minutesToTest; i++)
-            {
-                if ((minutes + i) % feedbackEveryMinutes == 0)
-                    return true;
-            }
-
-            return false;
-        }
-
         private void finishTouchEditing()
         {
             currentTouch = null;
             feedbackGenerator = null;
         }
-
-        private DateTimeOffset roundToLowerMinute(DateTimeOffset time)
-            => time - TimeSpan.FromSeconds(time.Second);
 
         #endregion
 
@@ -346,8 +339,8 @@ namespace Toggl.Daneel.Views.EditDuration
         {
             var capArcRadius = Thickness / 2f;
 
-            var startAngle = (nfloat)roundedStartTimeAngle;
-            var endAngle = (nfloat)roundedEndTimeAngle;
+            var startAngle = (nfloat)startTimeAngle;
+            var endAngle = (nfloat)endTimeAngle;
 
             // these angles become obvious when you draw a diagram and mark all the angles
             var startCapStartAngle = startAngle + (nfloat)Math.PI;
@@ -357,9 +350,9 @@ namespace Toggl.Daneel.Views.EditDuration
 
             var durationArc = new UIBezierPath();
 
-            durationArc.AddArc(roundedStartTimePosition, capArcRadius, startCapStartAngle, startCapEndAngle, true); // start cap
+            durationArc.AddArc(startTimePosition, capArcRadius, startCapStartAngle, startCapEndAngle, true); // start cap
             durationArc.AddArc(Center, Radius, startAngle, endAngle, true); // outer arc
-            durationArc.AddArc(roundedEndTimePosition, capArcRadius, endCapStartAngle, endCapEndAngle, true); // end cap
+            durationArc.AddArc(endTimePosition, capArcRadius, endCapStartAngle, endCapEndAngle, true); // end cap
             durationArc.AddArc(Center, SmallRadius, endAngle, startAngle, false); // inner arc
 
             var layer = new CAShapeLayer();
@@ -370,8 +363,8 @@ namespace Toggl.Daneel.Views.EditDuration
             {
                 // cap shadows
                 var shadowPath = new UIBezierPath();
-                shadowPath.AddArc(roundedStartTimePosition, capArcRadius, 0f, (nfloat)FullCircle, false);
-                shadowPath.AddArc(roundedEndTimePosition, capArcRadius, 0f, (nfloat)FullCircle, true);
+                shadowPath.AddArc(startTimePosition, capArcRadius, 0f, (nfloat)FullCircle, false);
+                shadowPath.AddArc(endTimePosition, capArcRadius, 0f, (nfloat)FullCircle, true);
 
                 layer.ShadowPath = shadowPath.CGPath;
                 layer.ShadowColor = shadowColor;
@@ -386,7 +379,7 @@ namespace Toggl.Daneel.Views.EditDuration
             return layer;
         }
 
-        private CALayer createCap(CGPoint center)
+        private CALayer createCap(CGPoint center, UIImage image, nfloat imageWidth, nfloat imageHeight, nfloat centerHorizontalOffset)
         {
             var innerRadius = Resize(capRadius);
             var outerRadius = (Radius - SmallRadius) / 2;
@@ -402,35 +395,18 @@ namespace Toggl.Daneel.Views.EditDuration
             var innerPath = new UIBezierPath();
             innerPath.AddArc(center, innerRadius, 0, (nfloat)FullCircle, false);
 
-            // two horizontal bars
-            var length = Resize(horizontalBarLength);
-            var height = Resize(horizontalBarHeight);
-            var offset = Resize(horizontalBarsDistance / 2);
-            var roundedCornersRadius = Resize(horizontalBarCornerRadius);
-
-            var topHorizontalBar = UIBezierPath.FromRoundedRect(
-                new CGRect(center.X - length / 2, center.Y - height - offset, length, height),
-                UIRectCorner.AllCorners,
-                new CGSize(roundedCornersRadius, roundedCornersRadius));
-            var topBar = new CAShapeLayer();
-            topBar.Path = topHorizontalBar.CGPath;
-            topBar.FillColor = backgroundColor;
-
-            var bottomHorizontalBar = UIBezierPath.FromRoundedRect(
-                new CGRect(center.X - length / 2, center.Y + offset, length, height),
-                UIRectCorner.AllCorners,
-                new CGSize(roundedCornersRadius, roundedCornersRadius));
-            var bottomBar = new CAShapeLayer();
-            bottomBar.Path = bottomHorizontalBar.CGPath;
-            bottomBar.FillColor = backgroundColor;
-
-            // combine layers
             var circleLayer = new CAShapeLayer();
             circleLayer.Path = innerPath.CGPath;
             circleLayer.FillColor = capColor;
 
-            circleLayer.AddSublayer(topBar);
-            circleLayer.AddSublayer(bottomBar);
+            var height = Resize(imageHeight);
+            var width = Resize(imageWidth);
+            var offset = Resize(centerHorizontalOffset);
+            var frame = new CGRect(center.X - width / 2f + offset, center.Y - height / 2f, width, height);
+            var imageLayer = new CALayer();
+            imageLayer.Contents = image.CGImage;
+            imageLayer.Frame = frame;
+            circleLayer.AddSublayer(imageLayer);
 
             backgroundLayer.AddSublayer(circleLayer);
 

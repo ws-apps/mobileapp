@@ -6,16 +6,16 @@ using UIKit;
 
 namespace Toggl.Daneel.Autocomplete
 {
-    public sealed class AutocompleteTextViewDelegate : NSObject, IUITextViewDelegate, IAutocompleteEventProvider
+    public sealed class AutocompleteTextViewDelegate : UITextViewDelegate, IAutocompleteEventProvider
     {
         public event Action TextViewDidChange;
         public event EventHandler TextChanged;
         public event EventHandler ProjectDeleted;
         public event EventHandler CursorPositionChanged;
+        public event EventHandler IsWritingMultistageCharacter;
         public event EventHandler<TagDeletedEventArgs> TagDeleted;
 
-        [Export("textViewDidChange:")]
-        public void DidChange(UITextView textView)
+        public override void Changed(UITextView textView)
         {
             TextViewDidChange?.Invoke();
 
@@ -28,9 +28,14 @@ namespace Toggl.Daneel.Autocomplete
             TextChanged.Raise(this);
         }
 
-        [Export("textView:shouldChangeTextInRange:replacementText:")]
-        public bool ShouldChangeCharacters(UITextView textView, NSRange range, string text)
+        public override bool ShouldChangeText(UITextView textView, NSRange range, string text)
         {
+            if (isTypingMultistageCharacter(range, text))
+            {
+                IsWritingMultistageCharacter.Raise(this);
+                return true;
+            }
+
             if (!isPressingBackspace(range, text))
                 return true;
 
@@ -54,6 +59,9 @@ namespace Toggl.Daneel.Autocomplete
 
             return true;
         }
+
+        private bool isTypingMultistageCharacter(NSRange range, string text)
+            => range.Length == 0 && text.Length > 0;
 
         private static bool isPressingBackspace(NSRange range, string text)
             => range.Length == 1 && text.Length == 0;

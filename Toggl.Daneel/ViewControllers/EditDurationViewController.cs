@@ -13,7 +13,7 @@ using static Toggl.Daneel.Extensions.FontExtensions;
 
 namespace Toggl.Daneel.ViewControllers
 {
-    [ModalDialogPresentation]
+    [ModalCardPresentation]
     public sealed partial class EditDurationViewController : MvxViewController<EditDurationViewModel>
     {
         public EditDurationViewController() : base(nameof(EditDurationViewController), null)
@@ -57,39 +57,14 @@ namespace Toggl.Daneel.ViewControllers
                       .To(vm => vm.StopTime)
                       .WithConversion(dateConverter);
 
-            //Visiblity and colors
-            bindingSet.Bind(StartTimeLabel)
-                      .For(v => v.TextColor)
-                      .To(vm => vm.IsEditingStartTime)
-                      .WithConversion(editedTimeLabelColorConverter);
-
-            bindingSet.Bind(StartDateLabel)
-                      .For(v => v.TextColor)
-                      .To(vm => vm.IsEditingStartTime)
-                      .WithConversion(editedTimeLabelColorConverter);
-
-            bindingSet.Bind(EndTimeLabel)
-                      .For(v => v.TextColor)
-                      .To(vm => vm.IsEditingStopTime)
-                      .WithConversion(editedTimeLabelColorConverter);
-
-            bindingSet.Bind(EndDateLabel)
-                      .For(v => v.TextColor)
-                      .To(vm => vm.IsEditingStopTime)
-                      .WithConversion(editedTimeLabelColorConverter);
-
+            //Visiblity
             bindingSet.Bind(EndTimeLabel)
                       .For(v => v.BindVisibility())
                       .To(vm => vm.IsRunning);
 
-            //Toggling date picker
-            bindingSet.Bind(StartView)
-                      .For(v => v.BindTap())
-                      .To(vm => vm.EditStartTimeCommand);
-
-            bindingSet.Bind(EndView)
-                      .For(v => v.BindTap())
-                      .To(vm => vm.EditStopTimeCommand);
+            bindingSet.Bind(EndDateLabel)
+                      .For(v => v.BindVisibility())
+                      .To(vm => vm.IsRunning);
 
             //Stop time entry button
             bindingSet.Bind(SetEndButton)
@@ -98,34 +73,12 @@ namespace Toggl.Daneel.ViewControllers
                       .WithConversion(inverseBoolConverter);
 
             bindingSet.Bind(SetEndButton)
-                      .To(vm => vm.EditStopTimeCommand);
-
-            //Date picker
-            bindingSet.Bind(DatePickerContainer)
-                      .For(v => v.BindAnimatedVisibility())
-                      .To(vm => vm.IsEditingTime);
-
-            bindingSet.Bind(DatePicker)
-                      .For(v => v.BindDateTimeOffset())
-                      .To(vm => vm.EditedTime);
-
-            bindingSet.Bind(DatePicker)
-                      .For(v => v.MaximumDate)
-                      .To(vm => vm.MaximumTime);
-
-            bindingSet.Bind(DatePicker)
-                      .For(v => v.MinimumDate)
-                      .To(vm => vm.MinimumTime);
+                      .To(vm => vm.StopTimeEntryCommand);
 
             //The wheel
             bindingSet.Bind(DurationLabel)
                       .To(vm => vm.Duration)
                       .WithConversion(durationConverter);
-
-            bindingSet.Bind(WheelView)
-                      .For(v => v.IsEnabled)
-                      .To(vm => vm.IsEditingTime)
-                      .WithConversion(inverseBoolConverter);
 
             bindingSet.Bind(WheelView)
                       .For(v => v.MaximumStartTime)
@@ -160,12 +113,6 @@ namespace Toggl.Daneel.ViewControllers
 
         private void prepareViews()
         {
-            var width = UIScreen.MainScreen.Bounds.Width - 32; //32 for 16pt margins on both sides
-            PreferredContentSize = new CGSize
-            {
-                Width = width,
-                Height = 155 + width
-            };
 
             EndTimeLabel.Font = EndTimeLabel.Font.GetMonospacedDigitFont();
             DurationLabel.Font = DurationLabel.Font.GetMonospacedDigitFont();

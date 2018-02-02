@@ -48,15 +48,14 @@ namespace Toggl.Daneel.ViewControllers
 		UIKit.UIButton DoneButton { get; set; }
 
 		[Outlet]
-		[GeneratedCode ("iOS Designer", "1.0")]
-		UIKit.UIButton DurationButton { get; set; }
-
-		[Outlet]
 		Toggl.Daneel.Views.AutocompleteTextViewPlaceholder Placeholder { get; set; }
 
 		[Outlet]
 		[GeneratedCode ("iOS Designer", "1.0")]
 		UIKit.UIButton ProjectsButton { get; set; }
+
+		[Outlet]
+		UIKit.UIButton StartDateButton { get; set; }
 
 		[Outlet]
 		[GeneratedCode ("iOS Designer", "1.0")]
@@ -117,9 +116,9 @@ namespace Toggl.Daneel.ViewControllers
 				DoneButton = null;
 			}
 
-			if (DurationButton != null) {
-				DurationButton.Dispose ();
-				DurationButton = null;
+			if (StartDateButton != null) {
+				StartDateButton.Dispose ();
+				StartDateButton = null;
 			}
 
 			if (Placeholder != null) {

@@ -244,130 +244,11 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             }
         }
 
-        public sealed class TheEditStartTimeCommand : EditDurationViewModelTest
+        public sealed class TheStopTimeEntryCommand : EditDurationViewModelTest
         {
             private static DurationParameter parameter = DurationParameter.WithStartAndDuration(
                 new DateTimeOffset(2018, 01, 13, 0, 0, 0, TimeSpan.Zero),
                 TimeSpan.FromMinutes(7));
-
-            [Fact]
-            public void SetsTheIsEditingFlagsCorrectlyWhenNothingWasEdited()
-            {
-                ViewModel.Prepare(parameter);
-
-                ViewModel.EditStartTimeCommand.Execute();
-
-                ViewModel.IsEditingStartTime.Should().BeTrue();
-                ViewModel.IsEditingStopTime.Should().BeFalse();
-            }
-
-            [Fact]
-            public void SetsTheIsEditingFlagsCorrectlyWhenStopTimeWasEdited()
-            {
-                ViewModel.Prepare(parameter);
-                ViewModel.EditStopTimeCommand.Execute();
-
-                ViewModel.EditStartTimeCommand.Execute();
-
-                ViewModel.IsEditingStartTime.Should().BeTrue();
-                ViewModel.IsEditingStopTime.Should().BeFalse();
-            }
-
-            [Fact]
-            public void ClosesEditingWhenStartTimeWasBeingEdited()
-            {
-                ViewModel.Prepare(parameter);
-                ViewModel.EditStartTimeCommand.Execute();
-
-                ViewModel.EditStartTimeCommand.Execute();
-
-                ViewModel.IsEditingStartTime.Should().BeFalse();
-                ViewModel.IsEditingStopTime.Should().BeFalse();
-            }
-
-            [Fact]
-            public void InitializesTheEditTimePropertyWithTheStartTime()
-            {
-                ViewModel.Prepare(parameter);
-
-                ViewModel.EditStartTimeCommand.Execute();
-
-                ViewModel.EditedTime.Should().Be(parameter.Start);
-            }
-
-            [Fact]
-            public void SetsTheMinimumAndMaximumDateForTheDatePicker()
-            {
-                ViewModel.Prepare(parameter);
-
-                ViewModel.EditStartTimeCommand.Execute();
-
-                ViewModel.MinimumTime.Should().Be((parameter.Start + parameter.Duration.Value - TimeSpan.FromHours(999)).LocalDateTime);
-                ViewModel.MaximumTime.Should().Be((parameter.Start + parameter.Duration.Value).LocalDateTime);
-            }
-        }
-
-        public sealed class TheEditStopTimeTimeProperty : EditDurationViewModelTest
-        {
-            private static DurationParameter parameter = DurationParameter.WithStartAndDuration(
-                new DateTimeOffset(2018, 01, 13, 0, 0, 0, TimeSpan.Zero),
-                TimeSpan.FromMinutes(7));
-
-            [Fact]
-            public void SetsTheIsEditingFlagsCorrectlyWhenNothingWasEdited()
-            {
-                ViewModel.Prepare(parameter);
-
-                ViewModel.EditStopTimeCommand.Execute();
-
-                ViewModel.IsEditingStartTime.Should().BeFalse();
-                ViewModel.IsEditingStopTime.Should().BeTrue();
-            }
-
-            [Fact]
-            public void SetsTheIsEditingFlagsCorrectlyWhenStopTimeWasEdited()
-            {
-                ViewModel.Prepare(parameter);
-                ViewModel.EditStartTimeCommand.Execute();
-
-                ViewModel.EditStopTimeCommand.Execute();
-
-                ViewModel.IsEditingStartTime.Should().BeFalse();
-                ViewModel.IsEditingStopTime.Should().BeTrue();
-            }
-
-            [Fact]
-            public void ClosesEditingWhenStartTimeWasBeingEdited()
-            {
-                ViewModel.Prepare(parameter);
-                ViewModel.EditStopTimeCommand.Execute();
-
-                ViewModel.EditStopTimeCommand.Execute();
-
-                ViewModel.IsEditingStartTime.Should().BeFalse();
-                ViewModel.IsEditingStopTime.Should().BeFalse();
-            }
-
-            [Fact]
-            public void InitializesTheEditTimePropertyWithTheStartTime()
-            {
-                ViewModel.Prepare(parameter);
-
-                ViewModel.EditStopTimeCommand.Execute();
-
-                ViewModel.EditedTime.Should().Be(parameter.Start + parameter.Duration.Value);
-            }
-
-            [Fact]
-            public void SetsTheMinimumAndMaximumDateForTheDatePicker()
-            {
-                ViewModel.Prepare(parameter);
-
-                ViewModel.EditStopTimeCommand.Execute();
-
-                ViewModel.MinimumTime.Should().Be(parameter.Start.LocalDateTime);
-                ViewModel.MaximumTime.Should().Be((parameter.Start + TimeSpan.FromHours(999)).LocalDateTime);
-            }
 
             [Fact]
             public void StopsARunningTimeEntry()
@@ -377,7 +258,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 ViewModel.Prepare(runningTEParameter);
                 TimeService.CurrentDateTime.Returns(now);
 
-                ViewModel.EditStopTimeCommand.Execute();
+                ViewModel.StopTimeEntryCommand.Execute();
 
                 ViewModel.IsRunning.Should().BeFalse();
                 ViewModel.StopTime.Should().Be(now);
@@ -394,132 +275,10 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 TimeService.CurrentDateTime.Returns(now);
                 TimeService.CurrentDateTimeObservable.Returns(observable);
 
-                ViewModel.EditStopTimeCommand.Execute();
+                ViewModel.StopTimeEntryCommand.Execute();
                 subject.OnNext(now.AddSeconds(1));
 
                 ViewModel.StopTime.Should().Be(now);
-            }
-        }
-
-        public sealed class TheEditedTimeProperty : EditDurationViewModelTest
-        {
-            private static DurationParameter parameter = DurationParameter.WithStartAndDuration(
-                new DateTimeOffset(2018, 01, 13, 0, 0, 0, TimeSpan.Zero),
-                TimeSpan.FromMinutes(7));
-
-            [Fact]
-            public void ReturnsTheStartTimeWhenIsEditingStartTime()
-            {
-                ViewModel.Prepare(parameter);
-
-                ViewModel.EditStartTimeCommand.Execute();
-
-                ViewModel.EditedTime.Should().Be(parameter.Start);
-            }
-
-            [Fact]
-            public void ReturnsTheStopTimeWhenIsEditingStopTime()
-            {
-                ViewModel.Prepare(parameter);
-
-                ViewModel.EditStopTimeCommand.Execute();
-
-                ViewModel.EditedTime.Should().Be(parameter.Start + parameter.Duration.Value);
-            }
-
-            [Fact]
-            public void DoesNotAcceptAnyValueWhenNotEditingNeitherStartNorStopTime()
-            {
-                var editedValue = new DateTimeOffset(2018, 02, 20, 0, 0, 0, TimeSpan.Zero);
-                ViewModel.Prepare(parameter);
-
-                ViewModel.EditedTime = editedValue;
-
-                ViewModel.EditedTime.Should().NotBe(editedValue);
-                ViewModel.StartTime.Should().NotBe(editedValue);
-                ViewModel.StopTime.Should().NotBe(editedValue);
-            }
-
-            [Fact]
-            public void ChangesJustTheStartTime()
-            {
-                var editedValue = new DateTimeOffset(2018, 01, 07, 0, 0, 0, TimeSpan.Zero);
-                ViewModel.Prepare(parameter);
-
-                ViewModel.EditStartTimeCommand.Execute();
-                ViewModel.EditedTime = editedValue;
-
-                ViewModel.EditedTime.Should().Be(editedValue);
-                ViewModel.StartTime.Should().Be(editedValue);
-                ViewModel.StopTime.Should().NotBe(editedValue);
-            }
-
-            [Fact]
-            public void DoesNotAllowChangingTheStartTimeToMoreThanTheMaximumDate()
-            {
-                var editedValue = parameter.Start.Add(parameter.Duration.Value).AddHours(1);
-                ViewModel.Prepare(parameter);
-
-                ViewModel.EditStartTimeCommand.Execute();
-                ViewModel.EditedTime = editedValue;
-
-                ViewModel.EditedTime.Should().Be(ViewModel.MaximumTime);
-                ViewModel.StartTime.Should().Be(ViewModel.MaximumTime);
-                ViewModel.StopTime.Should().Be(ViewModel.MaximumTime);
-            }
-
-            [Fact]
-            public void DoesNotAllowChangingTheStartTimeToLessThanTheMinimumDate()
-            {
-                var editedValue = parameter.Start.AddHours(-1000);
-                ViewModel.Prepare(parameter);
-
-                ViewModel.EditStartTimeCommand.Execute();
-                ViewModel.EditedTime = editedValue;
-
-                ViewModel.EditedTime.Should().Be(ViewModel.MinimumTime);
-                ViewModel.StartTime.Should().Be(ViewModel.MinimumTime);
-                ViewModel.StopTime.Should().NotBe(ViewModel.MinimumTime);
-            }
-
-            [Fact]
-            public void ChangesJustTheStopTime()
-            {
-                var editedValue = new DateTimeOffset(2018, 02, 20, 0, 0, 0, TimeSpan.Zero);
-                ViewModel.Prepare(parameter);
-
-                ViewModel.EditStopTimeCommand.Execute();
-                ViewModel.EditedTime = editedValue;
-
-                ViewModel.EditedTime.Should().Be(editedValue);
-                ViewModel.StartTime.Should().NotBe(editedValue);
-                ViewModel.StopTime.Should().Be(editedValue);
-            }
-
-            [Fact]
-            public void DoesNotAllowChangingTheStopTimeToMoreThanTheMaximumDate()
-            {
-                var editedValue = parameter.Start.AddHours(1000);
-                ViewModel.Prepare(parameter);
-
-                ViewModel.EditStopTimeCommand.Execute();
-                ViewModel.EditedTime = editedValue;
-
-                ViewModel.EditedTime.Should().Be(ViewModel.MaximumTime);
-                ViewModel.StopTime.Should().Be(ViewModel.MaximumTime);
-            }
-
-            [Fact]
-            public void DoesNotAllowChangingTheStopTimeToLessThanTheMinimumDate()
-            {
-                var editedValue = parameter.Start.AddHours(-1);
-                ViewModel.Prepare(parameter);
-
-                ViewModel.EditStopTimeCommand.Execute();
-                ViewModel.EditedTime = editedValue;
-
-                ViewModel.EditedTime.Should().Be(ViewModel.MinimumTime);
-                ViewModel.StopTime.Should().Be(ViewModel.MinimumTime);
             }
         }
     }

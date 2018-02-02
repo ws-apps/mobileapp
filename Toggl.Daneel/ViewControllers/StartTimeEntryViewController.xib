@@ -23,6 +23,7 @@
                 <outlet property="DoneButton" destination="Hya-nl-hcs" id="name-outlet-Hya-nl-hcs"/>
                 <outlet property="Placeholder" destination="jGg-N9-yt7" id="maS-ba-Eh5"/>
                 <outlet property="ProjectsButton" destination="qfx-lJ-emc" id="name-outlet-qfx-lJ-emc"/>
+                <outlet property="StartDateButton" destination="Dr2-ax-s3L" id="Kia-hj-LHV"/>
                 <outlet property="SuggestionsTableView" destination="04s-S8-twa" id="name-outlet-04s-S8-twa"/>
                 <outlet property="TagsButton" destination="H7M-A1-mmK" id="name-outlet-H7M-A1-mmK"/>
                 <outlet property="TimeLabel" destination="3I4-ki-f8o" id="name-outlet-3I4-ki-f8o"/>
@@ -119,37 +120,41 @@
                             </constraints>
                             <state key="normal" image="icBillable"/>
                         </button>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4Tp-xX-rFB">
-                            <rect key="frame" x="128" y="0.0" width="42" height="50"/>
-                            <state key="normal" image="icDatetime"/>
-                        </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Hya-nl-hcs">
                             <rect key="frame" x="325" y="0.0" width="50" height="50"/>
                             <accessibility key="accessibilityConfiguration" label="StartTimeEntryDone"/>
                             <state key="normal" image="icDone"/>
                         </button>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="-15" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ibp-rp-GIs">
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="-15" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ibp-rp-GIs">
                             <rect key="frame" x="212" y="1" width="42" height="49"/>
                             <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="12"/>
                             <color key="textColor" red="0.96862745098039216" green="0.25098039215686274" blue="0.28627450980392155" alpha="1" colorSpace="calibratedRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Dr2-ax-s3L">
+                            <rect key="frame" x="128" y="0.0" width="42" height="50"/>
+                            <state key="normal" image="date"/>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4Tp-xX-rFB">
+                            <rect key="frame" x="170" y="0.0" width="42" height="50"/>
+                            <state key="normal" image="icDatetime"/>
+                        </button>
                     </subviews>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <constraints>
                         <constraint firstItem="Hya-nl-hcs" firstAttribute="width" secondItem="dU3-s1-ELa" secondAttribute="height" multiplier="1:1" id="05f-8r-PWq"/>
-                        <constraint firstItem="4Tp-xX-rFB" firstAttribute="centerY" secondItem="Xnc-Zt-xWV" secondAttribute="centerY" id="0pD-l2-1EY"/>
-                        <constraint firstItem="4Tp-xX-rFB" firstAttribute="width" secondItem="H7M-A1-mmK" secondAttribute="width" id="1RC-QU-4sg"/>
+                        <constraint firstItem="4Tp-xX-rFB" firstAttribute="width" secondItem="H7M-A1-mmK" secondAttribute="width" id="4GZ-6x-U6U"/>
                         <constraint firstItem="qfx-lJ-emc" firstAttribute="height" secondItem="dU3-s1-ELa" secondAttribute="height" id="57F-eo-fSD"/>
                         <constraint firstItem="Xnc-Zt-xWV" firstAttribute="height" secondItem="H7M-A1-mmK" secondAttribute="height" id="7QF-p9-duO"/>
+                        <constraint firstItem="Ibp-rp-GIs" firstAttribute="centerY" secondItem="4Tp-xX-rFB" secondAttribute="centerY" id="9zz-eW-0vA"/>
+                        <constraint firstItem="Dr2-ax-s3L" firstAttribute="width" secondItem="H7M-A1-mmK" secondAttribute="width" id="BRJ-2H-RJA"/>
+                        <constraint firstItem="4Tp-xX-rFB" firstAttribute="centerY" secondItem="Xnc-Zt-xWV" secondAttribute="centerY" id="BcW-tb-Tk5"/>
                         <constraint firstAttribute="trailing" secondItem="2em-4m-f1y" secondAttribute="trailing" id="HMI-6t-ddi"/>
                         <constraint firstAttribute="height" constant="50" id="I0s-0r-NeA"/>
                         <constraint firstItem="Xnc-Zt-xWV" firstAttribute="leading" secondItem="H7M-A1-mmK" secondAttribute="trailing" id="LML-We-R2J"/>
                         <constraint firstItem="H7M-A1-mmK" firstAttribute="width" secondItem="qfx-lJ-emc" secondAttribute="width" id="Lgi-ZT-Iqq"/>
-                        <constraint firstItem="4Tp-xX-rFB" firstAttribute="leading" secondItem="Xnc-Zt-xWV" secondAttribute="trailing" id="R6H-v7-0xf"/>
                         <constraint firstItem="H7M-A1-mmK" firstAttribute="leading" secondItem="qfx-lJ-emc" secondAttribute="trailing" id="Ri0-zk-3nr"/>
                         <constraint firstItem="Xnc-Zt-xWV" firstAttribute="centerY" secondItem="H7M-A1-mmK" secondAttribute="centerY" id="Seh-3E-0rd"/>
-                        <constraint firstItem="4Tp-xX-rFB" firstAttribute="height" secondItem="Xnc-Zt-xWV" secondAttribute="height" id="SqF-uV-74q"/>
                         <constraint firstItem="2em-4m-f1y" firstAttribute="top" secondItem="dU3-s1-ELa" secondAttribute="top" id="T6W-gD-PS2"/>
                         <constraint firstItem="H7M-A1-mmK" firstAttribute="centerY" secondItem="qfx-lJ-emc" secondAttribute="centerY" id="TTW-fb-T8a"/>
                         <constraint firstItem="Ibp-rp-GIs" firstAttribute="top" secondItem="2em-4m-f1y" secondAttribute="bottom" id="XO4-pe-uuD"/>
@@ -158,8 +163,15 @@
                         <constraint firstItem="qfx-lJ-emc" firstAttribute="centerY" secondItem="dU3-s1-ELa" secondAttribute="centerY" id="cAA-Z2-S3c"/>
                         <constraint firstItem="2em-4m-f1y" firstAttribute="leading" secondItem="dU3-s1-ELa" secondAttribute="leading" id="cxV-jj-fOc"/>
                         <constraint firstAttribute="bottom" secondItem="Ibp-rp-GIs" secondAttribute="bottom" id="dTf-AH-52C"/>
+                        <constraint firstItem="Ibp-rp-GIs" firstAttribute="leading" secondItem="4Tp-xX-rFB" secondAttribute="trailing" id="jOB-tP-2X0"/>
+                        <constraint firstItem="Dr2-ax-s3L" firstAttribute="centerY" secondItem="H7M-A1-mmK" secondAttribute="centerY" id="k6m-3j-g6W"/>
                         <constraint firstItem="Hya-nl-hcs" firstAttribute="centerY" secondItem="dU3-s1-ELa" secondAttribute="centerY" id="lXh-tS-P07"/>
+                        <constraint firstItem="Dr2-ax-s3L" firstAttribute="height" secondItem="H7M-A1-mmK" secondAttribute="height" id="n1T-2I-EgI"/>
+                        <constraint firstItem="4Tp-xX-rFB" firstAttribute="leading" secondItem="Dr2-ax-s3L" secondAttribute="trailing" id="s4P-6o-td7"/>
                         <constraint firstItem="qfx-lJ-emc" firstAttribute="leading" secondItem="dU3-s1-ELa" secondAttribute="leading" constant="2" id="t2l-uP-lb6"/>
+                        <constraint firstItem="Ibp-rp-GIs" firstAttribute="width" secondItem="Dr2-ax-s3L" secondAttribute="width" id="vDj-uj-p2x"/>
+                        <constraint firstItem="4Tp-xX-rFB" firstAttribute="height" secondItem="Xnc-Zt-xWV" secondAttribute="height" id="xAy-h6-8Co"/>
+                        <constraint firstItem="Dr2-ax-s3L" firstAttribute="leading" secondItem="Xnc-Zt-xWV" secondAttribute="trailing" id="xmn-we-RDd"/>
                         <constraint firstItem="H7M-A1-mmK" firstAttribute="height" secondItem="qfx-lJ-emc" secondAttribute="height" id="yu9-x5-VRI"/>
                     </constraints>
                 </view>
@@ -203,6 +215,7 @@
         </view>
     </objects>
     <resources>
+        <image name="date" width="14" height="15"/>
         <image name="duration" width="13" height="16"/>
         <image name="icBillable" width="8" height="16"/>
         <image name="icClose" width="10" height="10"/>

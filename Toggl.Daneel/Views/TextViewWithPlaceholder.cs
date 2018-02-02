@@ -124,6 +124,12 @@ namespace Toggl.Daneel.Views
         [Export("textViewDidChange:")]
         public virtual new void Changed(UITextView textView)
         {
+            // When the `MarkedTextRange` property of the UITextView is not null
+            // then it means that the user is in the middle of inputting a multistage character.
+            // Hold off on editing the attributedText until they are done.
+            // Source: https://stackoverflow.com/questions/31430308/uitextview-attributedtext-with-japanese-keyboard-repeats-input
+            if (textView.MarkedTextRange != null) return;
+
             Text = base.Text.Replace(Environment.NewLine, " ");
         }
 
@@ -131,6 +137,13 @@ namespace Toggl.Daneel.Views
         public void EditingStarted(UITextView textView)
         {
             isFocused = true;
+            if (Text.Length == 0)
+            {
+                // this will force the text view to change the color of the text
+                // so if the person starts typing a multistage character, the color
+                // of the text won't be the color of the placeholder anymore
+                updateAttributedText(" ");
+            }
             updateAttributedText(Text);
         }
 

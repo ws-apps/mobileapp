@@ -38,31 +38,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             }
         }
 
-        [DependsOn(nameof(IsEditingStartTime), nameof(IsEditingStopTime))]
-        public bool IsEditingTime => IsEditingStopTime || IsEditingStartTime;
-
-        public bool IsEditingStartTime { get; private set; }
-
-        public bool IsEditingStopTime { get; private set; }
-
-        public DateTimeOffset EditedTime
-        {
-            get => IsEditingStartTime ? StartTime : StopTime;
-            set
-            {
-                if (IsEditingTime == false) return;
-
-                if (IsEditingStartTime)
-                {
-                    StartTime = value.Clamp(MinimumStartTime, MaximumStartTime);
-                }
-                else
-                {
-                    StopTime = value.Clamp(MinimumStopTime, MaximumStopTime);
-                }
-            }
-        }
-
         public DateTime MinimumTime { get; private set; }
 
         public DateTime MaximumTime { get; private set; }
@@ -79,9 +54,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public IMvxAsyncCommand CloseCommand { get; }
 
-        public IMvxCommand EditStartTimeCommand { get; }
-
-        public IMvxCommand EditStopTimeCommand { get; }
+        public IMvxCommand StopTimeEntryCommand { get; }
 
         public EditDurationViewModel(IMvxNavigationService navigationService, ITimeService timeService)
         {
@@ -93,8 +66,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
             SaveCommand = new MvxAsyncCommand(save);
             CloseCommand = new MvxAsyncCommand(close);
-            EditStartTimeCommand = new MvxCommand(editStartTime);
-            EditStopTimeCommand = new MvxCommand(editStopTime);
+            StopTimeEntryCommand = new MvxCommand(stopRunningTimeEntry);
         }
 
         public override void Prepare(DurationParameter parameter)
@@ -123,48 +95,11 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             return navigationService.Close(this, result);
         }
 
-        private void editStartTime()
+        private void stopRunningTimeEntry()
         {
-            if (IsEditingStartTime)
-            {
-                IsEditingStartTime = false;
-            }
-            else
-            {
-                MinimumTime = MinimumStartTime.LocalDateTime;
-                MaximumTime = MaximumStartTime.LocalDateTime;
-
-                IsEditingStartTime = true;
-                IsEditingStopTime = false;
-
-                EditedTime = StartTime;
-            }
-        }
-
-        private void editStopTime()
-        {
-            if (IsRunning)
-            {
-                runningTimeEntryDisposable?.Dispose();
-                StopTime = timeService.CurrentDateTime;
-                IsRunning = false;
-                return;
-            }
-
-            if (IsEditingStopTime)
-            {
-                IsEditingStopTime = false;
-            }
-            else
-            {
-                MinimumTime = MinimumStopTime.LocalDateTime;
-                MaximumTime = MaximumStopTime.LocalDateTime;
-
-                IsEditingStopTime = true;
-                IsEditingStartTime = false;
-
-                EditedTime = StopTime;
-            }
+            runningTimeEntryDisposable?.Dispose();
+            StopTime = timeService.CurrentDateTime;
+            IsRunning = false;
         }
 
         private void onDurationChanged(TimeSpan changedDuration)

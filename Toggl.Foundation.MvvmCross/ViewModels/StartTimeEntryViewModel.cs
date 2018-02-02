@@ -110,6 +110,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public IMvxAsyncCommand DoneCommand { get; }
 
+        public IMvxAsyncCommand SetStartDateCommand { get; }
+
         public IMvxAsyncCommand ChangeTimeCommand { get; }
 
         public IMvxCommand ToggleBillableCommand { get; }
@@ -145,6 +147,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             ToggleBillableCommand = new MvxCommand(toggleBillable);
             CreateCommand = new MvxAsyncCommand(create);
             ChangeTimeCommand = new MvxAsyncCommand(changeTime);
+            SetStartDateCommand = new MvxAsyncCommand(setStartDate);
             ToggleTagSuggestionsCommand = new MvxCommand(toggleTagSuggestions);
             ToggleProjectSuggestionsCommand = new MvxCommand(toggleProjectSuggestions);
             SelectSuggestionCommand = new MvxAsyncCommand<AutocompleteSuggestion>(selectSuggestion);
@@ -441,6 +444,26 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             }
 
             IsEditingTime = false;
+        }
+
+        private async Task setStartDate()
+        {
+            var minimum = StartTime + ElapsedTime - TimeSpan.FromHours(MaxTimeEntryDurationInHours);
+            var maximum = StartTime + ElapsedTime;
+            var parameters = DatePickerParameters.WithDates(StartTime, minimum, maximum);
+            var selectedDate = await navigationService
+                .Navigate<SelectDateTimeViewModel, DatePickerParameters, DateTimeOffset>(parameters)
+                .ConfigureAwait(false);
+
+            StartTime = new DateTimeOffset(
+                selectedDate.Year,
+                selectedDate.Month,
+                selectedDate.Day,
+                StartTime.Hour,
+                StartTime.Minute,
+                StartTime.Second,
+                StartTime.Offset)
+                .Clamp(minimum, maximum);
         }
 
         private Task back() => navigationService.Close(this);

@@ -32,6 +32,7 @@ namespace Toggl.Daneel.Views
                 textViewDelegate.TextChanged += handleEvent;
                 textViewDelegate.ProjectDeleted += handleEvent;
                 textViewDelegate.TagDeleted += handleEvent;
+                textViewDelegate.IsWritingMultistageCharacter += handleMultistageCharacterTyping;
 
                 setupProperties();
                 updateVisibility();
@@ -51,6 +52,7 @@ namespace Toggl.Daneel.Views
                 textViewDelegate.TextChanged -= handleEvent;
                 textViewDelegate.ProjectDeleted -= handleEvent;
                 textViewDelegate.TagDeleted -= handleEvent;
+                textViewDelegate.IsWritingMultistageCharacter -= handleMultistageCharacterTyping;
             }
         }
 
@@ -66,6 +68,11 @@ namespace Toggl.Daneel.Views
         private void handleEvent(object sender, EventArgs args)
         {
             updateVisibility();
+        }
+
+        private void handleMultistageCharacterTyping(object sender, EventArgs args)
+        {
+            Hidden = true;
         }
 
         private void updateVisibility()

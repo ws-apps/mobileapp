@@ -50,6 +50,7 @@ namespace Toggl.Daneel.ViewControllers
             };
 
             DatePicker.Locale = NSLocale.CurrentLocale;
+            DatePicker.Mode = UIDatePickerMode.Date;
         }
     }
 }

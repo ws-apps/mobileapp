@@ -709,6 +709,52 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             }
         }
 
+        public sealed class TheSetStartDateCommand : StartTimeEntryViewModelTest
+        {
+            private static readonly DateTimeOffset now = DateTimeOffset.UtcNow;
+            private static readonly StartTimeEntryParameters prepareParameters = new StartTimeEntryParameters(now, "", null);
+
+            [Fact, LogIfTooSlow]
+            public async Task NavigatesToTheSelectDateTimeViewModel()
+            {
+                ViewModel.Prepare(prepareParameters);
+                await ViewModel.SetStartDateCommand.ExecuteAsync();
+
+                await NavigationService.Received().Navigate<SelectDateTimeViewModel, DatePickerParameters, DateTimeOffset>(Arg.Any<DatePickerParameters>());
+            }
+
+            [Fact, LogIfTooSlow]
+            public async Task SetsTheStartDateToTheValueReturnedByTheSelectDateTimeViewModel()
+            {
+                var parameterToReturn = now.AddDays(-2);
+                NavigationService
+                    .Navigate<SelectDateTimeViewModel, DatePickerParameters, DateTimeOffset>(Arg.Any<DatePickerParameters>())
+                    .Returns(parameterToReturn);
+
+                ViewModel.Prepare(prepareParameters);
+                await ViewModel.SetStartDateCommand.ExecuteAsync();
+
+                ViewModel.StartTime.Date.Should().Be(parameterToReturn.Date);
+            }
+
+            [Fact, LogIfTooSlow]
+            public async Task UsesOnlyTheDateReturnedByTheSelectDateTimeViewModelAndKeepsTheOriginalTimeOfDay()
+            {
+                var startTime = new DateTimeOffset(2018, 02, 03, 1, 2, 3, TimeSpan.Zero);
+                var specificPrepareParameters = new StartTimeEntryParameters(startTime, "", null);
+                var parameterToReturn = new DateTimeOffset(2018, 01, 15, 4, 5, 6, TimeSpan.Zero);
+                NavigationService
+                    .Navigate<SelectDateTimeViewModel, DatePickerParameters, DateTimeOffset>(Arg.Any<DatePickerParameters>())
+                    .Returns(parameterToReturn);
+
+                ViewModel.Prepare(specificPrepareParameters);
+                await ViewModel.SetStartDateCommand.ExecuteAsync();
+
+                ViewModel.StartTime.Date.Should().Be(parameterToReturn.Date);
+                ViewModel.StartTime.TimeOfDay.Should().Be(startTime.TimeOfDay);
+            }
+        }
+
         public sealed class TheDoneCommand : StartTimeEntryViewModelTest
         {
             public sealed class StartsANewTimeEntry : StartTimeEntryViewModelTest
