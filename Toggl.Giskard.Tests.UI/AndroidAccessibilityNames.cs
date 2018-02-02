@@ -8,8 +8,8 @@ namespace Toggl.Tests.UI
         public const string FirstOnboardingElement = LoginButton;
         public const string SkipButton = "";
         public const string NextButton = "";
-        public const string LoginButton = "Login button";
-        public const string SignUpButton = "Sign up button";
+        public const string LoginButton = "LOG IN";
+        public const string SignUpButton = "NEW TO TOGGL";
         public const string FirstLabel = "";
         public const string SecondLabel = "";
         public const string ThirdLabel = "";
