@@ -58,7 +58,7 @@ namespace Toggl.PrimeRadiant.Tests.Settings
 
             protected abstract string Key { get; }
 
-            [Fact]
+            [Fact, LogIfTooSlow]
             public void ReturnsTrueIfTheStoredVersionIsEqualToTheVersionPassedDuringConstruction()
             {
                 Storage.SetString(Key, VersionString);
@@ -68,7 +68,7 @@ namespace Toggl.PrimeRadiant.Tests.Settings
                 isOutdated.Should().BeTrue();
             }
 
-            [Theory]
+            [Theory, LogIfTooSlow]
             [InlineData("0.1")]
             [InlineData("0.2")]
             [InlineData("0.7.5")]

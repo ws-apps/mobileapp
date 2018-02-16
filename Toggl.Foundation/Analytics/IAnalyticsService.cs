@@ -1,5 +1,5 @@
 ﻿using System;
-namespace Toggl.Foundation.Services
+namespace Toggl.Foundation.Analytics
 {
     public interface IAnalyticsService
     {
@@ -11,5 +11,7 @@ namespace Toggl.Foundation.Services
         void TrackCurrentPage(Type viewModelType);
 
         void TrackNonFatalException(Exception ex);
+
+        void TrackStartedTimeEntry(TimeEntryStartOrigin origin);
     }
 }

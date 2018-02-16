@@ -44,7 +44,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 viewModel = new CalendarPageViewModel(calendarMonth, beginningOfWeek, today ?? DateTimeOffset.Now);
             }
 
-            [Theory]
+            [Theory, LogIfTooSlow]
             [ClassData(typeof(CalendarPageTestData))]
             public void ContainsFewDaysFromPreviousMonthAtTheBeginning(
                 int year,
@@ -65,7 +65,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                         .OnlyContain(day => !day.IsInCurrentMonth);
             }
 
-            [Theory]
+            [Theory, LogIfTooSlow]
             [ClassData(typeof(CalendarPageTestData))]
             public void ConainsAllDaysFromCurrentMonthInTheMiddle(
                 int year,
@@ -84,7 +84,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     .OnlyContain(day => day.IsInCurrentMonth);
             }
 
-            [Theory]
+            [Theory, LogIfTooSlow]
             [ClassData(typeof(CalendarPageTestData))]
             public void ContainsFewDaysFromNextMonthAtTheEnd(
                 int year,

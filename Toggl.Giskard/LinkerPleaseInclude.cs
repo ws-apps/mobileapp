@@ -6,6 +6,7 @@ using Android.Support.V7.Widget;
 using Android.Views;
 using Android.Widget;
 using MvvmCross.Binding.BindingContext;
+using MvvmCross.Binding.Droid.Target;
 using MvvmCross.Core.Navigation;
 using MvvmCross.Core.ViewModels;
 
@@ -26,6 +27,11 @@ namespace Toggl.Giskard
         }
         
         public void Include(Switch @switch)
+        {
+            @switch.CheckedChange += (sender, args) => @switch.Checked = !@switch.Checked;
+        }
+
+        public void Include(SwitchCompat @switch)
         {
             @switch.CheckedChange += (sender, args) => @switch.Checked = !@switch.Checked;
         }
@@ -122,6 +128,11 @@ namespace Toggl.Giskard
             cardView = new CardView(null);
             cardView = new CardView(null, null);
             cardView = new CardView(null, null, 0);
+        }
+
+        public void Include(MvxCompoundButtonCheckedTargetBinding binding)
+        {
+            binding = new MvxCompoundButtonCheckedTargetBinding(null, null);
         }
 
         public void Include(ConsoleColor color)

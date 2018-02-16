@@ -25,7 +25,8 @@ namespace Toggl.Daneel.Views
             {
                 if (remainingLength == value) return;
                 remainingLength = value;
-                SetText(Text);
+                var text = Text ?? String.Empty;
+                SetText(text);
             }
         }
 

@@ -16,7 +16,7 @@ namespace Toggl.Daneel.Views
     public sealed class MainScrollView : UIScrollView
     {
         internal const float SyncStateViewHeight = 26;
-        private static readonly float scrollThreshold = SyncStateViewHeight + (SyncStateViewHeight / 2);
+        private static readonly float scrollThreshold = 3 * SyncStateViewHeight;
 
         private readonly UIColor pullToRefreshColor = Color.Main.PullToRefresh.ToNativeColor();
         private readonly UIColor syncingColor = Color.Main.Syncing.ToNativeColor();
@@ -64,6 +64,8 @@ namespace Toggl.Daneel.Views
             DraggingEnded += onDragEnded;
             DecelerationEnded += onDecelerationEnded;
             ShouldScrollToTop = shouldScrollToTop;
+
+            Bounces = true;
         }
 
         protected override void Dispose(bool disposing)

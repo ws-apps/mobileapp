@@ -28,6 +28,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         private readonly ITimeService timeService;
         private readonly ITogglDataSource dataSource;
+        private readonly IUserPreferences userPreferences;
         private readonly IOnboardingStorage onboardingStorage;
         private readonly IMvxNavigationService navigationService;
 
@@ -78,17 +79,20 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             ITogglDataSource dataSource,
             ITimeService timeService,
             IOnboardingStorage onboardingStorage,
-            IMvxNavigationService navigationService)
+            IMvxNavigationService navigationService,
+            IUserPreferences userPreferences)
         {
             Ensure.Argument.IsNotNull(dataSource, nameof(dataSource));
             Ensure.Argument.IsNotNull(timeService, nameof(timeService));
             Ensure.Argument.IsNotNull(onboardingStorage, nameof(onboardingStorage));
             Ensure.Argument.IsNotNull(navigationService, nameof(navigationService));
+            Ensure.Argument.IsNotNull(userPreferences, nameof(userPreferences));
 
             this.dataSource = dataSource;
             this.timeService = timeService;
             this.navigationService = navigationService;
             this.onboardingStorage = onboardingStorage;
+            this.userPreferences = userPreferences;
 
             RefreshCommand = new MvxCommand(refresh);
             OpenReportsCommand = new MvxAsyncCommand(openReports);
@@ -125,6 +129,13 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             disposeBag.Add(spiderDisposable);
             disposeBag.Add(syncManagerDisposable);
             disposeBag.Add(currentlyRunningTimeEntryDisposable);
+        }
+
+        public override void ViewAppearing()
+        {
+            base.ViewAppearing();
+
+            IsInManualMode = userPreferences.IsManualModeEnabled();
         }
 
         public override void ViewAppeared()

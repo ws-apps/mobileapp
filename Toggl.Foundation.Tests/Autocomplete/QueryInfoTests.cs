@@ -14,7 +14,7 @@ namespace Toggl.Foundation.Tests.Autocomplete
         {
             public sealed class None
             {
-                [Theory]
+                [Theory, LogIfTooSlow]
                 [InlineData("")]
                 [InlineData(null)]
                 public void DoesNotSuggestAnythingWhenTheTextIsEmpty(string text)

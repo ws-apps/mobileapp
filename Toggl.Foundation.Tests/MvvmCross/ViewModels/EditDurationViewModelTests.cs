@@ -154,7 +154,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 TimeService.CurrentDateTimeObservable.Received().Subscribe(Arg.Any<AnonymousObserver<DateTimeOffset>>());
             }
 
-            [Fact]
+            [Fact, LogIfTooSlow]
             public void SetsTheIsRunningPropertyWhenTheDurationIsNull()
             {
                 var start = new DateTimeOffset(2018, 01, 15, 12, 34, 56, TimeSpan.Zero);
@@ -165,7 +165,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 ViewModel.IsRunning.Should().BeTrue();
             }
 
-            [Fact]
+            [Fact, LogIfTooSlow]
             public void DoesNotSetTheIsRunningPropertyWhenTheDurationIsNotNull()
             {
                 var start = new DateTimeOffset(2018, 01, 15, 12, 34, 56, TimeSpan.Zero);
@@ -250,7 +250,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 new DateTimeOffset(2018, 01, 13, 0, 0, 0, TimeSpan.Zero),
                 TimeSpan.FromMinutes(7));
 
-            [Fact]
+            [Fact, LogIfTooSlow]
             public void StopsARunningTimeEntry()
             {
                 var now = new DateTimeOffset(2018, 02, 20, 0, 0, 0, TimeSpan.Zero);
@@ -264,7 +264,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 ViewModel.StopTime.Should().Be(now);
             }
 
-            [Fact]
+            [Fact, LogIfTooSlow]
             public void UnsubscribesFromTheTheRunningTimeEntryObservable()
             {
                 var now = new DateTimeOffset(2018, 02, 20, 0, 0, 0, TimeSpan.Zero);

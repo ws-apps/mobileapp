@@ -121,7 +121,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
         public sealed class TheCurrentMonthProperty : ReportsCalendarViewModelTest
         {
-            [Theory]
+            [Theory, LogIfTooSlow]
             [InlineData(2017, 12, 11, 2017, 12)]
             [InlineData(2017, 5, 0, 2016, 6)]
             [InlineData(2017, 5, 11, 2017, 5)]
@@ -146,7 +146,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
         public sealed class TheCurrentPageProperty : ReportsCalendarViewModelTest
         {
-            [Fact]
+            [Fact, LogIfTooSlow]
             public void IsInitializedTo11()
             {
                 ViewModel.CurrentPage.Should().Be(11);
@@ -155,7 +155,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
         public sealed class TheRowsInCurrentMonthProperty : ReportsCalendarViewModelTest
         {
-            [Theory]
+            [Theory, LogIfTooSlow]
             [InlineData(2017, 12, 11, BeginningOfWeek.Monday, 5)]
             [InlineData(2017, 12, 9, BeginningOfWeek.Monday, 6)]
             [InlineData(2017, 2, 11, BeginningOfWeek.Wednesday, 4)]
@@ -237,7 +237,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
             public sealed class AfterTappingOneCell : TheCalendarDayTappedCommand
             {
-                [Theory]
+                [Theory, LogIfTooSlow]
                 [InlineData(5, 8)]
                 public void MarksTheFirstTappedCellAsSelected(
                 int monthIndex, int dayIndex)
@@ -249,7 +249,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     dayViewModel.Selected.Should().BeTrue();
                 }
 
-                [Theory]
+                [Theory, LogIfTooSlow]
                 [InlineData(11, 0)]
                 public void MarksTheFirstTappedCellAsStartOfSelection(
                     int monthIndex, int dayIndex)
@@ -261,7 +261,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     dayViewModel.IsStartOfSelectedPeriod.Should().BeTrue();
                 }
 
-                [Theory]
+                [Theory, LogIfTooSlow]
                 [InlineData(3, 20)]
                 public void MarksTheFirstTappedCellAsEndOfSelection(
                     int monthIndex, int dayIndex)
@@ -276,7 +276,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
             public sealed class AfterTappingTwoCells : TheCalendarDayTappedCommand
             {
-                [Theory]
+                [Theory, LogIfTooSlow]
                 [InlineData(0, 0, 5, 8)]
                 public void MarksTheFirstTappedCellAsNotEndOfSelection(
                     int firstMonthIndex,
@@ -293,7 +293,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     firstDayViewModel.IsEndOfSelectedPeriod.Should().BeFalse();
                 }
 
-                [Theory]
+                [Theory, LogIfTooSlow]
                 [InlineData(1, 1, 9, 9)]
                 public void MarksTheSecondTappedCellAsEndOfSelection(
                     int firstMonthIndex,
@@ -310,7 +310,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     secondDayViewModel.IsEndOfSelectedPeriod.Should().BeTrue();
                 }
 
-                [Theory]
+                [Theory, LogIfTooSlow]
                 [InlineData(1, 2, 3, 4)]
                 public void MarksTheSecondTappedCellAsNotStartOfSelection(
                     int firstMonthIndex,
@@ -327,7 +327,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     secondDayViewModel.IsStartOfSelectedPeriod.Should().BeFalse();
                 }
 
-                [Theory]
+                [Theory, LogIfTooSlow]
                 [InlineData(2, 15, 7, 20)]
                 public void MarksTheWholeIntervalAsSelected(
                     int firstMonthIndex,

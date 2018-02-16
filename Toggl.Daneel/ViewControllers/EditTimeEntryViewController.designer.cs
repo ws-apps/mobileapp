@@ -47,6 +47,21 @@ namespace Toggl.Daneel.ViewControllers
 		UIKit.UILabel DurationLabel { get; set; }
 
 		[Outlet]
+		UIKit.UIView DurationView { get; set; }
+
+		[Outlet]
+		UIKit.UILabel EndTimeLabel { get; set; }
+
+		[Outlet]
+		UIKit.UIView EndTimeView { get; set; }
+
+		[Outlet]
+		UIKit.UILabel ErrorMessageLabel { get; set; }
+
+		[Outlet]
+		UIKit.UIView ErrorView { get; set; }
+
+		[Outlet]
 		UIKit.UILabel ProjectTaskClientLabel { get; set; }
 
 		[Outlet]
@@ -55,32 +70,28 @@ namespace Toggl.Daneel.ViewControllers
 
 		[Outlet]
 		[GeneratedCode ("iOS Designer", "1.0")]
-		UIKit.UIView ScrollViewContent { get; set; }
+		UIKit.UIStackView ScrollViewContent { get; set; }
 
 		[Outlet]
 		UIKit.UILabel StartDateLabel { get; set; }
 
 		[Outlet]
-		UIKit.UIStackView StartDateTimeView { get; set; }
+		UIKit.UIView StartDateView { get; set; }
 
 		[Outlet]
 		UIKit.UILabel StartTimeLabel { get; set; }
+
+		[Outlet]
+		UIKit.UIView StartTimeView { get; set; }
+
+		[Outlet]
+		UIKit.UIButton StopButton { get; set; }
 
 		[Outlet]
 		UIKit.UITextView TagsTextView { get; set; }
 		
 		void ReleaseDesignerOutlets ()
 		{
-			if (DeleteButtonBottomConstraint != null) {
-				DeleteButtonBottomConstraint.Dispose ();
-				DeleteButtonBottomConstraint = null;
-			}
-
-			if (ConfirmButtonBottomConstraint != null) {
-				ConfirmButtonBottomConstraint.Dispose ();
-				ConfirmButtonBottomConstraint = null;
-			}
-
 			if (AddProjectAndTaskView != null) {
 				AddProjectAndTaskView.Dispose ();
 				AddProjectAndTaskView = null;
@@ -111,9 +122,19 @@ namespace Toggl.Daneel.ViewControllers
 				ConfirmButton = null;
 			}
 
+			if (ConfirmButtonBottomConstraint != null) {
+				ConfirmButtonBottomConstraint.Dispose ();
+				ConfirmButtonBottomConstraint = null;
+			}
+
 			if (DeleteButton != null) {
 				DeleteButton.Dispose ();
 				DeleteButton = null;
+			}
+
+			if (DeleteButtonBottomConstraint != null) {
+				DeleteButtonBottomConstraint.Dispose ();
+				DeleteButtonBottomConstraint = null;
 			}
 
 			if (DescriptionTextView != null) {
@@ -124,6 +145,11 @@ namespace Toggl.Daneel.ViewControllers
 			if (DurationLabel != null) {
 				DurationLabel.Dispose ();
 				DurationLabel = null;
+			}
+
+			if (DurationView != null) {
+				DurationView.Dispose ();
+				DurationView = null;
 			}
 
 			if (ProjectTaskClientLabel != null) {
@@ -141,19 +167,49 @@ namespace Toggl.Daneel.ViewControllers
 				ScrollViewContent = null;
 			}
 
+			if (ErrorMessageLabel != null) {
+				ErrorMessageLabel.Dispose ();
+				ErrorMessageLabel = null;
+			}
+
+			if (ErrorView != null) {
+				ErrorView.Dispose ();
+				ErrorView = null;
+			}
+
 			if (StartDateLabel != null) {
 				StartDateLabel.Dispose ();
 				StartDateLabel = null;
 			}
 
-			if (StartDateTimeView != null) {
-				StartDateTimeView.Dispose ();
-				StartDateTimeView = null;
+			if (StartDateView != null) {
+				StartDateView.Dispose ();
+				StartDateView = null;
 			}
 
 			if (StartTimeLabel != null) {
 				StartTimeLabel.Dispose ();
 				StartTimeLabel = null;
+			}
+
+			if (StartTimeView != null) {
+				StartTimeView.Dispose ();
+				StartTimeView = null;
+			}
+
+			if (EndTimeLabel != null) {
+				EndTimeLabel.Dispose ();
+				EndTimeLabel = null;
+			}
+
+			if (EndTimeView != null) {
+				EndTimeView.Dispose ();
+				EndTimeView = null;
+			}
+
+			if (StopButton != null) {
+				StopButton.Dispose ();
+				StopButton = null;
 			}
 
 			if (TagsTextView != null) {

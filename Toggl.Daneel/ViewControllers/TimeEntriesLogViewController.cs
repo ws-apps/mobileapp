@@ -79,6 +79,11 @@ namespace Toggl.Daneel.ViewControllers
                       .For(v => v.ContinueTimeEntryCommand)
                       .To(vm => vm.ContinueTimeEntryCommand);
 
+
+            bindingSet.Bind(source)
+                      .For(v => v.DeleteTimeEntryCommand)
+                      .To(vm => vm.DeleteCommand);
+
             bindingSet.Apply();
         }
     }

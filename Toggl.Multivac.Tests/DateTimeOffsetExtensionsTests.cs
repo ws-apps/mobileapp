@@ -11,7 +11,7 @@ namespace Toggl.Multivac.Tests
     {
         public sealed class TheRoundFunction
         {
-            [Theory]
+            [Theory, LogIfTooSlow]
             [MemberData(nameof(SecondsWhichShouldBeRoundedDown))]
             public void ShouldRoundDownToTheNearestMinute(int second)
             {
@@ -23,7 +23,7 @@ namespace Toggl.Multivac.Tests
                 rounded.Second.Should().Be(0);
             }
 
-            [Theory]
+            [Theory, LogIfTooSlow]
             [MemberData(nameof(SecondsWhichShouldBeRoundedUp))]
             public void ShouldRoundUpToTheNearestMinute(int second)
             {
@@ -35,7 +35,7 @@ namespace Toggl.Multivac.Tests
                 rounded.Second.Should().Be(0);
             }
 
-            [Theory]
+            [Theory, LogIfTooSlow]
             [MemberData(nameof(SecondsWhichShouldBeRoundedUp))]
             public void ShouldRoundUpToTheNearestMinuteAndUpdateHourAndDayAndYearWhenNeeded(int second)
             {

@@ -22,7 +22,7 @@ namespace Toggl.Daneel.ViewControllers
 		UIKit.UIView DatePickerContainer { get; set; }
 
 		[Outlet]
-		UIKit.UILabel DurationLabel { get; set; }
+		Toggl.Daneel.Views.EditDuration.DurationField DurationInput { get; set; }
 
 		[Outlet]
 		UIKit.UILabel EndDateLabel { get; set; }
@@ -68,9 +68,9 @@ namespace Toggl.Daneel.ViewControllers
 				DatePickerContainer = null;
 			}
 
-			if (DurationLabel != null) {
-				DurationLabel.Dispose ();
-				DurationLabel = null;
+			if (DurationInput != null) {
+				DurationInput.Dispose ();
+				DurationInput = null;
 			}
 
 			if (EndDateLabel != null) {
@@ -98,11 +98,6 @@ namespace Toggl.Daneel.ViewControllers
 				SetEndButton = null;
 			}
 
-			if (StartView != null) {
-				StartView.Dispose ();
-				StartView = null;
-			}
-
 			if (StartDateLabel != null) {
 				StartDateLabel.Dispose ();
 				StartDateLabel = null;
@@ -111,6 +106,16 @@ namespace Toggl.Daneel.ViewControllers
 			if (StartTimeLabel != null) {
 				StartTimeLabel.Dispose ();
 				StartTimeLabel = null;
+			}
+
+			if (StartView != null) {
+				StartView.Dispose ();
+				StartView = null;
+			}
+
+			if (WheelView != null) {
+				WheelView.Dispose ();
+				WheelView = null;
 			}
 		}
 	}

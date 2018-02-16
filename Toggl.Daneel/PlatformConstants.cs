@@ -8,7 +8,6 @@ namespace Toggl.Daneel
     public sealed class PlatformConstants : IPlatformConstants
     {
         private const string phoneModelProperty = "hw.machine";
-        private const string errorResult = "failed to detect phone model";
 
         public string HelpUrl { get; } = "https://support.toggl.com/toggl-timer-for-ios/";
 
@@ -33,7 +32,7 @@ namespace Toggl.Daneel
                 if (sysctlResult != 0)
                 {
                     Marshal.FreeHGlobal(pointerToLength);
-                    return errorResult;
+                    return null;
                 }
                 var length = Marshal.ReadInt32(pointerToLength);
 
@@ -42,8 +41,8 @@ namespace Toggl.Daneel
                 sysctlResult = sysctlbyname(phoneModelProperty, pointerToDeviceString, pointerToLength, IntPtr.Zero, 0);
 
                 var phoneIdentifier = sysctlResult == 0
-                    ? errorResult
-                    : Marshal.PtrToStringAnsi(pointerToDeviceString);
+                    ? Marshal.PtrToStringAnsi(pointerToDeviceString)
+                    : null;
 
                 Marshal.FreeHGlobal(pointerToLength);
                 Marshal.FreeHGlobal(pointerToDeviceString);
@@ -52,7 +51,7 @@ namespace Toggl.Daneel
             }
             catch
             {
-                return errorResult;
+                return null;
             }
         }
 
@@ -200,7 +199,7 @@ namespace Toggl.Daneel
                     return "Simulator";
 
                 default:
-                    return identifier;
+                    return null;
             }
         }
     }

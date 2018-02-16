@@ -1,4 +1,5 @@
-﻿using MvvmCross.Binding.BindingContext;
+﻿using System;
+using MvvmCross.Binding.BindingContext;
 using MvvmCross.Binding.iOS;
 using MvvmCross.iOS.Views;
 using MvvmCross.iOS.Views.Presenters.Attributes;
@@ -15,9 +16,21 @@ namespace Toggl.Daneel.ViewControllers
     [MvxChildPresentation]
     public partial class SettingsViewController : MvxViewController<SettingsViewModel>
     {
+        private IDisposable willEnterForegroundNotification;
+
         public SettingsViewController() 
             : base(nameof(SettingsViewController), null)
         {
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing == false) return;
+
+            willEnterForegroundNotification?.Dispose();
+            willEnterForegroundNotification = null;
         }
 
         public override void ViewDidLoad()
@@ -120,6 +133,14 @@ namespace Toggl.Daneel.ViewControllers
                       .To(vm => vm.IsManualModeEnabled);
 
             bindingSet.Apply();
+
+            willEnterForegroundNotification = UIApplication.Notifications.ObserveWillEnterForeground((sender, e) => startAnimations());
+        }
+
+        public override void ViewWillAppear(bool animated)
+        {
+            base.ViewWillAppear(animated);
+            startAnimations();
         }
 
         private void prepareViews()
@@ -148,6 +169,12 @@ namespace Toggl.Daneel.ViewControllers
         {
             imageView.Image = imageView.Image.ImageWithRenderingMode(UIImageRenderingMode.AlwaysTemplate);
             imageView.TintColor = Color.Settings.SyncStatusText.ToNativeColor();
+        }
+
+        private void startAnimations()
+        {
+            SyncingActivityIndicatorView.StartAnimation();
+            LoggingOutActivityIndicatorView.StartAnimation();
         }
     }
 }

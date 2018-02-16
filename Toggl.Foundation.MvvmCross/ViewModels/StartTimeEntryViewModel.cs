@@ -6,6 +6,7 @@ using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using MvvmCross.Core.Navigation;
 using MvvmCross.Core.ViewModels;
+using Toggl.Foundation.Analytics;
 using Toggl.Foundation.Autocomplete;
 using Toggl.Foundation.Autocomplete.Suggestions;
 using Toggl.Foundation.DataSources;
@@ -16,6 +17,7 @@ using Toggl.Foundation.MvvmCross.Parameters;
 using Toggl.Foundation.MvvmCross.Services;
 using Toggl.Multivac;
 using Toggl.Multivac.Extensions;
+using Toggl.PrimeRadiant.Settings;
 using static Toggl.Foundation.Helper.Constants;
 
 namespace Toggl.Foundation.MvvmCross.ViewModels
@@ -25,8 +27,10 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
     {
         //Fields
         private readonly ITimeService timeService;
-        private readonly IDialogService dialogService;
         private readonly ITogglDataSource dataSource;
+        private readonly IDialogService dialogService;
+        private readonly IUserPreferences userPreferences;
+        private readonly IAnalyticsService analyticsService;
         private readonly IMvxNavigationService navigationService;
         private readonly Subject<TextFieldInfo> infoSubject = new Subject<TextFieldInfo>();
         private readonly Subject<AutocompleteSuggestionType> queryByTypeSubject = new Subject<AutocompleteSuggestionType>();
@@ -37,6 +41,10 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private IDisposable queryDisposable;
         private IDisposable elapsedTimeDisposable;
         private TextFieldInfo previousTextFieldInfo;
+        private StartTimeEntryParameters parameter;
+
+        private TimeSpan displayedTime = TimeSpan.Zero;
+        private bool isRunning => elapsedTimeDisposable != null;
 
         //Properties
         private int DescriptionByteCount
@@ -69,6 +77,14 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             }
         }
 
+        public bool IsDirty
+            => TextFieldInfo.Text.Length > 0
+                || TextFieldInfo.ProjectId.HasValue
+                || TextFieldInfo.Tags.Length > 0
+                || IsBillable
+                || StartTime != parameter.StartTime
+                || Duration != parameter.Duration;
+
         public bool UseGrouping { get; set; }
 
         public string CurrentQuery { get; private set; }
@@ -81,7 +97,23 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public TextFieldInfo TextFieldInfo { get; set; } = TextFieldInfo.Empty;
 
-        public TimeSpan ElapsedTime { get; private set; } = TimeSpan.Zero;
+        public TimeSpan DisplayedTime
+        {
+            get => displayedTime;
+            set
+            {
+                if (isRunning)
+                {
+                    StartTime = timeService.CurrentDateTime - value;
+                }
+                else
+                {
+                    Duration = value;
+                }
+
+                displayedTime = value; 
+            }
+        }
 
         public bool IsBillable { get; private set; } = false;
 
@@ -128,18 +160,24 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public StartTimeEntryViewModel(
             ITimeService timeService,
-            IDialogService dialogService,
             ITogglDataSource dataSource,
+            IDialogService dialogService,
+            IUserPreferences userPreferences,
+            IAnalyticsService analyticsService,
             IMvxNavigationService navigationService)
         {
             Ensure.Argument.IsNotNull(dataSource, nameof(dataSource));
             Ensure.Argument.IsNotNull(timeService, nameof(timeService));
             Ensure.Argument.IsNotNull(dialogService, nameof(dialogService));
+            Ensure.Argument.IsNotNull(userPreferences, nameof(userPreferences));
+            Ensure.Argument.IsNotNull(analyticsService, nameof(analyticsService));
             Ensure.Argument.IsNotNull(navigationService, nameof(navigationService));
 
             this.dataSource = dataSource;
             this.timeService = timeService;
             this.dialogService = dialogService;
+            this.userPreferences = userPreferences;
+            this.analyticsService = analyticsService;
             this.navigationService = navigationService;
 
             BackCommand = new MvxAsyncCommand(back);
@@ -311,17 +349,18 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public override void Prepare(StartTimeEntryParameters parameter)
         {
+            this.parameter = parameter;
             StartTime = parameter.StartTime;
             Duration = parameter.Duration;
 
             if (Duration.HasValue)
             {
-                ElapsedTime = Duration.Value;
+                displayedTime = Duration.Value;
+                RaisePropertyChanged(nameof(DisplayedTime));
             }
             else
             {
-                elapsedTimeDisposable =
-                    timeService.CurrentDateTimeObservable.Subscribe(currentTime => ElapsedTime = currentTime - StartTime);
+                elapsedTimeDisposable = timeService.CurrentDateTimeObservable.Subscribe(onCurrentTime);
             }
 
             var queryByTypeObservable =
@@ -354,6 +393,12 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             
             hasAnyTags = (await dataSource.Tags.GetAll()).Any();
             hasAnyProjects = (await dataSource.Projects.GetAll()).Any();
+        }
+
+        private void onCurrentTime(DateTimeOffset currentTime)
+        {
+            displayedTime = currentTime - StartTime;
+            RaisePropertyChanged(nameof(DisplayedTime));
         }
 
         private async void OnTextFieldInfoChanged()
@@ -398,10 +443,11 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         private void appendSymbol(string symbol)
         {
-            var shouldAddWhitespace = TextFieldInfo.CursorPosition > 0 && Char.IsWhiteSpace(TextFieldInfo.Text[TextFieldInfo.CursorPosition - 1]) == false;
+            var cursor = TextFieldInfo.DescriptionCursorPosition;
+            var shouldAddWhitespace = cursor > 0 && Char.IsWhiteSpace(TextFieldInfo.Text[cursor - 1]) == false;
             var textToInsert = shouldAddWhitespace ? $" {symbol}" : symbol;
-            var newText = TextFieldInfo.Text.Insert(TextFieldInfo.CursorPosition, textToInsert);
-            TextFieldInfo = TextFieldInfo.WithTextAndCursor(newText, TextFieldInfo.CursorPosition + textToInsert.Length);            
+            var newText = TextFieldInfo.Text.Insert(cursor, textToInsert);
+            TextFieldInfo = TextFieldInfo.WithTextAndCursor(newText, cursor + textToInsert.Length);            
         }
 
         private void toggleTaskSuggestions(ProjectSuggestion projectSuggestion)
@@ -423,7 +469,10 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             );
         }
 
-        private void toggleBillable() => IsBillable = !IsBillable;
+        private void toggleBillable()
+        {
+            IsBillable = !IsBillable;
+        }
 
         private async Task changeTime()
         {
@@ -439,8 +488,10 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             if (selectedDuration.Duration.HasValue)
             {
                 Duration = selectedDuration.Duration;
-                ElapsedTime = selectedDuration.Duration.Value;
+                displayedTime = selectedDuration.Duration.Value;
                 elapsedTimeDisposable?.Dispose();
+                elapsedTimeDisposable = null;
+                RaisePropertyChanged(nameof(DisplayedTime));
             }
 
             IsEditingTime = false;
@@ -448,25 +499,37 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         private async Task setStartDate()
         {
-            var minimum = StartTime + ElapsedTime - TimeSpan.FromHours(MaxTimeEntryDurationInHours);
-            var maximum = StartTime + ElapsedTime;
-            var parameters = DatePickerParameters.WithDates(StartTime, minimum, maximum);
-            var selectedDate = await navigationService
-                .Navigate<SelectDateTimeViewModel, DatePickerParameters, DateTimeOffset>(parameters)
+            var parameters = isRunning
+                ? DateTimePickerParameters.ForStartDateOfRunningTimeEntry(StartTime, timeService.CurrentDateTime)
+                : DateTimePickerParameters.ForStartDateOfStoppedTimeEntry(StartTime);
+
+            var duration = Duration;
+
+            StartTime = await navigationService
+                .Navigate<SelectDateTimeViewModel, DateTimePickerParameters, DateTimeOffset>(parameters)
                 .ConfigureAwait(false);
 
-            StartTime = new DateTimeOffset(
-                selectedDate.Year,
-                selectedDate.Month,
-                selectedDate.Day,
-                StartTime.Hour,
-                StartTime.Minute,
-                StartTime.Second,
-                StartTime.Offset)
-                .Clamp(minimum, maximum);
+            if (isRunning == false)
+            {
+                Duration = duration;
+            }
         }
 
-        private Task back() => navigationService.Close(this);
+        private async Task back()
+        {
+            if (IsDirty)
+            {
+                var result = await dialogService.ShowMultipleChoiceDialog(
+                    Resources.ContinueEditing,
+                    new MultipleChoiceDialogAction(Resources.Discard, true)
+                );
+
+                if (result != Resources.Discard)
+                    return;
+            }
+
+            await navigationService.Close(this);
+        }
 
         private async Task done()
         {
@@ -486,6 +549,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 .SelectMany(dataSource.TimeEntries.Start)
                 .Do(_ => dataSource.SyncManager.PushSync());
 
+            var origin = userPreferences.IsManualModeEnabled() ? TimeEntryStartOrigin.Manual : TimeEntryStartOrigin.Timer;
+            analyticsService.TrackStartedTimeEntry(origin);
             await navigationService.Close(this);
         }
 

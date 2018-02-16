@@ -156,7 +156,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
         public sealed class TheIsNameAlreadyTakenProperty : EditProjectWithSpecificNameViewModelTest
         {
-            [Fact]
+            [Fact, LogIfTooSlow]
             public async Task IsTrueWhenProjectWithSameNameAlreadyExistsInSameWorkspace()
             {
                 SetupDataSource(isFromSameWorkspace: true);
@@ -168,7 +168,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 ViewModel.IsNameAlreadyTaken.Should().BeTrue();
             }
 
-            [Fact]
+            [Fact, LogIfTooSlow]
             public async Task IsFalseWhenProjectWithSameNameAlreadyExistsOnlyInAnotherWorkspace()
             {
                 SetupDataSource(isFromSameWorkspace: false);
@@ -180,7 +180,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 ViewModel.IsNameAlreadyTaken.Should().BeFalse();
             }
 
-            [Fact]
+            [Fact, LogIfTooSlow]
             public async Task IsCorrectAfterWorkspaceChangeWhenNameDoesNotExistInAny()
             {
                 await TestChangeAfterWorkspaceChange("NotUsedProject",
@@ -189,7 +189,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                                                      after: false);
             }
 
-            [Fact]
+            [Fact, LogIfTooSlow]
             public async Task IsCorrectAfterWorkspaceChangeWhenNameExistOnlyInDestinationWorkspace()
             {
                 await TestChangeAfterWorkspaceChange("Project-1-1",
@@ -198,7 +198,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                                                      after: true);
             }
 
-            [Fact]
+            [Fact, LogIfTooSlow]
             public async Task IsCorrectAfterWorkspaceChangeWhenNameExistOnlyInDefaultWorkspace()
             {
                 await TestChangeAfterWorkspaceChange("Project-0-2",
@@ -207,7 +207,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                                                      after: false);
             }
 
-            [Fact]
+            [Fact, LogIfTooSlow]
             public async Task IsCorrectAfterWorkspaceChangeWhenNameExistInBothWorkspaces()
             {
                 await TestChangeAfterWorkspaceChange("Project",
@@ -243,7 +243,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 ViewModel.SaveEnabled.Should().BeFalse();
             }
 
-            [Fact]
+            [Fact, LogIfTooSlow]
             public async Task IsFalseWhenProjectWithSameNameAlreadyExistsInSameWorkspace()
             {
                 SetupDataSource(isFromSameWorkspace: true);
@@ -255,7 +255,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 ViewModel.SaveEnabled.Should().BeFalse();
             }
 
-            [Fact]
+            [Fact, LogIfTooSlow]
             public async Task IsTrueWhenProjectWithSameNameAlreadyExistsOnlyInAnotherWorkspace()
             {
                 SetupDataSource(isFromSameWorkspace: false);
@@ -267,7 +267,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 ViewModel.SaveEnabled.Should().BeTrue();
             }
 
-            [Fact]
+            [Fact, LogIfTooSlow]
             public async Task IsCorrectAfterWorkspaceChangeWhenNameDoesNotExistInAny()
             {
                 await TestChangeAfterWorkspaceChange("NotUsedProject",
@@ -276,7 +276,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                                                      after: true);
             }
 
-            [Fact]
+            [Fact, LogIfTooSlow]
             public async Task IsCorrectAfterWorkspaceChangeWhenNameExistOnlyInDestinationWorkspace()
             {
                 await TestChangeAfterWorkspaceChange("Project-1-1",
@@ -285,7 +285,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                                                      after: false);
             }
 
-            [Fact]
+            [Fact, LogIfTooSlow]
             public async Task IsCorrectAfterWorkspaceChangeWhenNameExistOnlyInDefaultWorkspace()
             {
                 await TestChangeAfterWorkspaceChange("Project-0-2",
@@ -294,7 +294,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                                                      after: true);
             }
 
-            [Fact]
+            [Fact, LogIfTooSlow]
             public async Task IsCorrectAfterWorkspaceChangeWhenNameExistInBothWorkspaces()
             {
                 await TestChangeAfterWorkspaceChange("Project",
@@ -704,7 +704,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 await ViewModel.PickClientCommand.ExecuteAsync();
 
                 await NavigationService.Received()
-                    .Navigate<SelectClientViewModel, long, long?>(Arg.Any<long>());
+                    .Navigate<SelectClientViewModel, SelectClientParameters, long?>(Arg.Any<SelectClientParameters>());
             }
 
             [Fact, LogIfTooSlow]
@@ -720,7 +720,27 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 await ViewModel.PickClientCommand.ExecuteAsync();
 
                 await NavigationService.Received()
-                    .Navigate<SelectClientViewModel, long, long?>(WorkspaceId);
+                    .Navigate<SelectClientViewModel, SelectClientParameters, long?>(
+                        Arg.Is<SelectClientParameters>(parameter => parameter.WorkspaceId == WorkspaceId)
+                    );
+            }
+
+            [Fact, LogIfTooSlow]
+            public async Task PassesTheCurrentCliendIdToTheViewModel()
+            {
+                DataSource.Workspaces
+                    .GetDefault()
+                    .Returns(Observable.Return(Workspace));
+                Workspace.Id.Returns(WorkspaceId);
+                ViewModel.Prepare("Some name");
+                await ViewModel.Initialize();
+
+                await ViewModel.PickClientCommand.ExecuteAsync();
+
+                await NavigationService.Received()
+                    .Navigate<SelectClientViewModel, SelectClientParameters, long?>(
+                        Arg.Is<SelectClientParameters>(parameter => parameter.SelectedClientId == 0)
+                    );
             }
 
             [Fact, LogIfTooSlow]
@@ -732,7 +752,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 client.Id.Returns(expectedId.Value);
                 client.Name.Returns(expectedName);
                 NavigationService
-                    .Navigate<SelectClientViewModel, long, long?>(Arg.Any<long>())
+                    .Navigate<SelectClientViewModel, SelectClientParameters, long?>(Arg.Any<SelectClientParameters>())
                     .Returns(Task.FromResult(expectedId));
                 DataSource.Workspaces
                     .GetDefault()
@@ -755,7 +775,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 client.Id.Returns(expectedId.Value);
                 client.Name.Returns(expectedName);
                 NavigationService
-                    .Navigate<SelectClientViewModel, long, long?>(Arg.Any<long>())
+                    .Navigate<SelectClientViewModel, SelectClientParameters, long?>(Arg.Any<SelectClientParameters>())
                     .Returns(Task.FromResult(expectedId));
                 DataSource.Workspaces
                     .GetDefault()
@@ -765,7 +785,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 ViewModel.Prepare("Some name");
                 await ViewModel.PickClientCommand.ExecuteAsync();
                 NavigationService
-                    .Navigate<SelectClientViewModel, long, long?>(Arg.Any<long>())
+                    .Navigate<SelectClientViewModel, SelectClientParameters, long?>(Arg.Any<SelectClientParameters>())
                     .Returns(Task.FromResult<long?>(0));
 
                 await ViewModel.PickClientCommand.ExecuteAsync();

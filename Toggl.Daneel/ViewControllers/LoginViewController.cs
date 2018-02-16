@@ -1,4 +1,5 @@
-﻿using CoreText;
+﻿using System;
+using CoreText;
 using Foundation;
 using MvvmCross.Binding.BindingContext;
 using MvvmCross.Binding.iOS;
@@ -23,10 +24,22 @@ namespace Toggl.Daneel.ViewControllers
         
         private readonly UIBarButtonItem nextButton =
             new UIBarButtonItem { Title = Resources.LoginNextButton, TintColor = UIColor.White };
-    
+
+        private IDisposable willEnterForegroundNotification;
+
         public LoginViewController() 
             : base(nameof(LoginViewController))
         {
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing == false) return;
+
+            willEnterForegroundNotification?.Dispose();
+            willEnterForegroundNotification = null;
         }
 
         public override void ViewDidLoad()
@@ -150,12 +163,15 @@ namespace Toggl.Daneel.ViewControllers
             bindingSet.Apply();
 
             EmailTextField.BecomeFirstResponder();
+
+            willEnterForegroundNotification = UIApplication.Notifications.ObserveWillEnterForeground((sender, e) => startAnimations());
         }
 
         public override void ViewWillAppear(bool animated)
         {
             base.ViewWillAppear(animated);
             NavigationController.NavigationBar.UserInteractionEnabled = true;
+            startAnimations();
         }
 
         protected override void KeyboardWillShow(object sender, UIKeyboardEventArgs e)
@@ -228,6 +244,11 @@ namespace Toggl.Daneel.ViewControllers
             nextButton.SetTitleTextAttributes(attributes, UIControlState.Disabled);
             backButton.SetTitleTextAttributes(attributes, UIControlState.Highlighted);
             nextButton.SetTitleTextAttributes(attributes, UIControlState.Highlighted);
+        }
+
+        private void startAnimations()
+        {
+            ActivityIndicator.StartAnimation();
         }
     }
 }

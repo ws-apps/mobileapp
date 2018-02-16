@@ -9,6 +9,10 @@ namespace Toggl.Foundation.MvvmCross.Collections
     {
         public string WorkspaceName { get; }
 
+        public WorkspaceGroupedCollection()
+        {
+        }
+
         public WorkspaceGroupedCollection(string workspaceName, IEnumerable<T> items)
         {
             Ensure.Argument.IsNotNull(items, nameof(items));

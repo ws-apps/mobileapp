@@ -27,7 +27,7 @@ namespace Toggl.Multivac.Tests
         
         public sealed class TheConstructor
         {
-            [Fact]
+            [Fact, LogIfTooSlow]
             public void ThrowsIfTheYearIsNegative()
             {
                 Action tryingToConstructWithNegativeYear =
@@ -37,7 +37,7 @@ namespace Toggl.Multivac.Tests
                     .ShouldThrow<ArgumentOutOfRangeException>();
             }
 
-            [Theory]
+            [Theory, LogIfTooSlow]
             [InlineData(0)]
             [InlineData(-1)]
             public void ThrowsIfTheMonthIsSmallerThan1(int month)
@@ -49,7 +49,7 @@ namespace Toggl.Multivac.Tests
                     .ShouldThrow<ArgumentOutOfRangeException>();
             }
 
-            [Theory]
+            [Theory, LogIfTooSlow]
             [InlineData(13)]
             [InlineData(120)]
             public void ThrowsIfTheMonthIsGreaterThan12(int month)
@@ -64,7 +64,7 @@ namespace Toggl.Multivac.Tests
 
         public sealed class TheNextMethod
         {
-            [Theory]
+            [Theory, LogIfTooSlow]
             [ClassData(typeof(MonthTestData))]
             public void IncrementsTheMonthWhenMonthIsLessThan12(int month)
             {
@@ -76,7 +76,7 @@ namespace Toggl.Multivac.Tests
                 nextCalendarMonth.Month.Should().Be(month + 1);
             }
 
-            [Theory]
+            [Theory, LogIfTooSlow]
             [ClassData(typeof(MonthTestData))]
             public void DoesNotIncrementTheYearWhenMonthIsLessThan12(int month)
             {
@@ -114,7 +114,7 @@ namespace Toggl.Multivac.Tests
 
         public sealed class ThePreviousMethod
         {
-            [Theory]
+            [Theory, LogIfTooSlow]
             [ClassData(typeof(MonthTestData))]
             public void DecrementsTheMonthIfMonthIsGreaterThan1(int month)
             {
@@ -126,7 +126,7 @@ namespace Toggl.Multivac.Tests
                 previousCalendarMonth.Month.Should().Be(month - 1);
             }
             
-            [Theory]
+            [Theory, LogIfTooSlow]
             [ClassData(typeof(MonthTestData))]
             public void DoesNotDecrementTheYearWhenMonthIsGreaterThan1(int month)
             {
@@ -164,7 +164,7 @@ namespace Toggl.Multivac.Tests
 
         public sealed class TheAddMonthsProperty
         {
-            [Theory]
+            [Theory, LogIfTooSlow]
             [InlineData(2018, 1, 5, 2018, 6)]
             [InlineData(2018, 12, 12, 2019, 12)]
             [InlineData(2018, 12, 5, 2019, 5)]
@@ -188,7 +188,7 @@ namespace Toggl.Multivac.Tests
                 result.Month.Should().Be(expectedMonth);
             }
             
-            [Theory]
+            [Theory, LogIfTooSlow]
             [InlineData(2018, 7, -3, 2018, 4)]
             [InlineData(2014, 4, -12, 2013, 4)]
             [InlineData(2015, 1, -1, 2014, 12)]

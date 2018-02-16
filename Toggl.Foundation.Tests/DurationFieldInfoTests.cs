@@ -51,7 +51,7 @@ namespace Toggl.Foundation.Tests
                 output.Should().BeLessOrEqualTo(TimeSpan.FromHours(999));
             }
 
-            [Theory]
+            [Theory, LogIfTooSlow]
             [InlineData(0, 0)]
             [InlineData(0, 1)]
             [InlineData(1, 0)]
@@ -71,7 +71,7 @@ namespace Toggl.Foundation.Tests
 
         public sealed class ThePushMethod : BaseDurationFieldInfoTest
         {
-            [Theory]
+            [Theory, LogIfTooSlow]
             [InlineData("", 0, 0)]
             [InlineData("1", 0, 1)]
             [InlineData("12", 0, 12)]
@@ -88,7 +88,7 @@ namespace Toggl.Foundation.Tests
                 Field.Minutes.Should().Be(expectedMinutes);
             }
 
-            [Theory]
+            [Theory, LogIfTooSlow]
             [InlineData("123456", 123, 45)]
             [InlineData("1234567", 123, 45)]
             [InlineData("12345678", 123, 45)]
@@ -104,7 +104,7 @@ namespace Toggl.Foundation.Tests
 
         public sealed class ThePopMethod : BaseDurationFieldInfoTest
         {
-            [Theory]
+            [Theory, LogIfTooSlow]
             [InlineData("19", 1, 0, 1)]
             [InlineData("127", 1, 0, 12)]
             [InlineData("650", 1, 0, 65)]
@@ -122,7 +122,7 @@ namespace Toggl.Foundation.Tests
                 Field.Minutes.Should().Be(expectedMinutes);
             }
 
-            [Theory]
+            [Theory, LogIfTooSlow]
             [InlineData("")]
             [InlineData("12345")]
             [InlineData("12345")]
@@ -140,7 +140,7 @@ namespace Toggl.Foundation.Tests
 
         public sealed class TheToStringMethod : BaseDurationFieldInfoTest
         {
-            [Theory]
+            [Theory, LogIfTooSlow]
             [InlineData("", "00:00")]
             [InlineData("0", "00:00")]
             [InlineData("00", "00:00")]
@@ -157,7 +157,7 @@ namespace Toggl.Foundation.Tests
                 output.Should().Be(expectedOutput);
             }
 
-            [Theory]
+            [Theory, LogIfTooSlow]
             [InlineData("60", "00:60")]
             [InlineData("181", "01:81")]
             [InlineData("99999", "999:99")]
@@ -170,7 +170,7 @@ namespace Toggl.Foundation.Tests
                 output.Should().Be(expectedOutput);
             }
 
-            [Theory]
+            [Theory, LogIfTooSlow]
             [InlineData("1", "00:01")]
             [InlineData("2", "00:02")]
             [InlineData("12", "00:12")]
@@ -186,7 +186,7 @@ namespace Toggl.Foundation.Tests
                 output.Should().Be(expectedOutput);
             }
 
-            [Theory]
+            [Theory, LogIfTooSlow]
             [InlineData("100", "01:00")]
             [InlineData("200", "02:00")]
             [InlineData("120", "01:20")]
@@ -200,7 +200,7 @@ namespace Toggl.Foundation.Tests
                 output.Should().Be(expectedOutput);
             }
 
-            [Theory]
+            [Theory, LogIfTooSlow]
             [InlineData("1200", "12:00")]
             [InlineData("4201", "42:01")]
             [InlineData("1234", "12:34")]
@@ -214,7 +214,7 @@ namespace Toggl.Foundation.Tests
                 output.Should().Be(expectedOutput);
             }
 
-            [Theory]
+            [Theory, LogIfTooSlow]
             [InlineData("10000", "100:00")]
             [InlineData("12345", "123:45")]
             [InlineData("99999", "999:99")]
@@ -230,7 +230,7 @@ namespace Toggl.Foundation.Tests
 
         public sealed class TheToTimeSpanMethod : BaseDurationFieldInfoTest
         {
-            [Theory]
+            [Theory, LogIfTooSlow]
             [InlineData("99861")]
             [InlineData("99901")]
             [InlineData("99999")]
@@ -243,7 +243,7 @@ namespace Toggl.Foundation.Tests
                 output.Should().Be(TimeSpan.FromHours(999));
             }
 
-            [Theory]
+            [Theory, LogIfTooSlow]
             [InlineData("12", 12)]
             [InlineData("123", 1 * 60 + 23)]
             [InlineData("1177", 11 * 60 + 77)]
@@ -260,7 +260,7 @@ namespace Toggl.Foundation.Tests
 
         public sealed class TheEmptyStaticProperty
         {
-            [Fact]
+            [Fact, LogIfTooSlow]
             public void MinutesAndHoursAreZero()
             {
                 var field = DurationFieldInfo.Empty;
@@ -269,13 +269,13 @@ namespace Toggl.Foundation.Tests
                 field.Minutes.Should().Be(0);
             }
 
-            [Fact]
+            [Fact, LogIfTooSlow]
             public void SerializesIntoZerosOnly()
             {
                 DurationFieldInfo.Empty.ToString().Should().Be("00:00");
             }
 
-            [Fact]
+            [Fact, LogIfTooSlow]
             public void ConvertsIntoZeroTimeSpan()
             {
                 DurationFieldInfo.Empty.ToTimeSpan().Should().Be(TimeSpan.Zero);

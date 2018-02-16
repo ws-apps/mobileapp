@@ -433,7 +433,7 @@ namespace Toggl.Foundation.Tests.DataSources
                       .Build();
 
                 var timeEntryObservable = Observable.Return(timeEntry);
-                var errorObservable = Observable.Throw<IDatabaseTimeEntry>(new EntityNotFoundException());
+                var errorObservable = Observable.Throw<IDatabaseTimeEntry>(new EntityNotFoundException(new Exception()));
                 Repository.GetById(Arg.Is(timeEntry.Id)).Returns(timeEntryObservable);
                 Repository.Update(Arg.Any<long>(), Arg.Any<IDatabaseTimeEntry>()).Returns(errorObservable);
                 var observer = Substitute.For<IObserver<Unit>>();
@@ -448,7 +448,7 @@ namespace Toggl.Foundation.Tests.DataSources
             {
                 var observer = Substitute.For<IObserver<Unit>>();
                 Repository.GetById(Arg.Any<long>())
-                          .Returns(Observable.Throw<IDatabaseTimeEntry>(new EntityNotFoundException()));
+                          .Returns(Observable.Throw<IDatabaseTimeEntry>(new EntityNotFoundException(new Exception())));
 
                 TimeEntriesSource.Delete(12).Subscribe(observer);
 

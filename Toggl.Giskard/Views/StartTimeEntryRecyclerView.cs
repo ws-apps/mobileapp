@@ -15,10 +15,34 @@ namespace Toggl.Giskard.Views
     {
         public StartTimeEntryRecyclerAdapter StartTimeEntryRecyclerAdapter => Adapter as StartTimeEntryRecyclerAdapter;
 
+        public IMvxAsyncCommand CreateCommand
+        {
+            get => StartTimeEntryRecyclerAdapter.CreateCommand;
+            set => StartTimeEntryRecyclerAdapter.CreateCommand = value;
+        }
+
         public IMvxCommand<ProjectSuggestion> ToggleTasksCommand
         {
             get => StartTimeEntryRecyclerAdapter.ToggleTasksCommand;
             set => StartTimeEntryRecyclerAdapter.ToggleTasksCommand = value;
+        }
+
+        public string Text
+        {
+            get => StartTimeEntryRecyclerAdapter.Text;
+            set => StartTimeEntryRecyclerAdapter.Text = value;
+        }
+
+        public bool IsSuggestingCreation
+        {
+            get => StartTimeEntryRecyclerAdapter.IsSuggestingCreation;
+            set => StartTimeEntryRecyclerAdapter.IsSuggestingCreation = value;
+        }
+
+        public bool IsSuggestingProjects
+        {
+            get => StartTimeEntryRecyclerAdapter.IsSuggestingProjects;
+            set => StartTimeEntryRecyclerAdapter.IsSuggestingProjects = value;
         }
 
         public bool UseGrouping

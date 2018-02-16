@@ -1,7 +1,6 @@
-﻿using Android.Views;
+﻿﻿using Android.Views;
 using MvvmCross.Binding.Bindings.Target.Construction;
 using Toggl.Giskard.Bindings;
-using Toggl.Giskard.Views;
 using Android.Widget;
 using Android.Support.Design.Widget;
 
@@ -29,19 +28,19 @@ namespace Toggl.Giskard
                 view => new ViewMarginTargetBinding(view, ViewMarginTargetBinding.BoundMargin.Bottom)
             );
 
+            registry.RegisterCustomBindingFactory<View>(
+                DrawableColorTargetBinding.BindingName,
+                view => new DrawableColorTargetBinding(view)
+            );
+
             registry.RegisterCustomBindingFactory<EditText>(
                 EditTextFocusTargetBinding.BindingName,
                 view => new EditTextFocusTargetBinding(view)
             );
 
-            registry.RegisterCustomBindingFactory<EditText>(
-                EditTextTextFieldInfoTargetBinding.BindingName,
-                view => new EditTextTextFieldInfoTargetBinding(view)
-            );
-
-            registry.RegisterCustomBindingFactory<View>(
-                DrawableColorTargetBinding.BindingName,
-                view => new DrawableColorTargetBinding(view)
+            registry.RegisterCustomBindingFactory<TextView>(
+                TextViewTagListTargetBinding.BindingName,
+                view => new TextViewTagListTargetBinding(view)
             );
 
             registry.RegisterCustomBindingFactory<View>(

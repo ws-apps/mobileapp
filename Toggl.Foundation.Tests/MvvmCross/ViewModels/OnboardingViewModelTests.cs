@@ -4,7 +4,6 @@ using FluentAssertions;
 using NSubstitute;
 using Toggl.Foundation.Login;
 using Toggl.Foundation.MvvmCross.ViewModels;
-using Toggl.Foundation.Services;
 using Toggl.Foundation.Tests.Generators;
 using Xunit;
 
@@ -14,8 +13,6 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
     {
         public abstract class OnboardingViewModelTest : BaseViewModelTests<OnboardingViewModel>
         {
-            protected IAnalyticsService AnalyticsService { get; } = Substitute.For<IAnalyticsService>();
-
             protected override OnboardingViewModel CreateViewModel()
                 => new OnboardingViewModel(NavigationService, OnboardingStorage, AnalyticsService);
         }
@@ -184,7 +181,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 OnboardingStorage.Received().SetCompletedOnboarding();
             }
 
-            [Theory]
+            [Theory, LogIfTooSlow]
             [InlineData(1)]
             [InlineData(2)]
             public void DoesNotSetTheCompletedOnboardingFlagWhenUserSkipsAtLeastOnePage(int pagesViewed)
@@ -223,7 +220,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 OnboardingStorage.Received().SetCompletedOnboarding();
             }
 
-            [Theory]
+            [Theory, LogIfTooSlow]
             [InlineData(1)]
             [InlineData(2)]
             public void DoesNotSetTheCompletedOnboardingFlagWhenUserSkipsAtLeastOnePage(int pagesViewed)

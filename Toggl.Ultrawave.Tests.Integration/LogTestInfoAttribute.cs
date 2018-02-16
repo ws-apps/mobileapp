@@ -15,8 +15,8 @@ namespace Toggl.Ultrawave.Tests.Integration
         public override void Before(MethodInfo methodUnderTest)
         {
             var methodName = toSentenceCase(methodUnderTest.Name);
-            formattedTestName = getFormattedName(methodUnderTest.ReflectedType, methodName);
-            Console.WriteLine(formattedTestName.Replace("`1", ""));
+            formattedTestName = getFormattedName(methodUnderTest.ReflectedType, methodName).Replace("`1", "");
+            Console.WriteLine(formattedTestName);
 
             // This is to make integration tests run slightly slower to prevent SecureChannelFailure
             // errors caused by too many HTTP calls in quick succession in most cases
@@ -30,7 +30,7 @@ namespace Toggl.Ultrawave.Tests.Integration
         public override void After(MethodInfo methodUnderTest)
         {
             stopwatch.Stop();
-            Console.WriteLine($"{formattedTestName} ended after: {stopwatch.Elapsed}");
+            Console.WriteLine($"{stopwatch.Elapsed} - {formattedTestName}");
         }
 
         private string getFormattedName(Type typeInfo, string accumulator)

@@ -1,5 +1,7 @@
 ﻿using System;
+using CoreAnimation;
 using CoreGraphics;
+using Foundation;
 using MvvmCross.Binding.BindingContext;
 using MvvmCross.Binding.iOS;
 using MvvmCross.iOS.Views;
@@ -28,11 +30,23 @@ namespace Toggl.Daneel.ViewControllers
         private readonly UIButton settingsButton = new UIButton(new CGRect(0, 0, 40, 40));
         private readonly UIImageView titleImage = new UIImageView(UIImage.FromBundle("togglLogo"));
 
+        private IDisposable willEnterForegroundNotification;
+
         private bool viewInitialized;
 
         public MainViewController()
             : base(nameof(MainViewController), null)
         {
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing == false) return;
+
+            willEnterForegroundNotification?.Dispose();
+            willEnterForegroundNotification = null;
         }
 
         public override void ViewDidLoad()
@@ -112,6 +126,8 @@ namespace Toggl.Daneel.ViewControllers
                       .WithConversion(startTimeEntryButtonManualModeIconConverter);
 
             bindingSet.Apply();
+
+            willEnterForegroundNotification = UIApplication.Notifications.ObserveWillEnterForeground((sender, e) => startAnimations());
         }
 
         internal void OnTimeEntryCardVisibilityChanged(bool visible)
@@ -139,6 +155,8 @@ namespace Toggl.Daneel.ViewControllers
                 new UIBarButtonItem(settingsButton),
                 new UIBarButtonItem(reportsButton)
             };
+
+            startAnimations();
         }
 
         public override void ViewDidLayoutSubviews()
@@ -241,12 +259,26 @@ namespace Toggl.Daneel.ViewControllers
                 });
         }
 
+        private void startAnimations()
+        {
+            animateSpider();
+            SyncIndicatorView.StartAnimation();
+        }
+
         private void animateSpider()
         {
-            SpiderBroImageView.Transform = CGAffineTransform.MakeRotation(-animationAngle);
+            SpiderBroImageView.Layer.RemoveAllAnimations();
 
-            UIView.Animate(Timings.SpiderBro, 0, UIViewAnimationOptions.Autoreverse | UIViewAnimationOptions.Repeat,
-                () => SpiderBroImageView.Transform = CGAffineTransform.MakeRotation(animationAngle), animateSpider);
+            var animation = CABasicAnimation.FromKeyPath("transform.rotation.z");
+            animation.Duration = Timings.SpiderBro;
+            animation.TimingFunction = CAMediaTimingFunction.FromName(CAMediaTimingFunction.EaseInEaseOut);
+            animation.Cumulative = false;
+            animation.From = NSNumber.FromFloat(-animationAngle);
+            animation.To = NSNumber.FromFloat(animationAngle);
+            animation.RepeatCount = float.PositiveInfinity;
+            animation.AutoReverses = true;
+
+            SpiderBroImageView.Layer.AddAnimation(animation, "swing");
         }
     }
 }

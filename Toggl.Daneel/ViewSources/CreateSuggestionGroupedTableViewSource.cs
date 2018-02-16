@@ -3,11 +3,13 @@ using System.Linq;
 using Foundation;
 using MvvmCross.Core.ViewModels;
 using Toggl.Daneel.Views;
+using Toggl.Foundation.MvvmCross.Collections;
 using UIKit;
 
 namespace Toggl.Daneel.ViewSources
 {
-    public abstract class CreateSuggestionGroupedTableViewSource<T> : GroupedCollectionTableViewSource<T> 
+    public abstract class CreateSuggestionGroupedTableViewSource<T> 
+        : GroupedCollectionTableViewSource<WorkspaceGroupedCollection<T>, T> 
         where T : class
     {
         protected const string CreateEntityCellIdentifier = nameof(CreateEntityViewCell);

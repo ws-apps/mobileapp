@@ -1,8 +1,8 @@
 ﻿using System;
 using CoreGraphics;
-using Foundation;
 using MvvmCross.Binding.BindingContext;
 using MvvmCross.Binding.iOS;
+using MvvmCross.Core.ViewModels;
 using MvvmCross.iOS.Views;
 using MvvmCross.Plugins.Color.iOS;
 using MvvmCross.Plugins.Visibility;
@@ -19,12 +19,9 @@ using UIKit;
 namespace Toggl.Daneel.ViewControllers
 {
     [ModalCardPresentation]
-    public partial class EditTimeEntryViewController : MvxViewController
+    public partial class EditTimeEntryViewController : MvxViewController<EditTimeEntryViewModel>
     {
-        private const int switchHeight = 24;
-        private const float nonScrollableContentHeight = 100;
-
-        private EditTimeEntryErrorView syncErrorMessageView;
+        private const float nonScrollableContentHeight = 116f;
 
         public EditTimeEntryViewController() : base(nameof(EditTimeEntryViewController), null)
         {
@@ -35,22 +32,6 @@ namespace Toggl.Daneel.ViewControllers
             base.ViewDidLoad();
 
             prepareViews();
-
-            if (PresentationController is ModalPresentationController modalPresentationController)
-            {
-                syncErrorMessageView = EditTimeEntryErrorView.Create();
-                var contentView = modalPresentationController.AdditionalContentView;
-
-                contentView.AddSubview(syncErrorMessageView);
-
-                syncErrorMessageView.TranslatesAutoresizingMaskIntoConstraints = false;
-                syncErrorMessageView.TopAnchor
-                    .ConstraintEqualTo(contentView.TopAnchor, 28).Active = true;
-                syncErrorMessageView.LeadingAnchor
-                    .ConstraintEqualTo(contentView.LeadingAnchor, 8).Active = true;
-                syncErrorMessageView.TrailingAnchor
-                    .ConstraintEqualTo(contentView.TrailingAnchor, -8).Active = true;
-            }
 
             var durationConverter = new TimeSpanToDurationWithUnitValueConverter();
             var dateConverter = new DateToTitleStringValueConverter();
@@ -63,28 +44,24 @@ namespace Toggl.Daneel.ViewControllers
                 Color.EditTimeEntry.ClientText.ToNativeColor(),
                 false
             );
+            var stopRunningTimeEntryAndEditDurationForStoppedConverter = new BoolToConstantValueConverter<IMvxCommand>(
+                ViewModel.StopCommand, ViewModel.EditDurationCommand);
 
             var bindingSet = this.CreateBindingSet<EditTimeEntryViewController, EditTimeEntryViewModel>();
 
-            if (syncErrorMessageView != null)
-            {
-                bindingSet.Bind(syncErrorMessageView)
-                          .For(v => v.Text)
-                          .To(vm => vm.SyncErrorMessage);
+            //Error message view
+            bindingSet.Bind(ErrorMessageLabel)
+                      .For(v => v.Text)
+                      .To(vm => vm.SyncErrorMessage);
 
-                bindingSet.Bind(syncErrorMessageView)
-                          .For(v => v.BindTap())
-                          .To(vm => vm.DismissSyncErrorMessageCommand);
+            bindingSet.Bind(ErrorView)
+                      .For(v => v.BindTap())
+                      .To(vm => vm.DismissSyncErrorMessageCommand);
 
-                bindingSet.Bind(syncErrorMessageView)
-                          .For(v => v.CloseCommand)
-                          .To(vm => vm.DismissSyncErrorMessageCommand);
-
-                bindingSet.Bind(syncErrorMessageView)
-                          .For(v => v.BindVisible())
-                          .To(vm => vm.SyncErrorMessageVisible)
-                          .WithConversion(inverterVisibilityConverter);
-            }
+            bindingSet.Bind(ErrorView)
+                      .For(v => v.BindVisible())
+                      .To(vm => vm.SyncErrorMessageVisible)
+                      .WithConversion(inverterVisibilityConverter);
 
             //Text
             bindingSet.Bind(DescriptionTextView)
@@ -119,13 +96,30 @@ namespace Toggl.Daneel.ViewControllers
                       .To(vm => vm.StartTime)
                       .WithConversion(timeConverter);
 
+            bindingSet.Bind(EndTimeLabel)
+                      .To(vm => vm.StopTime)
+                      .WithConversion(timeConverter);
+
             //Commands
             bindingSet.Bind(CloseButton).To(vm => vm.CloseCommand);
             bindingSet.Bind(DeleteButton).To(vm => vm.DeleteCommand);
             bindingSet.Bind(ConfirmButton).To(vm => vm.ConfirmCommand);
-            bindingSet.Bind(DurationLabel)
+
+            bindingSet.Bind(DurationView)
                       .For(v => v.BindTap())
                       .To(vm => vm.EditDurationCommand);
+
+            bindingSet.Bind(StartTimeView)
+                      .For(v => v.BindTap())
+                      .To(vm => vm.EditDurationCommand);
+
+            bindingSet.Bind(StopButton)
+                      .To(vm => vm.StopCommand);
+
+            bindingSet.Bind(EndTimeView)
+                      .For(v => v.BindTap())
+                      .To(vm => vm.IsTimeEntryRunning)
+                      .WithConversion(stopRunningTimeEntryAndEditDurationForStoppedConverter);
 
             bindingSet.Bind(ProjectTaskClientLabel)
                       .For(v => v.BindTap())
@@ -135,9 +129,9 @@ namespace Toggl.Daneel.ViewControllers
                       .For(v => v.BindTap())
                       .To(vm => vm.SelectProjectCommand);
 
-            bindingSet.Bind(StartDateTimeView)
+            bindingSet.Bind(StartDateView)
                       .For(v => v.BindTap())
-                      .To(vm => vm.SelectStartDateTimeCommand);
+                      .To(vm => vm.SelectStartDateCommand);
 
             bindingSet.Bind(TagsTextView)
                       .For(v => v.BindTap())
@@ -150,6 +144,17 @@ namespace Toggl.Daneel.ViewControllers
             bindingSet.Bind(BillableView)
                       .For(v => v.BindTap())
                       .To(vm => vm.ToggleBillableCommand);
+
+            //End time and the stop button visibility
+            bindingSet.Bind(StopButton)
+                      .For(v => v.BindVisible())
+                      .To(vm => vm.IsTimeEntryRunning)
+                      .WithConversion(inverterVisibilityConverter);
+
+            bindingSet.Bind(EndTimeLabel)
+                      .For(v => v.BindVisible())
+                      .To(vm => vm.IsTimeEntryRunning)
+                      .WithConversion(visibilityConverter);
 
             //Project visibility
             bindingSet.Bind(AddProjectAndTaskView)
@@ -202,7 +207,13 @@ namespace Toggl.Daneel.ViewControllers
 
         public override void ViewWillLayoutSubviews()
         {
-            var newSize = new CGSize(0, nonScrollableContentHeight + ScrollViewContent.Bounds.Height);
+            var height = nonScrollableContentHeight + ScrollViewContent.Bounds.Height;
+            if (UIDevice.CurrentDevice.CheckSystemVersion(11, 0))
+            {
+                height += UIApplication.SharedApplication.KeyWindow.SafeAreaInsets.Bottom;
+            }
+
+            var newSize = new CGSize(0, height);
             if (newSize != PreferredContentSize)
             {
                 PreferredContentSize = newSize;

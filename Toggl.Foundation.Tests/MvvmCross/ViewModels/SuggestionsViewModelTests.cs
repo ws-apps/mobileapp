@@ -8,8 +8,8 @@ using FsCheck;
 using FsCheck.Xunit;
 using Microsoft.Reactive.Testing;
 using NSubstitute;
+using Toggl.Foundation.Analytics;
 using Toggl.Foundation.DTOs;
-using Toggl.Foundation.Exceptions;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using Toggl.Foundation.Suggestions;
 using Toggl.Foundation.Tests.Generators;
@@ -28,7 +28,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             protected ISuggestionProviderContainer Container { get; } = Substitute.For<ISuggestionProviderContainer>();
 
             protected override SuggestionsViewModel CreateViewModel()
-                => new SuggestionsViewModel(DataSource, OnboardingStorage, Container, TimeService);
+                => new SuggestionsViewModel(DataSource, AnalyticsService, OnboardingStorage, Container, TimeService);
 
             protected void SetProviders(params ISuggestionProvider[] providers)
             {
@@ -39,19 +39,22 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         public sealed class TheConstructor : SuggestionsViewModelTest
         {
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(FourParameterConstructorTestData))]
-            public void ThrowsIfAnyOfTheArgumentsIsNull(bool useDataSource, 
-                                                        bool useOnboardingStorage, 
-                                                        bool useContainer, 
-                                                        bool useTimeService)
+            [ClassData(typeof(FiveParameterConstructorTestData))]
+            public void ThrowsIfAnyOfTheArgumentsIsNull(
+                bool useDataSource, 
+                bool useOnboardingStorage, 
+                bool useContainer, 
+                bool useAnalyticsService,
+                bool useTimeService)
             {
                 var container = useContainer ? Container : null;
                 var dataSource = useDataSource ? DataSource : null;
                 var timeService = useTimeService ? TimeService : null;
+                var analyticsService = useAnalyticsService ? AnalyticsService : null;
                 var onboardingStorage = useOnboardingStorage ? OnboardingStorage : null;
 
                 Action tryingToConstructWithEmptyParameters =
-                    () => new SuggestionsViewModel(dataSource, onboardingStorage, container, timeService);
+                    () => new SuggestionsViewModel(dataSource, analyticsService, onboardingStorage, container, timeService);
 
                 tryingToConstructWithEmptyParameters
                     .ShouldThrow<ArgumentNullException>();
@@ -191,8 +194,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 DataSource.TimeEntries.Start(Arg.Any<StartTimeEntryDTO>())
                     .Returns(Observable.Never<IDatabaseTimeEntry>());
 
-                ViewModel.StartTimeEntryCommand.ExecuteAsync(suggestion);
-                ViewModel.StartTimeEntryCommand.ExecuteAsync(suggestion);
+                var _ = ViewModel.StartTimeEntryCommand.ExecuteAsync(suggestion);
+                var __ = ViewModel.StartTimeEntryCommand.ExecuteAsync(suggestion);
 
                 await DataSource.TimeEntries.Received(1).Start(Arg.Any<StartTimeEntryDTO>());
             }
@@ -209,6 +212,16 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 await ViewModel.StartTimeEntryCommand.ExecuteAsync(suggestion);
 
                 await DataSource.TimeEntries.Received(2).Start(Arg.Any<StartTimeEntryDTO>());
+            }
+
+            [Fact]
+            public async Task RegistersTheEventInTheAnalyticsService()
+            {
+                var suggestion = createSuggestion();
+
+                await ViewModel.StartTimeEntryCommand.ExecuteAsync(suggestion);
+
+                AnalyticsService.Received().TrackStartedTimeEntry(TimeEntryStartOrigin.Suggestion);
             }
 
             private Suggestion createSuggestion()

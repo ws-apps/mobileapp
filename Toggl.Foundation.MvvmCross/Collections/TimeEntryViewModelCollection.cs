@@ -12,7 +12,11 @@ namespace Toggl.Foundation.MvvmCross.Collections
     {
         public DateTimeOffset Date { get; }
 
-        public TimeSpan TotalTime { get; }
+        public TimeSpan TotalTime { get; private set; }
+
+        public TimeEntryViewModelCollection()
+        {
+        }
 
         public TimeEntryViewModelCollection(DateTime date, IEnumerable<TimeEntryViewModel> items)
         {
@@ -24,7 +28,34 @@ namespace Toggl.Foundation.MvvmCross.Collections
             this.AddRange(items);
 
             Date = new DateTimeOffset(date);
-            TotalTime = items.Aggregate(TimeSpan.Zero, (acc, vm) => acc + vm.Duration);
+            TotalTime = calculateTotalTime();
         }
+
+        protected override void ClearItems()
+        {
+            base.ClearItems();
+            TotalTime = calculateTotalTime();
+        }
+
+        protected override void SetItem(int index, TimeEntryViewModel item)
+        {
+            base.SetItem(index, item);
+            TotalTime = calculateTotalTime();
+        }
+
+        protected override void InsertItem(int index, TimeEntryViewModel item)
+        {
+            base.InsertItem(index, item);
+            TotalTime += item.Duration;
+        }
+
+        protected override void RemoveItem(int index)
+        {
+            base.RemoveItem(index);
+            TotalTime = calculateTotalTime();
+        }
+
+        private TimeSpan calculateTotalTime()
+            => Items.Aggregate(TimeSpan.Zero, (acc, vm) => acc + vm.Duration);
     }
 }

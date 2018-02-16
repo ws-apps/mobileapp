@@ -9,7 +9,17 @@ namespace Toggl.Daneel.Views
     public sealed class AutocompleteTextView : UITextView
     {
         public AutocompleteTextViewDelegate AutocompleteTextViewInfoDelegate { get; } = new AutocompleteTextViewDelegate();
-        
+
+        public override NSAttributedString AttributedText
+        {
+            get => base.AttributedText;
+            set
+            {
+                base.AttributedText = value;
+                AutocompleteTextViewInfoDelegate.Changed(this);
+            }
+        }
+
         public AutocompleteTextView(IntPtr handle) : base(handle)
         {
         }

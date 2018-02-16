@@ -32,7 +32,7 @@ namespace Toggl.Daneel
         protected override void SetShortcuts(IEnumerable<ApplicationShortcut> shortcuts)
         {
             //Temporary disable application shortcuts (until handling is implemented)
-            //return;
+            return;
 
             UIApplication.SharedApplication.InvokeOnMainThread(() =>
             {

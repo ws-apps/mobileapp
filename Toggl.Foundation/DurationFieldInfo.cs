@@ -6,7 +6,7 @@ using static Toggl.Foundation.Helper.Constants;
 
 namespace Toggl.Foundation
 {
-    public struct DurationFieldInfo
+    public struct DurationFieldInfo : IEquatable<DurationFieldInfo>
     {
         public static DurationFieldInfo Empty = new DurationFieldInfo(new Stack<int>(maximumNumberOfDigits));
 
@@ -19,6 +19,8 @@ namespace Toggl.Foundation
         public int Minutes => combineDigitsIntoANumber(0, 2);
 
         public int Hours => combineDigitsIntoANumber(2, 3);
+
+        public bool IsEmpty => digits.Count == 0;
 
         private DurationFieldInfo(Stack<int> digits)
         {
@@ -63,6 +65,10 @@ namespace Toggl.Foundation
 
         public TimeSpan ToTimeSpan()
             => TimeSpan.FromHours(Hours).Add(TimeSpan.FromMinutes(Minutes)).Clamp(TimeSpan.Zero, maximumDuration);
+
+        public override int GetHashCode() => digits.GetHashCode();
+
+        public bool Equals(DurationFieldInfo other) => other.Hours == Hours && other.Minutes == Minutes;
 
         private int combineDigitsIntoANumber(int start, int count)
         {

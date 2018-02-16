@@ -1,14 +1,14 @@
-﻿<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <resources>
-    <color name="defaultBackground">#fafbfc</color>
-    <color name="errorText">#e20505</color>
-    <color name="lightToolbarBackground">#ffffff</color>
+    <color name="defaultBackground">#FAFBFC</color>
+    <color name="errorText">#E20505</color>
+    <color name="lightToolbarBackground">#FFFFFF</color>
     <color name="darkToolbarBackground">#323232</color>
-    <color name="placeholderText">#cecece</color>
+    <color name="placeholderText">#CECECE</color>
     <color name="defaultText">#959595</color>
     <color name="defaultIcon">#959595</color>
-    <color name="defaultEditText">#5e5b5b</color>
-    <color name="defaultFabBackground">#1ad180</color>
+    <color name="defaultEditText">#5E5B5B</color>
+    <color name="defaultFabBackground">#1AD180</color>
     <color name="lightGray">#FFFAFBFC</color>
     <color name="separator">#FFE5E5E5</color>
     <color name="clientName">#FF5E5B5B</color>
@@ -16,6 +16,11 @@
     <color name="playButtonGreen">#FF1AD180</color>
     <color name="playButtonRed">#E20505</color>
     <color name="runningEntryDescription">#000000</color>
+    <color name="darkLabel">#000000</color>
+    <color name="buttonBlue">#328FFF</color>
     <color name="runningEntryTimer">#328FFF</color>
-	<color name="launcherBackgroundColor">#FFFF</color>
+    <color name="editTimeEntryText">#000000</color>
+    <color name="switchTint">#328FFF</color>
+    <color name="launcherBackgroundColor">#FFFF</color>
+    <color name="checkboxTint">#328FFF</color>
 </resources>

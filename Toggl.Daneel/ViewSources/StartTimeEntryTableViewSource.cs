@@ -51,6 +51,8 @@ namespace Toggl.Daneel.ViewSources
         public StartTimeEntryTableViewSource(UITableView tableView)
             : base(tableView, headerCellIdentifier, "")
         {
+            UseAnimations = false;
+
             tableView.TableFooterView = new UIView();
             tableView.SeparatorStyle = UITableViewCellSeparatorStyle.None;
             tableView.SeparatorColor = Color.StartTimeEntry.SeparatorColor.ToNativeColor();

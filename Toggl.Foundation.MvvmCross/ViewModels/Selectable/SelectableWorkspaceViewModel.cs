@@ -5,6 +5,7 @@ using Toggl.PrimeRadiant.Models;
 
 namespace Toggl.Foundation.MvvmCross.ViewModels
 {
+    [Preserve(AllMembers = true)]
     public sealed class SelectableWorkspaceViewModel : MvxNotifyPropertyChanged
     {
         public long WorkspaceId { get; set; }

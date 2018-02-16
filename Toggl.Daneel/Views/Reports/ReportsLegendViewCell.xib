@@ -53,7 +53,7 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MpZ-1D-dTJ">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="1"/>
+                        <rect key="frame" x="0.0" y="43" width="320" height="1"/>
                         <color key="backgroundColor" red="0.90980392156862744" green="0.90980392156862744" blue="0.90980392156862744" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="1" id="ZrJ-1h-uyF"/>
@@ -75,7 +75,7 @@
                 <constraint firstItem="49P-Ko-VVc" firstAttribute="centerY" secondItem="cxk-wN-pdQ" secondAttribute="centerY" id="fZW-of-C17"/>
                 <constraint firstAttribute="trailing" secondItem="MpZ-1D-dTJ" secondAttribute="trailing" id="h8Z-dT-Acg"/>
                 <constraint firstItem="49P-Ko-VVc" firstAttribute="leading" secondItem="cxk-wN-pdQ" secondAttribute="leading" constant="16" id="uHB-QV-2Wj"/>
-                <constraint firstItem="MpZ-1D-dTJ" firstAttribute="top" secondItem="cxk-wN-pdQ" secondAttribute="top" id="vwg-Rz-KAI"/>
+                <constraint firstItem="MpZ-1D-dTJ" firstAttribute="bottom" secondItem="cxk-wN-pdQ" secondAttribute="bottom" id="vwg-Rz-KAI"/>
             </constraints>
             <connections>
                 <outlet property="CircleView" destination="49P-Ko-VVc" id="7q5-Y8-9QL"/>

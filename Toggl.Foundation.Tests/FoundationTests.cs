@@ -9,6 +9,7 @@ using Toggl.PrimeRadiant;
 using Toggl.Ultrawave;
 using Xunit;
 using Toggl.Foundation.Suggestions;
+using Toggl.Foundation.Analytics;
 
 namespace Toggl.Foundation.Tests
 {

@@ -95,9 +95,9 @@ namespace Toggl.Foundation.Tests.Reports
             {
                 var actualProjectIds = projectIds.Get.Select(i => (long)i.Get).Distinct().ToArray();
                 if (actualProjectIds.Length < 2) return;
-                
-                var projectsInDb = actualProjectIds.Where((i, id) => i % 2 == 0).ToArray();
-                var projectsInApi = actualProjectIds.Where((i, id) => i % 2 != 0).ToArray();
+
+                var projectsInDb = actualProjectIds.Where((id, i) => i % 2 == 0).ToArray();
+                var projectsInApi = actualProjectIds.Where((id, i) => i % 2 != 0).ToArray();
                 var summaries = getSummaryList(actualProjectIds);
                 apiProjectsSummary.ProjectsSummaries.Returns(summaries);
                 configureRepositoryToReturn(projectsInDb, projectsInApi);

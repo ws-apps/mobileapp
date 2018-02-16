@@ -6,6 +6,7 @@
 //
 using Foundation;
 using System.CodeDom.Compiler;
+using Toggl.Daneel.Views.EditDuration;
 
 namespace Toggl.Daneel.ViewControllers
 {
@@ -66,8 +67,7 @@ namespace Toggl.Daneel.ViewControllers
 		UIKit.UIButton TagsButton { get; set; }
 
 		[Outlet]
-		[GeneratedCode ("iOS Designer", "1.0")]
-		UIKit.UILabel TimeLabel { get; set; }
+        DurationField TimeInput { get; set; }
 		
 		void ReleaseDesignerOutlets ()
 		{
@@ -141,9 +141,9 @@ namespace Toggl.Daneel.ViewControllers
 				TagsButton = null;
 			}
 
-			if (TimeLabel != null) {
-				TimeLabel.Dispose ();
-				TimeLabel = null;
+			if (TimeInput != null) {
+				TimeInput.Dispose ();
+				TimeInput = null;
 			}
 		}
 	}

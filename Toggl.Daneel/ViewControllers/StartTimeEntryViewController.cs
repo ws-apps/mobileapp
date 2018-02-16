@@ -14,6 +14,7 @@ using Toggl.Foundation.MvvmCross.Helper;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using UIKit;
 using Toggl.Foundation;
+using Foundation;
 
 namespace Toggl.Daneel.ViewControllers
 {
@@ -35,7 +36,6 @@ namespace Toggl.Daneel.ViewControllers
             SuggestionsTableView.Source = source;
             source.ToggleTasksCommand = new MvxCommand<ProjectSuggestion>(toggleTaskSuggestions);
 
-            var timeSpanConverter = new TimeSpanToDurationValueConverter();
             var invertedVisibilityConverter = new MvxInvertedVisibilityValueConverter();
             var invertedBoolConverter = new BoolToConstantValueConverter<bool>(false, true);
             var buttonColorConverter = new BoolToConstantValueConverter<UIColor>(
@@ -81,9 +81,9 @@ namespace Toggl.Daneel.ViewControllers
                       .To(vm => vm.ShouldShowNoProjectsInfoMessage);
 
             //Text
-            bindingSet.Bind(TimeLabel)
-                      .To(vm => vm.ElapsedTime)
-                      .WithConversion(timeSpanConverter);
+            bindingSet.Bind(TimeInput)
+                      .For(v => v.Duration)
+                      .To(vm => vm.DisplayedTime);
 
             bindingSet.Bind(DescriptionTextView)
                       .For(v => v.BindTextFieldInfo())
@@ -151,6 +151,17 @@ namespace Toggl.Daneel.ViewControllers
             UIView.Animate(Animation.Timings.EnterTiming, () => View.LayoutIfNeeded());
         }
 
+        public override void TouchesBegan(NSSet touches, UIEvent evt)
+        {
+            base.TouchesBegan(touches, evt);
+
+            if (TimeInput.IsEditing)
+            {
+                TimeInput.EndEditing(true);
+                DescriptionTextView.BecomeFirstResponder();
+            }
+        }
+
         private void prepareViews()
         {
             //This is needed for the ImageView.TintColor bindings to work
@@ -164,7 +175,9 @@ namespace Toggl.Daneel.ViewControllers
                 button.TintColor = Color.StartTimeEntry.InactiveButton.ToNativeColor();
             }
 
-            TimeLabel.Font = TimeLabel.Font.GetMonospacedDigitFont();
+            TimeInput.TintColor = Color.StartTimeEntry.Cursor.ToNativeColor();
+            TimeInput.Converter = new TimeSpanToDurationValueConverter();
+
             DescriptionTextView.TintColor = Color.StartTimeEntry.Cursor.ToNativeColor();
             DescriptionTextView.BecomeFirstResponder();
 

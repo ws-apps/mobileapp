@@ -276,6 +276,7 @@ __pycache__/
 
 # Cake - Uncomment if you are using it
 tools/**
+Tools/**
 !tools/packages.config
 
 # Telerik's JustMock configuration file
@@ -287,6 +288,9 @@ tools/**
 *.odx.cs
 *.xsd.cs
 
+# KDIFF3 tool
+*.orig
+
 # macOS Finder creates this in every folder opened
 .DS_STORE
 
@@ -297,3 +301,5 @@ Toggl.Daneel/Views/ResizableView.designer.cs
 Toggl.Daneel/Views/ActivityIndicatorView.designer.cs
 
 Toggl.Daneel/service-account.json
+
+giskard.keystore

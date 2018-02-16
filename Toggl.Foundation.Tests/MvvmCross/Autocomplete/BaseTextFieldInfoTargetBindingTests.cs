@@ -28,25 +28,25 @@ namespace Toggl.Foundation.Tests.MvvmCross.Autocomplete
 
         public sealed class TheSubscribeToEventsMethod : BaseTextFieldInfoTargetBindingTest
         {
-            [Fact]
+            [Fact, LogIfTooSlow]
             public void SubscribesToTheTagDeletedEvent()
             {
                 EventProvider.TagDeletedEventCount.Should().Be(1);
             }
 
-            [Fact]
+            [Fact, LogIfTooSlow]
             public void SubscribesToTheTextChangedEvent()
             {
                 EventProvider.TextChangedEventCount.Should().Be(1);
             }
 
-            [Fact]
+            [Fact, LogIfTooSlow]
             public void SubscribesToTheProjectDeletedEvent()
             {
                 EventProvider.ProjectDeletedEventCount.Should().Be(1);
             }
 
-            [Fact]
+            [Fact, LogIfTooSlow]
             public void SubscribesToTheCursorPositionChangedEvent()
             {
                 EventProvider.CursorPositionChangedEventCount.Should().Be(1);
@@ -60,25 +60,25 @@ namespace Toggl.Foundation.Tests.MvvmCross.Autocomplete
                 TargetBinding.Dispose();
             }
 
-            [Fact]
+            [Fact, LogIfTooSlow]
             public void UnsubscribesToTheTagDeletedEvent()
             {
                 EventProvider.TagDeletedEventCount.Should().Be(0);
             }
 
-            [Fact]
+            [Fact, LogIfTooSlow]
             public void UnsubscribesToTheTextChangedEvent()
             {
                 EventProvider.TextChangedEventCount.Should().Be(0);
             }
 
-            [Fact]
+            [Fact, LogIfTooSlow]
             public void UnsubscribesToTheProjectDeletedEvent()
             {
                 EventProvider.ProjectDeletedEventCount.Should().Be(0);
             }
 
-            [Fact]
+            [Fact, LogIfTooSlow]
             public void UnsubscribesToTheCursorPositionChangedEvent()
             {
                 EventProvider.CursorPositionChangedEventCount.Should().Be(0);
@@ -87,7 +87,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.Autocomplete
 
         public sealed class TheOnProjectDeletedMethod : BaseTextFieldInfoTargetBindingTest
         {
-            [Fact]
+            [Fact, LogIfTooSlow]
             public void RemovesTheProjectInfoFromTheCurrentTextFieldInfo()
             {
                 TargetBinding.SetValue(
@@ -101,7 +101,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.Autocomplete
                 TargetBinding.TextFieldInfo.ProjectId.Should().BeNull();
             }
 
-            [Fact]
+            [Fact, LogIfTooSlow]
             public void SetsTheCursorPositionToTheEndOfTheDescription()
             {
                 TargetBinding.SetValue(
@@ -118,7 +118,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.Autocomplete
 
         public sealed class TheOnTagDeletedMethod : BaseTextFieldInfoTargetBindingTest
         {
-            [Theory]
+            [Theory, LogIfTooSlow]
             [InlineData(0)]
             [InlineData(1)]
             public void RemovesTheReportedTagFromTheCurrentTextFieldInfo(int index)
@@ -149,7 +149,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.Autocomplete
 
         public sealed class TheQueueValueChangeMethod : BaseTextFieldInfoTargetBindingTest
         {
-            [Fact]
+            [Fact, LogIfTooSlow]
             public void SetsTheCursorToTheEndOfTheDescriptionIfTheTextChangedInTokenRegion()
             {
                 const string newDescription = "A ";

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Linq;
 using Foundation;
 using MvvmCross.Core.ViewModels;
 using MvvmCross.Plugins.Color.iOS;
@@ -22,6 +20,8 @@ namespace Toggl.Daneel.ViewSources
         public SelectProjectTableViewSource(UITableView tableView)
             : base(tableView, projectCellIdentifier, headerCellIdentifier)
         {
+            UseAnimations = false;
+
             tableView.TableFooterView = new UIView();
             tableView.SeparatorStyle = UITableViewCellSeparatorStyle.None;
             tableView.SeparatorColor = Color.StartTimeEntry.SeparatorColor.ToNativeColor();

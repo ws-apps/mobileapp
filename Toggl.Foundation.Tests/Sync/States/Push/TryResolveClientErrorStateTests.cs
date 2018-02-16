@@ -17,7 +17,7 @@ namespace Toggl.Foundation.Tests.Sync.States.Push
 {
     public sealed class TryResolveClientErrorStateTests
     {
-        [Fact]
+        [Fact, LogIfTooSlow]
         public void ThrowsWhenExceptionIsNotAClientErrorException()
         {
             var exception = new Exception();

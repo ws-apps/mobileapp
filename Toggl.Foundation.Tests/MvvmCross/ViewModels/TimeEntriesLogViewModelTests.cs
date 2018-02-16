@@ -7,10 +7,9 @@ using FluentAssertions;
 using FsCheck;
 using FsCheck.Xunit;
 using NSubstitute;
+using Toggl.Foundation.Analytics;
 using Toggl.Foundation.DTOs;
-using Toggl.Foundation.Exceptions;
 using Toggl.Foundation.Models;
-using Toggl.Foundation.MvvmCross.Parameters;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using Toggl.Foundation.Tests.Generators;
 using Toggl.Multivac.Extensions;
@@ -25,25 +24,28 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         public abstract class TimeEntriesLogViewModelTest : BaseViewModelTests<TimeEntriesLogViewModel>
         {
             protected override TimeEntriesLogViewModel CreateViewModel()
-                => new TimeEntriesLogViewModel(DataSource, TimeService, OnboardingStorage, NavigationService);
+               => new TimeEntriesLogViewModel(DataSource, TimeService, AnalyticsService, OnboardingStorage, NavigationService);
         }
 
         public sealed class TheConstructor : TimeEntriesLogViewModelTest
         {
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(FourParameterConstructorTestData))]
-            public void ThrowsIfAnyOfTheArgumentsIsNull(bool useDataSource, 
-                                                        bool useTimeService, 
-                                                        bool useOnboardingStorage, 
-                                                        bool useNavigationService)
+            [ClassData(typeof(FiveParameterConstructorTestData))]
+            public void ThrowsIfAnyOfTheArgumentsIsNull(
+                bool useDataSource, 
+                bool useTimeService, 
+                bool useAnalyticsService,
+                bool useOnboardingStorage, 
+                bool useNavigationService)
             {
                 var dataSource = useDataSource ? DataSource : null;
                 var timeService = useTimeService ? TimeService : null;
+                var analyticsService = useAnalyticsService ? AnalyticsService : null;
                 var onboardingStorage = useOnboardingStorage ? OnboardingStorage : null;
                 var navigationService = useNavigationService ? NavigationService : null;
 
                 Action tryingToConstructWithEmptyParameters =
-                    () => new TimeEntriesLogViewModel(dataSource, timeService, onboardingStorage, navigationService);
+                    () => new TimeEntriesLogViewModel(dataSource, timeService, analyticsService, onboardingStorage, navigationService);
 
                 tryingToConstructWithEmptyParameters
                     .ShouldThrow<ArgumentNullException>();
@@ -397,8 +399,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 DataSource.TimeEntries.Start(Arg.Any<StartTimeEntryDTO>())
                     .Returns(Observable.Never<IDatabaseTimeEntry>());
 
-                ViewModel.ContinueTimeEntryCommand.ExecuteAsync(timeEntryViewModel);
-                ViewModel.ContinueTimeEntryCommand.ExecuteAsync(timeEntryViewModel);
+                var _ = ViewModel.ContinueTimeEntryCommand.ExecuteAsync(timeEntryViewModel);
+                var __ = ViewModel.ContinueTimeEntryCommand.ExecuteAsync(timeEntryViewModel);
 
                 await DataSource.TimeEntries.Received(1).Start(Arg.Any<StartTimeEntryDTO>());
             }
@@ -417,11 +419,37 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 await DataSource.TimeEntries.Received(2).Start(Arg.Any<StartTimeEntryDTO>());
             }
 
+            [Fact]
+            public async ThreadingTask RegistersTheEventInTheAnalyticsService()
+            {
+                var timeEntryViewModel = createTimeEntryViewModel();
+
+                await ViewModel.ContinueTimeEntryCommand.ExecuteAsync(timeEntryViewModel);
+
+                AnalyticsService.Received().TrackStartedTimeEntry(TimeEntryStartOrigin.Continue);
+            }
+
             private TimeEntryViewModel createTimeEntryViewModel()
             {
                 var timeEntry = Substitute.For<IDatabaseTimeEntry>();
                 timeEntry.Duration.Returns(100);
                 return new TimeEntryViewModel(timeEntry);
+            }
+        }
+
+        public sealed class TheDeleteCommand : TimeEntriesLogViewModelTest
+        {
+            [Property]
+            public void DeletesTheTimeEntry(long id)
+            {
+                var timeEntry = Substitute.For<IDatabaseTimeEntry>();
+                timeEntry.Id.Returns(id);
+                timeEntry.Duration.Returns(100);
+                var timeEntryViewModel = new TimeEntryViewModel(timeEntry);
+
+                ViewModel.DeleteCommand.ExecuteAsync(timeEntryViewModel).Wait();
+
+                DataSource.TimeEntries.Received().Delete(id).Wait();
             }
         }
     }

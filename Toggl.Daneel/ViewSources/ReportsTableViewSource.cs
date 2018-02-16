@@ -2,7 +2,9 @@
 using CoreGraphics;
 using Foundation;
 using MvvmCross.Binding.iOS.Views;
+using MvvmCross.Plugins.Color.iOS;
 using Toggl.Daneel.Views.Reports;
+using Toggl.Foundation.MvvmCross.Helper;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using UIKit;
 
@@ -24,6 +26,7 @@ namespace Toggl.Daneel.ViewSources
             tableView.SeparatorStyle = UITableViewCellSeparatorStyle.None;
             tableView.RegisterNibForCellReuse(ReportsLegendViewCell.Nib, cellIdentifier);
             tableView.RegisterNibForHeaderFooterViewReuse(ReportsHeaderView.Nib, headerCellIdentifier);
+            tableView.BackgroundColor = Color.Reports.Background.ToNativeColor();
         }
 
         public override UIView GetViewForHeader(UITableView tableView, nint section)

@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using MvvmCross.Core.Navigation;
 using MvvmCross.Core.ViewModels;
 using Toggl.Foundation.DataSources;
+using Toggl.Foundation.MvvmCross.Parameters;
 using Toggl.Multivac;
 using Toggl.Multivac.Extensions;
 using Toggl.PrimeRadiant.Models;
@@ -15,12 +15,15 @@ using static Toggl.Multivac.Extensions.StringExtensions;
 namespace Toggl.Foundation.MvvmCross.ViewModels
 {
     [Preserve(AllMembers = true)]
-    public sealed class SelectClientViewModel : MvxViewModel<long, long?>
+    public sealed class SelectClientViewModel : MvxViewModel<SelectClientParameters, long?>
     {
+
         private readonly ITogglDataSource dataSource;
         private readonly IMvxNavigationService navigationService;
 
         private long workspaceId;
+        private long selectedClientId;
+        private SelectableClientViewModel noClient;
         private IEnumerable<IDatabaseClient> allClients;
 
         public string Text { get; set; } = "";
@@ -31,7 +34,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             {
                 var text = Text.Trim();
                 return !string.IsNullOrEmpty(text) 
-                    && !Suggestions.Any(s => s == text)
+                    && !Suggestions.Any(s => s.Name == text)
                     && text.LengthInBytes() <= MaxClientNameLengthInBytes;
             }
         }
@@ -42,7 +45,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public IMvxAsyncCommand<string> SelectClientCommand { get; }
 
-        public MvxObservableCollection<string> Suggestions { get; } = new MvxObservableCollection<string>();
+        public MvxObservableCollection<SelectableClientViewModel> Suggestions { get; } 
+            = new MvxObservableCollection<SelectableClientViewModel>();
 
         public SelectClientViewModel(ITogglDataSource dataSource, IMvxNavigationService navigationService)
         {
@@ -57,9 +61,11 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             SelectClientCommand = new MvxAsyncCommand<string>(selectClient);
         }
 
-        public override void Prepare(long parameter)
+        public override void Prepare(SelectClientParameters parameter)
         {
-            workspaceId = parameter;
+            workspaceId = parameter.WorkspaceId;
+            selectedClientId = parameter.SelectedClientId;
+            noClient = new SelectableClientViewModel(Resources.NoClient, selectedClientId == 0);
         }
 
         public override async Task Initialize()
@@ -68,8 +74,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
             allClients = await dataSource.Clients.GetAllInWorkspace(workspaceId);
 
-            Suggestions.Add(Resources.NoClient);
-            Suggestions.AddRange(allClients.Select(c => c.Name));
+            Suggestions.Add(noClient);
+            Suggestions.AddRange(allClients.Select(c => new SelectableClientViewModel(c.Name, c.Id == selectedClientId)));
         }
 
         private void OnTextChanged()
@@ -78,12 +84,12 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             var text = Text.Trim();
             Suggestions.AddRange(
                 allClients
-                    .Select(c => c.Name)
-                    .Where(name => name.ContainsIgnoringCase(text))
+                    .Where(c => c.Name.ContainsIgnoringCase(text))
+                    .Select(c => new SelectableClientViewModel(c.Name, c.Id == selectedClientId))
             );
 
             if (!string.IsNullOrEmpty(Text)) return;
-            Suggestions.Insert(0, Resources.NoClient);
+            Suggestions.Insert(0, noClient);
         }
 
         private Task close()

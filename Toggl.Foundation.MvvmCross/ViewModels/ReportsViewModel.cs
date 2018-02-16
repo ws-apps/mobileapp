@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
@@ -26,6 +27,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private readonly ReportsCalendarViewModel calendarViewModel;
         private readonly Subject<Unit> reportSubject = new Subject<Unit>();
         private readonly CompositeDisposable disposeBag = new CompositeDisposable();
+        private readonly CultureInfo culture = new CultureInfo("en-US");
 
         private DateTimeOffset startDate;
         private DateTimeOffset endDate;
@@ -160,13 +162,13 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         {
             if (startDate == endDate)
             {
-                CurrentDateRangeString = $"{startDate.ToString(dateFormat)} ▾";
+                CurrentDateRangeString = $"{startDate.ToString(dateFormat, culture)} ▾";
                 return;
             }
             
             CurrentDateRangeString = IsCurrentWeek
                 ? $"{Resources.ThisWeek} ▾"
-                : $"{startDate.ToString(dateFormat)} - {endDate.ToString(dateFormat)} ▾";
+                : $"{startDate.ToString(dateFormat, culture)} - {endDate.ToString(dateFormat, culture)} ▾";
         }
     }
 }

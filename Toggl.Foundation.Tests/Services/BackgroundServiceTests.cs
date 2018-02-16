@@ -22,7 +22,7 @@ namespace Toggl.Foundation.Tests.Services
 
         public sealed class TheConstructor
         {
-            [Fact]
+            [Fact, LogIfTooSlow]
             public void ThrowsWhenTheArgumentIsNull()
             {
                 Action constructor = () => new BackgroundService(null);
@@ -35,7 +35,7 @@ namespace Toggl.Foundation.Tests.Services
         {
             private readonly DateTimeOffset now = new DateTimeOffset(2017, 12, 11, 0, 30, 59, TimeSpan.Zero);
 
-            [Fact]
+            [Fact, LogIfTooSlow]
             public void DoesNotEmitAnythingWhenItHasNotEnterBackgroundFirst()
             {
                 bool emitted = false;
@@ -49,7 +49,7 @@ namespace Toggl.Foundation.Tests.Services
                 emitted.Should().BeFalse();
             }
 
-            [Fact]
+            [Fact, LogIfTooSlow]
             public void EmitsValueWhenEnteringForegroundAfterBeingInBackground()
             {
                 bool emitted = false;
@@ -65,7 +65,7 @@ namespace Toggl.Foundation.Tests.Services
                 emitted.Should().BeTrue();
             }
 
-            [Fact]
+            [Fact, LogIfTooSlow]
             public void DoesNotEmitAnythingWhenTheEnterForegroundIsCalledMultipleTimes()
             {
                 bool emitted = false;

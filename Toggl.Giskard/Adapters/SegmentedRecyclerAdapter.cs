@@ -6,6 +6,8 @@ using System.Linq;
 using Android.Runtime;
 using MvvmCross.Core.ViewModels;
 using MvvmCross.Droid.Support.V7.RecyclerView;
+using MvvmCross.Platform.Core;
+using Toggl.Foundation.MvvmCross.Collections;
 
 namespace Toggl.Giskard.Adapters
 {
@@ -17,13 +19,35 @@ namespace Toggl.Giskard.Adapters
 
         private int? cachedItemCount;
 
+        protected NestableObservableCollection<TCollection, TItem> AnimatableCollection
+            => ItemsSource as NestableObservableCollection<TCollection, TItem>;
+
         protected abstract MvxObservableCollection<TCollection> Collection { get; }
 
-        public SegmentedRecyclerAdapter()
+        public override IEnumerable ItemsSource
+        {
+            get => base.ItemsSource;
+            set
+            {
+                if (AnimatableCollection != null)
+                {
+                    AnimatableCollection.OnChildCollectionChanged -= OnChildCollectionChanged;
+                }
+
+                base.ItemsSource = value;
+
+                if (AnimatableCollection != null)
+                {
+                    AnimatableCollection.OnChildCollectionChanged += OnChildCollectionChanged;
+                }
+            }
+        }
+
+        protected SegmentedRecyclerAdapter()
         {
         }
 
-        public SegmentedRecyclerAdapter(IntPtr javaReference, JniHandleOwnership transfer)
+        protected SegmentedRecyclerAdapter(IntPtr javaReference, JniHandleOwnership transfer)
             : base(javaReference, transfer)
         {
         }
@@ -40,6 +64,44 @@ namespace Toggl.Giskard.Adapters
             base.OnItemsSourceCollectionChanged(sender, e);
 
             calculateHeaderIndexes();
+        }
+
+        protected void OnChildCollectionChanged(object sender, ChildCollectionChangedEventArgs args)
+        {
+            calculateHeaderIndexes();
+
+            MvxSingleton<IMvxMainThreadDispatcher>.Instance.RequestMainThreadAction(() =>
+            {
+                var groupHeaderIndex = headerIndexes[args.CollectionIndex];
+                NotifyItemChanged(groupHeaderIndex);
+
+                switch (args.Action)
+                {
+                    case NotifyCollectionChangedAction.Add:
+                        foreach (var index in args.Indexes)
+                        {
+                            var itemIndex = groupHeaderIndex + index + 1;
+                            NotifyItemInserted(itemIndex);
+                        }
+                        break;
+
+                    case NotifyCollectionChangedAction.Remove:
+                        foreach (var index in args.Indexes)
+                        {
+                            var itemIndex = groupHeaderIndex + index + 1;
+                            NotifyItemRemoved(itemIndex);
+                        }
+                        break;
+
+                    case NotifyCollectionChangedAction.Replace:
+                        foreach (var index in args.Indexes)
+                        {
+                            var itemIndex = groupHeaderIndex + index + 1;
+                            NotifyItemChanged(itemIndex);
+                        }
+                        break;
+                }
+            });
         }
 
         public override object GetItem(int viewPosition)
@@ -72,6 +134,14 @@ namespace Toggl.Giskard.Adapters
 
                 return cachedItemCount.Value;
             }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (!disposing || AnimatableCollection == null) return;
+            AnimatableCollection.OnChildCollectionChanged -= OnChildCollectionChanged;
         }
 
         private void calculateHeaderIndexes()

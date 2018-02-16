@@ -1,27 +1,11 @@
-﻿using System;
-using Toggl.Foundation.Services;
+﻿using System.Collections.Generic;
+using Toggl.Foundation.Analytics;
 
 namespace Toggl.Giskard.Services
 {
-    public sealed class AnalyticsService : IAnalyticsService
+    public sealed class AnalyticsService : BaseAnalyticsService
     {
-        public void TrackCurrentPage(Type viewModelType)
-        {
-        }
-
-        public void TrackLoginEvent()
-        {
-        }
-
-        public void TrackNonFatalException(Exception ex)
-        {
-        }
-
-        public void TrackOnboardingSkipEvent(string pageName)
-        {
-        }
-
-        public void TrackSignUpEvent()
+        protected override void NativeTrackEvent(string eventName, Dictionary<string, string> parameters)
         {
         }
     }

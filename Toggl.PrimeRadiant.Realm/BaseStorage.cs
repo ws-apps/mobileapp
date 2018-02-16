@@ -53,9 +53,9 @@ namespace Toggl.PrimeRadiant.Realm
                     observer.OnNext(data);
                     observer.OnCompleted();
                 }
-                catch (InvalidOperationException)
+                catch (InvalidOperationException ex)
                 {
-                    observer.OnError(new EntityNotFoundException());
+                    observer.OnError(new EntityNotFoundException(ex));
                 }
                 catch (Exception ex)
                 {

@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using CoreGraphics;
 using Foundation;
 using MvvmCross.Core.ViewModels;
 using MvvmCross.Plugins.Color.iOS;
 using Toggl.Daneel.Views;
+using Toggl.Foundation;
 using Toggl.Foundation.MvvmCross.Collections;
 using Toggl.Foundation.MvvmCross.Helper;
 using Toggl.Foundation.MvvmCross.ViewModels;
@@ -12,17 +12,19 @@ using UIKit;
 
 namespace Toggl.Daneel.ViewSources
 {
-    public sealed class TimeEntriesLogViewSource : GroupedCollectionTableViewSource<TimeEntryViewModel>
+    public sealed class TimeEntriesLogViewSource : GroupedCollectionTableViewSource<TimeEntryViewModelCollection, TimeEntryViewModel>
     {
         private const int bottomPadding = 64;
 
         private const string cellIdentifier = nameof(TimeEntriesLogViewCell);
         private const string headerCellIdentifier = nameof(TimeEntriesLogHeaderViewCell);
-        
-        private IEnumerable<TimeEntryViewModelCollection> groupedItems
-            => ItemsSource as IEnumerable<TimeEntryViewModelCollection>;
+
+        //Using the old API so that delete action would work on pre iOS 11 devices
+        private readonly UITableViewRowAction deleteTableViewRowAction;
 
         public IMvxAsyncCommand<TimeEntryViewModel> ContinueTimeEntryCommand { get; set; }
+
+        public IMvxAsyncCommand<TimeEntryViewModel> DeleteTimeEntryCommand { get; set; }
 
         public TimeEntriesLogViewSource(UITableView tableView)
             : base(tableView, cellIdentifier, headerCellIdentifier)
@@ -32,6 +34,12 @@ namespace Toggl.Daneel.ViewSources
             tableView.SeparatorStyle = UITableViewCellSeparatorStyle.None;
             tableView.RegisterNibForCellReuse(TimeEntriesLogViewCell.Nib, cellIdentifier);
             tableView.RegisterNibForHeaderFooterViewReuse(TimeEntriesLogHeaderViewCell.Nib, headerCellIdentifier);
+
+            deleteTableViewRowAction = UITableViewRowAction.Create(
+                UITableViewRowActionStyle.Destructive,
+                Resources.Delete,
+                handleDeleteTableViewRowAction);
+            deleteTableViewRowAction.BackgroundColor = Color.TimeEntriesLog.DeleteSwipeActionBackground.ToNativeColor();
         }
 
         public override UIView GetViewForFooter(UITableView tableView, nint section)
@@ -65,6 +73,40 @@ namespace Toggl.Daneel.ViewSources
         {
             scrollView.SetContentOffset(CGPoint.Empty, false);
             return false;
+        }
+
+        public override UITableViewRowAction[] EditActionsForRow(UITableView tableView, NSIndexPath indexPath)
+            => new[] { deleteTableViewRowAction };
+
+        public override UISwipeActionsConfiguration GetLeadingSwipeActionsConfiguration(UITableView tableView, NSIndexPath indexPath)
+        {
+            if (!UIDevice.CurrentDevice.CheckSystemVersion(11, 0))
+                return null;
+            
+            return UISwipeActionsConfiguration
+                .FromActions(new[] { continueSwipeActionFor(indexPath) });
+        }
+
+        private void handleDeleteTableViewRowAction(UITableViewRowAction _, NSIndexPath indexPath)
+        {
+            var timeEntry = (TimeEntryViewModel)GetItemAt(indexPath);
+            DeleteTimeEntryCommand.Execute(timeEntry);
+        }
+
+        private UIContextualAction continueSwipeActionFor(NSIndexPath indexPath)
+        {
+            var continueAction = UIContextualAction.FromContextualActionStyle(
+                UIContextualActionStyle.Normal,
+                Resources.Continue,
+                (action, sourceView, completionHandler) =>
+                {
+                    var timeEntry = (TimeEntryViewModel)GetItemAt(indexPath);
+                    ContinueTimeEntryCommand.Execute(timeEntry);
+                    completionHandler.Invoke(finished: true);
+                }
+            );
+            continueAction.BackgroundColor = Color.TimeEntriesLog.ContinueSwipeActionBackground.ToNativeColor();
+            return continueAction;
         }
     }
 }

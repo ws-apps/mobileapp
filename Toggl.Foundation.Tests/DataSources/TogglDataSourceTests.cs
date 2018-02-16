@@ -124,7 +124,7 @@ namespace Toggl.Foundation.Tests.DataSources
 
         public sealed class TheStartSyncingMethod : TogglDataSourceTest
         {
-            [Fact]
+            [Fact, LogIfTooSlow]
             public void SubscribesSyncManagerToTheBackgroundServiceSignal()
             {
                 var observable = Substitute.For<IObservable<TimeSpan>>();
@@ -135,7 +135,7 @@ namespace Toggl.Foundation.Tests.DataSources
                 observable.ReceivedWithAnyArgs().Subscribe(null);
             }
 
-            [Fact]
+            [Fact, LogIfTooSlow]
             public void CallsForceFullSync()
             {
                 DataSource.StartSyncing();
@@ -143,7 +143,7 @@ namespace Toggl.Foundation.Tests.DataSources
                 SyncManager.Received().ForceFullSync();
             }
 
-            [Fact]
+            [Fact, LogIfTooSlow]
             public void ReturnsAnObservableWhichEmitsWhenTheForceFullSyncObservableEmits()
             {
                 bool emitted = false;
@@ -157,7 +157,7 @@ namespace Toggl.Foundation.Tests.DataSources
                 emitted.Should().BeTrue();
             }
 
-            [Fact]
+            [Fact, LogIfTooSlow]
             public void ReturnsAnObservableWhichDoesNotEmitWhenTheForceFullSyncObservableDoesNotEmit()
             {
                 bool emitted = false;
@@ -170,7 +170,7 @@ namespace Toggl.Foundation.Tests.DataSources
                 emitted.Should().BeFalse();
             }
 
-            [Fact]
+            [Fact, LogIfTooSlow]
             public void CallsForceFullSyncOnlyOnceWhenTheObservableDoesNotEmitAnyValues()
             {
                 var observable = Observable.Never<TimeSpan>();
@@ -181,7 +181,7 @@ namespace Toggl.Foundation.Tests.DataSources
                 SyncManager.Received(1).ForceFullSync();
             }
 
-            [Fact]
+            [Fact, LogIfTooSlow]
             public void CallsForceFullSyncWhenAValueIsEmitted()
             {
                 var subject = new Subject<TimeSpan>();
@@ -193,7 +193,7 @@ namespace Toggl.Foundation.Tests.DataSources
                 SyncManager.Received(2).ForceFullSync();
             }
 
-            [Fact]
+            [Fact, LogIfTooSlow]
             public void ThrowsWhenCalledForTheSecondTime()
             {
                 var observable = Observable.Never<TimeSpan>();
@@ -205,7 +205,7 @@ namespace Toggl.Foundation.Tests.DataSources
                 callForTheSecondTime.ShouldThrow<InvalidOperationException>();
             }
 
-            [Fact]
+            [Fact, LogIfTooSlow]
             public async ThreadingTask UnsubscribesFromTheSignalAfterLogout()
             {
                 var subject = new Subject<TimeSpan>();
@@ -219,7 +219,7 @@ namespace Toggl.Foundation.Tests.DataSources
                 await SyncManager.DidNotReceive().ForceFullSync();
             }
 
-            [Fact]
+            [Fact, LogIfTooSlow]
             public async ThreadingTask ThrowsWhenStartSyncingIsCalledAfterLoggingOut()
             {
                 await DataSource.Logout();
@@ -403,7 +403,7 @@ namespace Toggl.Foundation.Tests.DataSources
                 handling.ShouldThrow<ArgumentException>();
             }
 
-            [Fact]
+            [Fact, LogIfTooSlow]
             public void UnsubscribesFromTheBackgroundServiceObservableWhenExceptionIsCaught()
             {
                 var subject = new Subject<TimeSpan>();

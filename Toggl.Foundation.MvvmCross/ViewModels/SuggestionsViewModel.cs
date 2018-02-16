@@ -3,7 +3,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using MvvmCross.Core.ViewModels;
-using PropertyChanged;
+using Toggl.Foundation.Analytics;
 using Toggl.Foundation.DataSources;
 using Toggl.Foundation.DTOs;
 using Toggl.Foundation.Suggestions;
@@ -15,10 +15,11 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
     [Preserve(AllMembers = true)]
     public sealed class SuggestionsViewModel : MvxViewModel
     {
+        private readonly ITimeService timeService;
         private readonly ITogglDataSource dataSource;
+        private readonly IAnalyticsService analyticsService;
         private readonly IOnboardingStorage onboardingStorage;
         private readonly ISuggestionProviderContainer suggestionProviders;
-        private readonly ITimeService timeService;
 
         private IDisposable emptyDatabaseDisposable;
 
@@ -35,17 +36,20 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public SuggestionsViewModel(
             ITogglDataSource dataSource,
+            IAnalyticsService analyticsService,
             IOnboardingStorage onboardingStorage,
             ISuggestionProviderContainer suggestionProviders,
             ITimeService timeService)
         {
             Ensure.Argument.IsNotNull(dataSource, nameof(dataSource));
             Ensure.Argument.IsNotNull(timeService, nameof(timeService));
+            Ensure.Argument.IsNotNull(analyticsService, nameof(analyticsService));
             Ensure.Argument.IsNotNull(onboardingStorage, nameof(onboardingStorage));
             Ensure.Argument.IsNotNull(suggestionProviders, nameof(suggestionProviders));
 
             this.dataSource = dataSource;
             this.timeService = timeService;
+            this.analyticsService = analyticsService;
             this.onboardingStorage = onboardingStorage;
             this.suggestionProviders = suggestionProviders;
 
@@ -108,6 +112,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                     areStartButtonsEnabled = true;
                     StartTimeEntryCommand.RaiseCanExecuteChanged();
                 });
+
+            analyticsService.TrackStartedTimeEntry(TimeEntryStartOrigin.Suggestion);
         }
     }
 }

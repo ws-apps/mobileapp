@@ -4,6 +4,7 @@ using System.Reactive.Linq;
 using FsCheck;
 using MvvmCross.Core.Navigation;
 using NSubstitute;
+using Toggl.Foundation.Analytics;
 using Toggl.Foundation.DataSources;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using Toggl.Multivac.Extensions;
@@ -28,9 +29,10 @@ namespace Toggl.Foundation.Tests.Generators
                 {
                     var source = Substitute.For<ITogglDataSource>();
                     var timeService = Substitute.For<ITimeService>();
+                    var analyticsService = Substitute.For<IAnalyticsService>();
                     var onboardingStorage = Substitute.For<IOnboardingStorage>();
                     var navigationService = Substitute.For<IMvxNavigationService>();
-                    var viewModel = new TimeEntriesLogViewModel(source, timeService, onboardingStorage, navigationService);
+                    var viewModel = new TimeEntriesLogViewModel(source, timeService, analyticsService, onboardingStorage, navigationService);
 
                     var year = yearGenerator.Sample(0, 1).First();
 

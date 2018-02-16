@@ -454,7 +454,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     Arg.Is<BrowserParameters>(parameter => parameter.Url == helpUrl));
             }
 
-            [Fact]
+            [Fact, LogIfTooSlow]
             public void NavigatesToBrowserViewModelWithHelpTitle()
             {
                 ViewModel.HelpCommand.Execute();
@@ -537,7 +537,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     .Wait();
             }
 
-            [Theory]
+            [Theory, LogIfTooSlow]
             [InlineData(true, "")]
             [InlineData(true, "Error")]
             [InlineData(true, null)]

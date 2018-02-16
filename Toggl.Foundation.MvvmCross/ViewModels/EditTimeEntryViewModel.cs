@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using MvvmCross.Core.Navigation;
 using MvvmCross.Core.ViewModels;
@@ -14,9 +13,9 @@ using Toggl.Foundation.MvvmCross.Parameters;
 using Toggl.Foundation.MvvmCross.Services;
 using Toggl.Multivac;
 using Toggl.Multivac.Extensions;
+using Toggl.Multivac.Models;
 using Toggl.PrimeRadiant.Models;
 using static Toggl.Foundation.Helper.Constants;
-using static Toggl.Multivac.Extensions.StringExtensions;
 
 namespace Toggl.Foundation.MvvmCross.ViewModels
 {
@@ -64,7 +63,26 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         public TimeSpan Duration
             => (StopTime ?? timeService.CurrentDateTime) - StartTime;
 
+        public TimeSpan DisplayedDuration
+        {
+            get => Duration;
+            set
+            {
+                if (stopTime.HasValue)
+                {
+                    StopTime = StartTime + value;
+                }
+                else
+                {
+                    StartTime = timeService.CurrentDateTime - value;
+                }
+            }
+        }
+
         public DateTimeOffset StartTime { get; set; }
+
+        [DependsOn(nameof(StopTime))]
+        public bool IsTimeEntryRunning => !StopTime.HasValue;
 
         private DateTimeOffset? stopTime;
         public DateTimeOffset? StopTime
@@ -73,14 +91,20 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             set
             {
                 if (stopTime == value) return;
+
                 stopTime = value;
-                if (stopTime != null)
+
+                if (IsTimeEntryRunning)
+                {
+                    subscribeToTimeServiceTicks();
+                }
+                else
                 {
                     tickingDisposable?.Dispose();
                     tickingDisposable = null;
-                    return;
                 }
-                subscribeToTimeServiceTicks();
+
+                RaisePropertyChanged(nameof(StopTime));
             }
         }
 
@@ -99,13 +123,19 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public IMvxCommand DismissSyncErrorMessageCommand { get; }
 
+        public IMvxCommand StopCommand { get; }
+
         public IMvxAsyncCommand DeleteCommand { get; }
 
         public IMvxAsyncCommand CloseCommand { get; }
 
         public IMvxAsyncCommand EditDurationCommand { get; }
 
-        public IMvxAsyncCommand SelectStartDateTimeCommand { get; }
+        public IMvxAsyncCommand SelectStartTimeCommand { get; }
+
+        public IMvxAsyncCommand SelectEndTimeCommand { get; }
+
+        public IMvxAsyncCommand SelectStartDateCommand { get; }
 
         public IMvxAsyncCommand SelectProjectCommand { get; }
 
@@ -133,7 +163,12 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             ConfirmCommand = new MvxCommand(confirm);
             CloseCommand = new MvxAsyncCommand(close);
             EditDurationCommand = new MvxAsyncCommand(editDuration);
-            SelectStartDateTimeCommand = new MvxAsyncCommand(selectStartDateTime);
+            StopCommand = new MvxCommand(stopTimeEntry, () => IsTimeEntryRunning);
+
+            SelectStartTimeCommand = new MvxAsyncCommand(selectStartTime);
+            SelectEndTimeCommand = new MvxAsyncCommand(selectEndTime);
+            SelectStartDateCommand = new MvxAsyncCommand(selectStartDate);
+
             SelectProjectCommand = new MvxAsyncCommand(selectProject);
             SelectTagsCommand = new MvxAsyncCommand(selectTags);
             DismissSyncErrorMessageCommand = new MvxCommand(dismissSyncErrorMessageCommand);
@@ -157,7 +192,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             ProjectColor = timeEntry.Project?.Color;
             Task = timeEntry.Task?.Name;
             Client = timeEntry.Project?.Client?.Name;
-            projectId = timeEntry.Project?.Id ?? 0;
+            projectId = timeEntry.Project?.Id;
+            taskId = timeEntry.Task?.Id;
             SyncErrorMessage = timeEntry.LastSyncErrorMessage;
             workspaceId = timeEntry.WorkspaceId;
             SyncErrorMessageVisible = !string.IsNullOrEmpty(SyncErrorMessage);
@@ -224,18 +260,62 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private Task close()
             => navigationService.Close(this);
 
-        private async Task selectStartDateTime()
+        private async Task selectStartTime()
         {
-            var currentTime = timeService.CurrentDateTime;
-            var maxDate = StopTime == null 
-                        ? currentTime 
-                        : StopTime.Value > currentTime ? currentTime : StopTime.Value;
-            var minDate = maxDate.AddHours(-MaxTimeEntryDurationInHours);
+            var parameters = DateTimePickerParameters.WithDates(
+                DateTimePickerMode.Time,
+                StartTime,
+                EarliestAllowedStartTime,
+                LatestAllowedStartTime);
 
-            var parameters = DatePickerParameters.WithDates(StartTime, minDate, maxDate);
             StartTime = await navigationService
-                .Navigate<SelectDateTimeViewModel, DatePickerParameters, DateTimeOffset>(parameters)
+                .Navigate<SelectDateTimeViewModel, DateTimePickerParameters, DateTimeOffset>(parameters)
                 .ConfigureAwait(false);
+        }
+
+        private void stopTimeEntry()
+        {
+            StopTime = timeService.CurrentDateTime;
+        }
+
+        private async Task selectEndTime()
+        {
+            if (IsTimeEntryRunning)
+            {
+                stopTimeEntry();
+                return;
+            }
+
+            var earliestAllowedTime = StartTime;
+            var latestAllowedTime = StartTime.Add(MaxTimeEntryDuration);
+
+            var parameters = DateTimePickerParameters.WithDates(
+                DateTimePickerMode.Time,
+                StopTime.Value,
+                earliestAllowedTime,
+                latestAllowedTime);
+
+            StopTime = await navigationService
+                .Navigate<SelectDateTimeViewModel, DateTimePickerParameters, DateTimeOffset>(parameters)
+                .ConfigureAwait(false);
+        }
+
+        private async Task selectStartDate()
+        {
+            var parameters = IsTimeEntryRunning
+                ? DateTimePickerParameters.ForStartDateOfRunningTimeEntry(StartTime, timeService.CurrentDateTime)
+                : DateTimePickerParameters.ForStartDateOfStoppedTimeEntry(StartTime);
+
+            var duration = Duration;
+
+            StartTime = await navigationService
+                .Navigate<SelectDateTimeViewModel, DateTimePickerParameters, DateTimeOffset>(parameters)
+                .ConfigureAwait(false);
+
+            if (IsTimeEntryRunning == false)
+            {
+                StopTime = StartTime + duration;
+            }
         }
 
         private async Task selectProject()
@@ -269,7 +349,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
             Task = taskId.HasValue ? (await dataSource.Tasks.GetById(taskId.Value)).Name : "";
         }
-        
+
         private async Task editDuration()
         {
             var duration = StopTime.HasValue ? Duration : (TimeSpan?)null;
@@ -277,7 +357,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             var selectedDuration = await navigationService
                 .Navigate<EditDurationViewModel, DurationParameter, DurationParameter>(currentDuration)
                 .ConfigureAwait(false);
-            
+
             StartTime = selectedDuration.Start;
             if (selectedDuration.Duration.HasValue)
             {
@@ -321,7 +401,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private void dismissSyncErrorMessageCommand()
             => SyncErrorMessageVisible = false;
 
-        private void toggleBillable() 
+        private void toggleBillable()
         {
             Billable = !Billable;
         }

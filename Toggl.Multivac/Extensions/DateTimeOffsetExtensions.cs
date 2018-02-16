@@ -19,5 +19,13 @@ namespace Toggl.Multivac.Extensions
             => time.Second >= (SecondsInAMinute / 2)
                 ? time + TimeSpan.FromSeconds(SecondsInAMinute - time.Second)
                 : time - TimeSpan.FromSeconds(time.Second);
+
+        public static DateTimeOffset WithDate(this DateTimeOffset original, DateTimeOffset date) 
+            => new DateTimeOffset(date.Year, date.Month, date.Day,
+                                  original.Hour, original.Minute, original.Second, original.Offset);
+
+        public static DateTimeOffset WithTime(this DateTimeOffset original, DateTimeOffset time)
+            => new DateTimeOffset(original.Year, original.Month, original.Day,
+                                  time.Hour, time.Minute, time.Second, original.Offset);
     }
 }

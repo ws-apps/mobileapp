@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:local="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@android:color/white"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:paddingTop="12dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize">
+        <RelativeLayout
+            android:layout_height="48dp"
+            android:layout_width="match_parent">
+            <ImageView
+                android:id="@+id/EditProjectProjectImage"
+                android:src="@drawable/project"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp" />
+            <EditText
+                local:MvxBind="Text Name"
+                android:lines="1"
+                android:textSize="15sp"
+                android:singleLine="true"
+                android:lineSpacingExtra="5sp"
+                android:textColor="@android:color/black"
+                android:background="@android:color/white"
+                tools:text="Some client with a ridiculously big name to help us test fading"
+                android:layout_marginTop="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignEnd="@+id/EditProjectFadeView"
+                android:layout_alignTop="@id/EditProjectProjectImage"
+                android:layout_toRightOf="@id/EditProjectProjectImage" />
+            <View
+                android:id="@+id/EditProjectFadeView"
+                android:background="@drawable/TransparentToWhiteGradient"
+                android:layout_width="68dp"
+                android:layout_marginRight="16dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true" />
+            <ImageView
+                local:MvxBind="Click PickColorCommand"
+                android:src="@drawable/dropdown"
+                android:clickable="true"
+                android:layout_marginRight="16dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignTop="@id/EditProjectProjectImage" />
+        </RelativeLayout>
+        <View
+            android:background="@color/separator"
+            android:layout_height="0.5dp"
+            android:layout_marginLeft="55dp"
+            android:layout_width="match_parent" />
+        <RelativeLayout
+            local:MvxBind="Click PickWorkspaceCommand"
+            android:clickable="true"
+            android:background="?attr/selectableItemBackground"
+            android:layout_height="48dp"
+            android:layout_width="match_parent">
+            <ImageView
+                android:id="@+id/EditProjectWorkspaceImage"
+                android:src="@drawable/workspace"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="end"
+                android:layout_marginTop="12dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="12dp"
+                android:layout_below="@+id/EditProjectProjectImage" />
+            <TextView
+                local:MvxBind="Text WorkspaceName"
+                android:lines="1"
+                android:textSize="15sp"
+                android:singleLine="true"
+                android:lineSpacingExtra="5sp"
+                android:textColor="@android:color/black"
+                tools:text="Some Workspace with a ridiculously big name to help us test fading"
+                android:layout_marginTop="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignEnd="@+id/EditProjectFadeView"
+                android:layout_alignTop="@id/EditProjectWorkspaceImage"
+                android:layout_toRightOf="@id/EditProjectWorkspaceImage" />
+            <View
+                android:id="@+id/EditProjectFadeView"
+                android:background="@drawable/TransparentToWhiteGradient"
+                android:layout_width="68dp"
+                android:layout_marginRight="16dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true" />
+            <ImageView
+                android:src="@drawable/dropdown"
+                android:clickable="true"
+                android:layout_marginRight="16dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignTop="@id/EditProjectWorkspaceImage" />
+        </RelativeLayout>
+        <View
+            android:background="@color/separator"
+            android:layout_height="0.5dp"
+            android:layout_marginLeft="55dp"
+            android:layout_width="match_parent" />
+        <RelativeLayout
+            local:MvxBind="Click PickClientCommand"
+            android:clickable="true"
+            android:background="?attr/selectableItemBackground"
+            android:layout_height="48dp"
+            android:layout_width="match_parent">
+            <ImageView
+                android:id="@+id/EditProjectClientImage"
+                android:src="@drawable/client"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="end"
+                android:layout_marginTop="12dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="12dp"
+                android:layout_below="@id/EditProjectWorkspaceImage" />
+            <TextView
+                local:MvxBind="Text If(ClientName, ClientName, 'No Client'); TextColor ARGB(If(ClientName, '#000000', '#CECECE'))"
+                android:lines="1"
+                android:textSize="15sp"
+                android:singleLine="true"
+                android:lineSpacingExtra="5sp"
+                android:textColor="@android:color/black"
+                tools:text="Some client with a ridiculously big name to help us test fading"
+                android:layout_marginTop="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignEnd="@+id/EditProjectFadeView"
+                android:layout_alignTop="@id/EditProjectClientImage"
+                android:layout_toRightOf="@id/EditProjectClientImage" />
+            <View
+                android:id="@+id/EditProjectFadeView"
+                android:background="@drawable/TransparentToWhiteGradient"
+                android:layout_width="68dp"
+                android:layout_marginRight="16dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true" />
+            <ImageView
+                android:src="@drawable/dropdown"
+                android:clickable="true"
+                android:layout_marginRight="16dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignTop="@id/EditProjectClientImage" />
+        </RelativeLayout>
+        <View
+            android:background="@color/separator"
+            android:layout_height="0.5dp"
+            android:layout_marginLeft="55dp"
+            android:layout_width="match_parent" />
+        <RelativeLayout
+            local:MvxBind="Click TogglePrivateProjectCommand"
+            android:clickable="true"
+            android:background="?attr/selectableItemBackground"
+            android:paddingBottom="12dp"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent">
+            <ImageView
+                android:id="@+id/EditProjectPrivateProjectImage"
+                android:src="@drawable/padlock"
+                android:layout_gravity="end"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="12dp"
+                android:layout_below="@+id/EditProjectClientImage" />
+            <TextView
+                android:id="@+id/EditProjectPrivateProjectLabel"
+                android:lines="1"
+                android:textSize="15sp"
+                android:singleLine="true"
+                android:lineSpacingExtra="5sp"
+                android:text="@string/PrivateProject"
+                android:textColor="@android:color/black"
+                android:layout_marginTop="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignEnd="@+id/EditProjectFadeView"
+                android:layout_alignTop="@id/EditProjectPrivateProjectImage"
+                android:layout_toRightOf="@id/EditProjectPrivateProjectImage" />
+            <TextView
+                android:textSize="12sp"
+                android:lineSpacingExtra="5sp"
+                android:textColor="@color/defaultText"
+                android:text="@string/PrivateProjectHint"
+                android:layout_marginTop="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/EditProjectPrivateProjectLabel"
+                android:layout_alignStart="@+id/EditProjectPrivateProjectLabel" />
+            <Switch
+                local:MvxBind="Checked IsPrivate"
+                android:thumbTint="@color/switchTint"
+                android:layout_marginRight="16dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignTop="@id/EditProjectPrivateProjectImage" />
+        </RelativeLayout>
+        <View
+            android:background="@color/separator"
+            android:layout_height="0.5dp"
+            android:layout_marginLeft="55dp"
+            android:layout_width="match_parent" />
+    </LinearLayout>
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/Toolbar"
+        android:minHeight="?attr/actionBarSize"
+        android:background="@android:color/white"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        local:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</android.support.design.widget.CoordinatorLayout>

@@ -323,6 +323,18 @@ namespace Toggl.Foundation {
             }
         }
         
+        public static string ContinueEditing {
+            get {
+                return ResourceManager.GetString("ContinueEditing", resourceCulture);
+            }
+        }
+        
+        public static string Discard {
+            get {
+                return ResourceManager.GetString("Discard", resourceCulture);
+            }
+        }
+        
         public static string PrivacyPolicy {
             get {
                 return ResourceManager.GetString("PrivacyPolicy", resourceCulture);
@@ -620,6 +632,12 @@ namespace Toggl.Foundation {
         public static string NoEmailErrorMessage {
             get {
                 return ResourceManager.GetString("NoEmailErrorMessage", resourceCulture);
+            }
+        }
+        
+        public static string Continue {
+            get {
+                return ResourceManager.GetString("Continue", resourceCulture);
             }
         }
     }

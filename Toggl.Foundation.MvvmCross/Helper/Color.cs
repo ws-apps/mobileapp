@@ -60,6 +60,10 @@ namespace Toggl.Foundation.MvvmCross.Helper
             public static readonly MvxColor ButtonBorder = new MvxColor(243, 243, 243);
 
             public static readonly MvxColor SectionFooter = new MvxColor(250, 251, 252);
+
+            public static readonly MvxColor DeleteSwipeActionBackground = new MvxColor(247, 64, 73);
+
+            public static readonly MvxColor ContinueSwipeActionBackground = lightishGreen;
         }
 
         public static class StartTimeEntry
@@ -81,6 +85,11 @@ namespace Toggl.Foundation.MvvmCross.Helper
             public static readonly MvxColor TokenBorder = new MvxColor(232, 232, 232);
 
             public static readonly MvxColor AddIconColor = new MvxColor(75, 200, 0);
+        }
+
+        public static class DurationField
+        {
+            public static readonly MvxColor Cursor = lightishGreen;
         }
 
         internal static MvxColor FromHSV(float hue, float saturation, float value)
@@ -200,6 +209,8 @@ namespace Toggl.Foundation.MvvmCross.Helper
 
         public static class Reports
         {
+            public static readonly MvxColor Background = new MvxColor(250, 251, 252);
+
             public static readonly MvxColor PercentageActivated = new MvxColor(0, 171, 252);
 
             public static readonly MvxColor PercentageDisabled = new MvxColor(6, 170, 245, 62);

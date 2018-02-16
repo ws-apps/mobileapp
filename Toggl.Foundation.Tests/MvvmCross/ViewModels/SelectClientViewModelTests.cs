@@ -4,7 +4,10 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using FsCheck;
+using FsCheck.Xunit;
 using NSubstitute;
+using Toggl.Foundation.MvvmCross.Parameters;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using Toggl.Foundation.Tests.Generators;
 using Toggl.PrimeRadiant.Models;
@@ -16,16 +19,19 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
     {
         public abstract class SelectClientViewModelTest : BaseViewModelTests<SelectClientViewModel>
         {
+            protected SelectClientParameters Parameters { get; }
+                = SelectClientParameters.WithIds(10, null);
+
             protected override SelectClientViewModel CreateViewModel()
                => new SelectClientViewModel(DataSource, NavigationService);
 
             protected List<IDatabaseClient> GenerateClientList() =>
-                Enumerable.Range(0, 10).Select(i =>
+                Enumerable.Range(1, 10).Select(i =>
                 {
-                    var workspace = Substitute.For<IDatabaseClient>();
-                    workspace.Id.Returns(i);
-                    workspace.Name.Returns(i.ToString());
-                    return workspace;
+                    var client = Substitute.For<IDatabaseClient>();
+                    client.Id.Returns(i);
+                    client.Name.Returns(i.ToString());
+                    return client;
                 }).ToList();
         }
 
@@ -54,7 +60,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 var clients = GenerateClientList();
                 DataSource.Clients.GetAllInWorkspace(Arg.Any<long>())
                     .Returns(Observable.Return(clients));
-                ViewModel.Prepare(10);
+                ViewModel.Prepare(Parameters);
 
                 await ViewModel.Initialize();
 
@@ -67,11 +73,47 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 var clients = GenerateClientList();
                 DataSource.Clients.GetAllInWorkspace(Arg.Any<long>())
                     .Returns(Observable.Return(clients));
-                ViewModel.Prepare(10);
+                ViewModel.Prepare(Parameters);
 
                 await ViewModel.Initialize();
 
-                ViewModel.Suggestions.First().Should().Be(Resources.NoClient);
+                ViewModel.Suggestions.First().Name.Should().Be(Resources.NoClient);
+            }
+
+            [Fact, LogIfTooSlow]
+            public async Task SetsNoClientAsSelectedIfTheParameterDoesNotSpecifyTheCurrentClient()
+            {
+                var clients = GenerateClientList();
+                DataSource.Clients.GetAllInWorkspace(Arg.Any<long>())
+                    .Returns(Observable.Return(clients));
+                ViewModel.Prepare(Parameters);
+
+                await ViewModel.Initialize();
+
+                ViewModel.Suggestions.Single(c => c.Selected).Name.Should().Be(Resources.NoClient);
+            }
+
+            [Theory, LogIfTooSlow]
+            [InlineData(1)]
+            [InlineData(2)]
+            [InlineData(3)]
+            [InlineData(4)]
+            [InlineData(5)]
+            [InlineData(6)]
+            [InlineData(7)]
+            [InlineData(8)]
+            [InlineData(9)]
+            public async Task SetsTheAppropriateClientAsTheCurrentlySelectedOne(int id)
+            {
+                var parameter = SelectClientParameters.WithIds(10, id);
+                var clients = GenerateClientList();
+                DataSource.Clients.GetAllInWorkspace(Arg.Any<long>())
+                    .Returns(Observable.Return(clients));
+                ViewModel.Prepare(parameter);
+
+                await ViewModel.Initialize();
+
+                ViewModel.Suggestions.Single(c => c.Selected).Name.Should().Be(id.ToString());
             }
         }
 
@@ -110,7 +152,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 var clients = GenerateClientList();
                 DataSource.Clients.GetAllInWorkspace(Arg.Any<long>())
                     .Returns(Observable.Return(clients));
-                ViewModel.Prepare(10);
+                ViewModel.Prepare(Parameters);
             }
 
             [Fact, LogIfTooSlow]
@@ -160,7 +202,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 var clients = GenerateClientList();
                 DataSource.Clients.GetAllInWorkspace(Arg.Any<long>())
                     .Returns(Observable.Return(clients));
-                ViewModel.Prepare(10);
+                ViewModel.Prepare(Parameters);
                 await ViewModel.Initialize();
 
                 ViewModel.Text = "0";
@@ -180,7 +222,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 DataSource.Clients
                     .GetAllInWorkspace(Arg.Any<long>())
                     .Returns(Observable.Return(new List<IDatabaseClient> { client }));
-                ViewModel.Prepare(10);
+                ViewModel.Prepare(Parameters);
             }
 
             [Fact, LogIfTooSlow]
@@ -229,9 +271,9 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [Fact, LogIfTooSlow]
             public async Task CreatesANewClientWithTheGivenNameInTheCurrentWorkspace()
             {
-                long workspaceId = 123;
+                long workspaceId = 10;
                 await ViewModel.Initialize();
-                ViewModel.Prepare(workspaceId);
+                ViewModel.Prepare(Parameters);
                 ViewModel.Text = "Some name of the client";
 
                 await ViewModel.CreateClientCommand.ExecuteAsync();

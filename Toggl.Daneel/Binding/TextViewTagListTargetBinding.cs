@@ -22,14 +22,6 @@ namespace Toggl.Daneel.Binding
 
         public override MvxBindingMode DefaultMode => MvxBindingMode.OneWay;
 
-        private static readonly UIStringAttributes centeredTextAttributes = new UIStringAttributes
-        {
-            ParagraphStyle = new NSMutableParagraphStyle
-            {
-                Alignment = UITextAlignment.Center
-            }
-        };
-
         public TextViewTagListTargetBinding(UITextView target) : base(target)
         {
             elipsisTag = "...".GetTagToken(tokenLeftMargin, tokenRightMargin);
@@ -78,11 +70,6 @@ namespace Toggl.Daneel.Binding
                     result.Append(NSAttributedString.FromAttachment(token));
                     return result;
                 }
-            );
-
-            tagTokenString.AddAttributes(
-                centeredTextAttributes,
-                new NSRange(0, tagTokenString.Length)
             );
 
             return tagTokenString;

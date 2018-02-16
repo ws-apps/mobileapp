@@ -159,7 +159,7 @@ namespace Toggl.Ultrawave.Tests.Integration
 
         public sealed class TheSearchMethod : AuthenticatedEndpointBaseTests<List<IProject>>
         {
-            [Fact]
+            [Fact, LogTestInfo]
             public async ThreadingTask ThrowsArgumentNullExceptionForNullIds()
             {
                 var (togglApi, user) = await SetupTestUser();
@@ -169,7 +169,7 @@ namespace Toggl.Ultrawave.Tests.Integration
                 searchingNull.ShouldThrow<ArgumentNullException>();
             }
 
-            [Fact]
+            [Fact, LogTestInfo]
             public async ThreadingTask ThrowsBadRequestExceptionForEmtpyArrayOfIds()
             {
                 var (togglApi, user) = await SetupTestUser();
@@ -180,7 +180,7 @@ namespace Toggl.Ultrawave.Tests.Integration
                 searchingWithEmptyIds.ShouldThrow<BadRequestException>();
             }
 
-            [Fact]
+            [Fact, LogTestInfo]
             public async ThreadingTask ReturnsEmtpyArrayForProjectsWhichDontExistOrDoNotBelongToOtherUser()
             {
                 var (togglApi, user) = await SetupTestUser();
@@ -191,7 +191,7 @@ namespace Toggl.Ultrawave.Tests.Integration
                 projects.Should().HaveCount(0);
             }
 
-            [Fact]
+            [Fact, LogTestInfo]
             public async ThreadingTask DoesNotFindProjectInAnInaccessibleWorkspace()
             {
                 var (togglApiA, userA) = await SetupTestUser();
@@ -203,7 +203,7 @@ namespace Toggl.Ultrawave.Tests.Integration
                 projects.Should().HaveCount(0);
             }
 
-            [Fact]
+            [Fact, LogTestInfo]
             public async ThreadingTask DoesNotFindProjectInADifferentWorkspace()
             {
                 var (togglApi, user) = await SetupTestUser();
@@ -216,7 +216,7 @@ namespace Toggl.Ultrawave.Tests.Integration
                 projects.Should().HaveCount(0);
             }
 
-            [Fact]
+            [Fact, LogTestInfo]
             public async ThreadingTask ReturnsOnlyProjectInTheSearchedWorkspace()
             {
                 var (togglApi, user) = await SetupTestUser();

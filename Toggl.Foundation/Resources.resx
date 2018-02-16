@@ -159,6 +159,12 @@ time entries will appear here.</value>
     <data name="Cancel">
         <value>Cancel</value>
     </data>
+    <data name="ContinueEditing">
+        <value>Continue Editing</value>
+    </data>
+    <data name="Discard">
+        <value>Discard</value>
+    </data>
     <data name="PrivacyPolicy">
         <value>Privacy Policy</value>
     </data>
@@ -311,5 +317,8 @@ account is not set up</value>
     </data>
     <data name="NoEmailErrorMessage">
         <value>Go to “Settings > Mail > Add Account” to set up an email account or send us your feedback to support@toggl.com</value>
+    </data>
+    <data name="Continue">
+        <value>Continue</value>
     </data>
 </root>

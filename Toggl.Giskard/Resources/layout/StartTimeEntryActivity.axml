@@ -16,7 +16,7 @@
         android:layout_marginBottom="20dp"
         android:layout_gravity="bottom|right" />
     <toggl.giskard.views.StartTimeEntryRecyclerView
-        local:MvxBind="ItemsSource Suggestions; ItemClick SelectSuggestionCommand; UseGrouping UseGrouping; ToggleTasksCommand ToggleTaskSuggestionsCommand"
+        local:MvxBind="ItemsSource Suggestions; ItemClick SelectSuggestionCommand; CreateCommand CreateCommand; Text CurrentQuery; UseGrouping UseGrouping; IsSuggestingCreation SuggestCreation; IsSuggestingCreation IsSuggestingProjects; ToggleTasksCommand ToggleTaskSuggestionsCommand"
         local:MvxTemplateSelector="@string/StartTimeEntrySuggestionsTemplateSelector"
         android:scrollbars="vertical"
         android:layout_width="match_parent"

@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Toggl.Foundation.Tests.MvvmCross.ViewModels.CalendarQuickSelectShortcuts
 {
-    public abstract class BaseCalendarQuickSelectShortcutTests<T>
+    public abstract class BaseCalendarQuickSelectShortcutTests<T> : BaseMvvmCrossTests
         where T : CalendarBaseQuickSelectShortcut
     {
         protected ITimeService TimeService { get; } = Substitute.For<ITimeService>();
@@ -23,7 +23,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels.CalendarQuickSelectShortcu
         protected abstract DateTime ExpectedStart { get; }
         protected abstract DateTime ExpectedEnd { get; }
 
-        [Fact]
+        [Fact, LogIfTooSlow]
         public void SetsSelectedToTrueWhenReceivesOnDateRangeChangedWithOwnDateRange()
         {
             var quickSelectShortCut = CreateQuickSelectShortcut();
@@ -34,7 +34,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels.CalendarQuickSelectShortcu
             quickSelectShortCut.Selected.Should().BeTrue();
         }
 
-        [Fact]
+        [Fact, LogIfTooSlow]
         public void TheGetDateRangeReturnsExpectedDateRange()
         {
             var dateRange = CreateQuickSelectShortcut().GetDateRange();
@@ -43,7 +43,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels.CalendarQuickSelectShortcu
             dateRange.EndDate.Date.Should().Be(ExpectedEnd);
         }
 
-        [Fact]
+        [Fact, LogIfTooSlow]
         public void ConstructorThrowsWhenTryingToConstructWithNull()
         {
             Action tryingToConstructWithNull =

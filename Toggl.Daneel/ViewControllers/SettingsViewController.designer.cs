@@ -31,6 +31,9 @@ namespace Toggl.Daneel.ViewControllers
 		UIKit.UIView HelpView { get; set; }
 
 		[Outlet]
+		Toggl.Daneel.Views.ActivityIndicatorView LoggingOutActivityIndicatorView { get; set; }
+
+		[Outlet]
 		UIKit.UIImageView LoggingOutIndicator { get; set; }
 
 		[Outlet]
@@ -68,6 +71,9 @@ namespace Toggl.Daneel.ViewControllers
 		UIKit.UIView SyncedView { get; set; }
 
 		[Outlet]
+		Toggl.Daneel.Views.ActivityIndicatorView SyncingActivityIndicatorView { get; set; }
+
+		[Outlet]
 		UIKit.UIImageView SyncingIndicator { get; set; }
 
 		[Outlet]
@@ -99,6 +105,16 @@ namespace Toggl.Daneel.ViewControllers
 		
 		void ReleaseDesignerOutlets ()
 		{
+			if (LoggingOutActivityIndicatorView != null) {
+				LoggingOutActivityIndicatorView.Dispose ();
+				LoggingOutActivityIndicatorView = null;
+			}
+
+			if (SyncingActivityIndicatorView != null) {
+				SyncingActivityIndicatorView.Dispose ();
+				SyncingActivityIndicatorView = null;
+			}
+
 			if (AddMobileTagSwitch != null) {
 				AddMobileTagSwitch.Dispose ();
 				AddMobileTagSwitch = null;

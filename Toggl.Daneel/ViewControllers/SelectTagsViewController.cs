@@ -65,6 +65,8 @@ namespace Toggl.Daneel.ViewControllers
                       .To(vm => vm.SelectTagCommand);
 
             bindingSet.Apply();
+
+            TextField.BecomeFirstResponder();
         }
 
         protected override void KeyboardWillShow(object sender, UIKeyboardEventArgs e)

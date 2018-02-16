@@ -40,7 +40,7 @@ private Action UITest(string[] dllPaths)
     };
 }
 
-private Action BuildSolution(string configuration, string platform = "", bool uploadSymbols = false)
+private Action BuildSolution(string configuration, string platform = "")
 {
     const string togglSolution = "./Toggl.sln";
     var buildSettings = new MSBuildSettings 
@@ -49,6 +49,7 @@ private Action BuildSolution(string configuration, string platform = "", bool up
         Configuration = configuration
     };
 
+<<<<<<< HEAD
     if (!uploadSymbols) 
         return () => MSBuild(togglSolution, buildSettings);
 
@@ -73,12 +74,6 @@ private Action GenerateApk(string configuration)
     return () => MSBuild(droidProject, buildSettings);
 }
 
-private void UploadSymbols()
-{
-    const string args = "Toggl.Daneel/scripts/FirebaseCrashReporting/xamarin_upload_symbols.sh -n Toggl.Daneel -b ./bin/Release -i Toggl.Daneel/Info.plist -p Toggl.Daneel/GoogleService-Info.plist -s Toggl.Daneel/service-account.json";
-    StartProcess("bash", new ProcessSettings { Arguments = args });
-}
-
 //Temporary variable replacement
 private string GetCommitHash()
 {   
@@ -90,6 +85,26 @@ private string GetCommitHash()
     }, out redirectedOutput);
 
     return redirectedOutput.Last();
+}
+
+private TemporaryFileTransformation GetAndroidProjectConfigurationTransformation()
+{
+    const string path = "Toggl.Giskard/Toggl.Giskard.csproj";
+    var storePass = EnvironmentVariable("BITRISEIO_ANDROID_KEYSTORE_PASSWORD");
+    var keyAlias = EnvironmentVariable("BITRISEIO_ANDROID_KEYSTORE_ALIAS");
+    var keyPass = EnvironmentVariable("BITRISEIO_ANDROID_KEYSTORE_PRIVATE_KEY_PASSWORD");
+
+    var filePath = GetFiles(path).Single();
+    var file = TransformTextFile(filePath).ToString();
+
+    return new TemporaryFileTransformation
+    {
+        Path = path,
+        Original = file,
+        Temporary = file.Replace("{KEYSTORE_PASSWORD}", storePass)
+                        .Replace("{KEYSTORE_ALIAS}", keyAlias)
+                        .Replace("{KEYSTORE_ALIAS_PASSWORD}", keyPass)
+    };
 }
 
 private TemporaryFileTransformation GetIosAnalyticsServicesConfigurationTransformation()
@@ -193,7 +208,8 @@ var transformations = new List<TemporaryFileTransformation>
     GetIosCrashConfigurationTransformation(),
     GetDroidCrashConfigurationTransformation(),
     GetIntegrationTestsConfigurationTransformation(),
-    GetIosAnalyticsServicesConfigurationTransformation()
+    GetIosAnalyticsServicesConfigurationTransformation(),
+    GetAndroidProjectConfigurationTransformation()
 };
 
 private string[] GetUnitTestProjects() => new []
@@ -216,7 +232,9 @@ private string[] GetIntegrationTestProjects()
 Setup(context => transformations.ForEach(transformation => System.IO.File.WriteAllText(transformation.Path, transformation.Temporary)));
 Teardown(context =>
 {
-    if (target == "Build.Release.iOS.AppStore") return;
+    if (target == "Build.Release.iOS.AppStore" ||
+        target == "Build.Release.Android.AdHoc")
+        return;
     transformations.ForEach(transformation => System.IO.File.WriteAllText(transformation.Path, transformation.Original));
 });
 
@@ -271,13 +289,14 @@ Task("Build.Release.iOS.AdHoc")
     .IsDependentOn("Nuget")
     .Does(BuildSolution("Release.AdHoc"));
 
-Task("Build.Release.iOS.TestFlight")
-    .IsDependentOn("Nuget")
-    .Does(BuildSolution("Release.TestFlight", ""));
-
 Task("Build.Release.iOS.AppStore")
     .IsDependentOn("Nuget")
-    .Does(BuildSolution("Release.AppStore", "", uploadSymbols: true));
+    .Does(BuildSolution("Release.AppStore", ""));
+
+//Android Builds
+Task("Build.Release.Android.AdHoc")
+    .IsDependentOn("Nuget")
+    .Does(BuildSolution("Release.AdHoc.Giskard", ""));
 
 //Unit Tests
 Task("Tests.Unit")

@@ -168,13 +168,23 @@ the selected time period.</string>
                         <constraint firstItem="Jj4-LO-dJn" firstAttribute="top" secondItem="nZs-8E-xY9" secondAttribute="top" constant="66" id="nZH-fh-0cS"/>
                     </constraints>
                 </view>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="crX-KG-Rz2">
+                    <rect key="frame" x="0.0" y="534" width="375" height="1"/>
+                    <color key="backgroundColor" red="0.90980392160000001" green="0.90980392160000001" blue="0.90980392160000001" alpha="1" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="1" id="OFK-AO-YF7"/>
+                    </constraints>
+                </view>
             </subviews>
             <color key="backgroundColor" red="0.98039215686274506" green="0.98431372549019602" blue="0.9882352941176471" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstItem="L3q-fe-0ae" firstAttribute="leading" secondItem="1" secondAttribute="leading" id="05W-ue-ZDv"/>
                 <constraint firstAttribute="trailing" secondItem="nZs-8E-xY9" secondAttribute="trailing" id="10m-4K-7KI"/>
+                <constraint firstItem="crX-KG-Rz2" firstAttribute="leading" secondItem="1" secondAttribute="leading" id="6JX-mY-on7"/>
                 <constraint firstItem="CCY-m1-lmD" firstAttribute="leading" secondItem="1" secondAttribute="leading" id="6YX-3o-jMS"/>
                 <constraint firstAttribute="trailing" secondItem="BGP-SH-dFd" secondAttribute="trailing" constant="32" id="81U-Kg-2Oj"/>
+                <constraint firstAttribute="bottom" secondItem="crX-KG-Rz2" secondAttribute="bottom" id="9Vs-Qj-rDV"/>
+                <constraint firstAttribute="trailing" secondItem="crX-KG-Rz2" secondAttribute="trailing" id="Gby-gw-I4S"/>
                 <constraint firstAttribute="bottom" secondItem="L3q-fe-0ae" secondAttribute="bottom" id="Kka-Ug-7yc"/>
                 <constraint firstItem="CCY-m1-lmD" firstAttribute="top" secondItem="qPk-V7-gUb" secondAttribute="bottom" constant="25" id="Ls3-Xy-nLw"/>
                 <constraint firstAttribute="trailing" secondItem="L3q-fe-0ae" secondAttribute="trailing" id="P4N-he-CeN"/>

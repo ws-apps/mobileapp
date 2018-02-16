@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:local="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@android:color/white"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:elevation="2dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize">
+        <ImageView
+            local:MvxBind="Click CloseCommand"
+            android:clickable="true"
+            android:src="@drawable/arrow_back"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp" />
+        <EditText
+            local:MvxBind="Text Text"
+            android:textSize="19sp"
+            android:letterSpacing="-0.01"
+            android:lineSpacingExtra="5sp"
+            android:hint="@string/AddClientHint"
+            android:textColor="@android:color/black"
+            android:background="@android:color/white"
+            android:textColorHint="@color/defaultText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical" />
+    </LinearLayout>
+    <toggl.giskard.views.SelectClientRecyclerView
+        local:MvxBind="ItemsSource Suggestions; ItemClick SelectClientCommand; CreateCommand CreateClientCommand; Text Text; IsSuggestingCreation SuggestCreation"
+        local:MvxTemplateSelector="@string/SelectClientTemplateSelector"
+        android:scrollbars="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize" />
+</android.support.design.widget.CoordinatorLayout>

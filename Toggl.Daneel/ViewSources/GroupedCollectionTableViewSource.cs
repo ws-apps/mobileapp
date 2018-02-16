@@ -1,30 +1,40 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using Foundation;
 using MvvmCross.Binding.ExtensionMethods;
 using MvvmCross.Binding.iOS.Views;
 using MvvmCross.Core.ViewModels;
-using Toggl.Daneel.Views;
+using MvvmCross.Platform.WeakSubscription;
 using Toggl.Daneel.Views.Interfaces;
+using Toggl.Foundation.MvvmCross.Collections;
 using UIKit;
 
 namespace Toggl.Daneel.ViewSources
 {
-    public abstract class GroupedCollectionTableViewSource<T> : MvxTableViewSource
-        where T : class
+    public abstract class GroupedCollectionTableViewSource<TCollection, TItem> : MvxTableViewSource
+        where TCollection : MvxObservableCollection<TItem>, new()
+        where TItem : class
     {
         private readonly string cellIdentifier;
         private readonly string headerCellIdentifier;
-        
-        protected IEnumerable<MvxObservableCollection<T>> GroupedItems
-            => ItemsSource as IEnumerable<MvxObservableCollection<T>>;
+        private readonly List<IDisposable> disposables = new List<IDisposable>();
+
+        protected IEnumerable<MvxObservableCollection<TItem>> GroupedItems
+            => ItemsSource as IEnumerable<MvxObservableCollection<TItem>>;
+
+        protected NestableObservableCollection<TCollection, TItem> AnimatableCollection
+            => ItemsSource as NestableObservableCollection<TCollection, TItem>;
 
         protected GroupedCollectionTableViewSource(UITableView tableView, string cellIdentifier, string headerCellIdentifier)
             : base(tableView)
         {
             this.cellIdentifier = cellIdentifier;
             this.headerCellIdentifier = headerCellIdentifier;
+
+            UseAnimations = true;
         }
 
         public override UIView GetViewForHeader(UITableView tableView, nint section)
@@ -60,8 +70,8 @@ namespace Toggl.Daneel.ViewSources
         public override nint RowsInSection(UITableView tableview, nint section)
             => GetGroupAt(section).Count();
 
-        protected IEnumerable<T> GetGroupAt(nint section)
-            => GroupedItems.ElementAtOrDefault((int)section) ?? new MvxObservableCollection<T>();
+        protected IEnumerable<TItem> GetGroupAt(nint section)
+            => GroupedItems.ElementAtOrDefault((int)section) ?? new TCollection();
 
         protected override object GetItemAt(NSIndexPath indexPath)
             => GroupedItems.ElementAtOrDefault(indexPath.Section)?.ElementAtOrDefault((int)indexPath.Item);
@@ -101,5 +111,96 @@ namespace Toggl.Daneel.ViewSources
 
         protected override UITableViewCell GetOrCreateCellFor(UITableView tableView, NSIndexPath indexPath, object item)
             => tableView.DequeueReusableCell(cellIdentifier, indexPath);
+
+        public override IEnumerable ItemsSource
+        {
+            get => base.ItemsSource;
+            set
+            {
+                if (AnimatableCollection != null)
+                {
+                    AnimatableCollection.OnChildCollectionChanged -= OnChildCollectionChanged;
+                }
+
+                base.ItemsSource = value;
+
+                if (AnimatableCollection != null)
+                {
+                    AnimatableCollection.OnChildCollectionChanged += OnChildCollectionChanged;
+                }
+            }
+        }
+
+        protected override void CollectionChangedOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
+        {
+            InvokeOnMainThread(() => 
+            {
+                if (!UseAnimations)
+                {
+                    ReloadTableData();
+                    return;
+                }
+
+                switch (args.Action)
+                {
+                    case NotifyCollectionChangedAction.Add:
+                        var indexToAdd = NSIndexSet.FromIndex(args.NewStartingIndex);
+                        TableView.InsertSections(indexToAdd, UITableViewRowAnimation.Automatic);
+                        break;
+
+                    case NotifyCollectionChangedAction.Remove:
+                        var indexToRemove = NSIndexSet.FromIndex(args.OldStartingIndex);
+                        TableView.DeleteSections(indexToRemove, UITableViewRowAnimation.Automatic);
+                        break;
+                }
+            });
+        }
+
+        protected void OnChildCollectionChanged(object sender, ChildCollectionChangedEventArgs args)
+        {
+            InvokeOnMainThread(() =>
+            {
+                if (!UseAnimations)
+                {
+                    ReloadTableData();
+                    return;
+                }
+
+                switch (args.Action)
+                {
+                    case NotifyCollectionChangedAction.Add:
+                        var indexPathsToAdd = args.Indexes
+                            .Select(row => NSIndexPath.FromRowSection(row, args.CollectionIndex))
+                            .ToArray();
+                        TableView.InsertRows(indexPathsToAdd, AddAnimation);
+                        break;
+
+                    case NotifyCollectionChangedAction.Remove:
+                        var indexPathsToRemove = args.Indexes
+                            .Select(row => NSIndexPath.FromRowSection(row, args.CollectionIndex))
+                            .ToArray();
+
+                        TableView.DeleteRows(indexPathsToRemove, RemoveAnimation);
+                        break;
+
+                    case NotifyCollectionChangedAction.Replace:
+                        var indexPathsToUpdate = args.Indexes
+                            .Select(row => NSIndexPath.FromRowSection(row, args.CollectionIndex))
+                            .ToArray();
+
+                        TableView.ReloadRows(indexPathsToUpdate, ReplaceAnimation);
+                        break;
+                }
+            });
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (!disposing || AnimatableCollection == null) return;
+
+            AnimatableCollection.OnChildCollectionChanged -= OnChildCollectionChanged;
+        }
     }
 }

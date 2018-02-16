@@ -18,7 +18,7 @@ namespace Toggl.Foundation.Tests.MvvmCross
     {
         public class TheRegisterServicesMethod : BaseMvvmCrossTests
         {
-            [Theory]
+            [Theory, LogIfTooSlow]
             [ClassData(typeof(FiveParameterConstructorTestData))]
             public void ThrowsIfAnyOfTheParametersIsNull(
                 bool useFoundation,
@@ -48,7 +48,7 @@ namespace Toggl.Foundation.Tests.MvvmCross
 
         public class TheRevokeNewUserIfNeededMethod : BaseMvvmCrossTests
         {
-            [Fact]
+            [Fact, LogIfTooSlow]
             public void MarksTheUserAsNotNewWhenUsingTheAppForTheFirstTimeAfterSixtyDays()
             {
                 var version = "1.0";

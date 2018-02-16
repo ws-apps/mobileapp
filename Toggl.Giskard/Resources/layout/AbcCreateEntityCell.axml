@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:local="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:background="@android:color/white"
+    android:layout_width="match_parent"
+    android:layout_height="48dp">
+    <ImageView
+        android:src="@drawable/add_new"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginLeft="8dp"
+        android:layout_gravity="center_vertical" />
+    <TextView
+        local:MvxBind="Text ."
+        android:lines="1"
+        android:textSize="15sp"
+        android:singleLine="true"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@android:color/black"
+        tools:text="Create client “Some ridiculously big client name to help me text the size of the fade”"
+        android:layout_marginLeft="36dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical" />
+    <View
+        android:id="@+id/StartTimeEntryProjectCellFade"
+        android:background="@drawable/TransparentToWhiteGradient"
+        android:layout_width="40dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="right" />
+    <View
+        android:background="@color/separator"
+        android:layout_height="0.5dp"
+        android:layout_gravity="bottom"
+        android:layout_width="match_parent" />
+</FrameLayout>

@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Reactive.Linq;
-using System.Threading.Tasks;
+using System.Threading;
 using FluentAssertions;
 using FsCheck.Xunit;
 using NSubstitute;
@@ -133,7 +135,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 ViewModel.CurrentDateRangeString.Should().Be($"{Resources.ThisWeek} ▾");
             }
 
-            [Theory]
+            [Theory, LogIfTooSlow]
             [InlineData(
                 2017, 12, 6,
                 2017, 12, 4,
@@ -169,27 +171,15 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 ViewModel.CurrentDateRangeString.Should().Be($"{Resources.ThisWeek} ▾");
             }
 
-            [Theory]
-            [InlineData(
-                 2017, 12, 15,
-                 2017, 12, 25,
-                 "15 Dec - 25 Dec ▾"
-            )]
-            [InlineData(
-                 2017, 1, 1,
-                 2017, 12, 30,
-                 "1 Jan - 30 Dec ▾"
-            )]
-            [InlineData(
-                2017, 11, 13,
-                2018, 11, 13,
-                "13 Nov - 13 Nov ▾"
-            )]
+            [Theory, LogIfTooSlow]
+            [MemberData(nameof(DateRangeFormattingTestData))]
             public void ReturnsSelectedDateRangeAsStringIfTheSelectedPeriodIsNotTheCurrentWeek(
                 int startYear, int startMonth, int startDay,
                 int endYear, int endMonth, int endDay,
+                CultureInfo deviceCulture,
                 string expectedResult)
             {
+                Thread.CurrentThread.CurrentCulture = deviceCulture;
                 var start = new DateTimeOffset(startYear, startMonth, startDay, 10, 12, 13, TimeSpan.Zero);
                 var end = new DateTimeOffset(endYear, endMonth, endDay, 12, 34, 1, TimeSpan.Zero);
 
@@ -197,6 +187,46 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     DateRangeParameter.WithDates(start, end));
 
                 ViewModel.CurrentDateRangeString.Should().Be(expectedResult);
+            }
+
+            public static IEnumerable<object[]> DateRangeFormattingTestData()
+            {
+                var cultures = new[]
+                {
+                    new CultureInfo("en-US"),
+                    new CultureInfo("en-GB"),
+                    new CultureInfo("de-DE"),
+                    new CultureInfo("jp-JP"),
+                    new CultureInfo("cs-CS"),
+                    new CultureInfo("ru-RU")
+                };
+
+                foreach (var culture in cultures)
+                {
+                    yield return new object[]
+                    {
+                        2017, 12, 15,
+                        2017, 12, 25,
+                        culture,
+                        "15 Dec - 25 Dec ▾"
+                    };
+
+                    yield return new object[]
+                    {
+                        2017, 1, 1,
+                        2017, 12, 30,
+                        culture,
+                        "1 Jan - 30 Dec ▾"
+                    };
+
+                    yield return new object[]
+                    {
+                        2017, 11, 13,
+                        2018, 11, 13,
+                        culture,
+                        "13 Nov - 13 Nov ▾"
+                    };
+                }
             }
         }
     }

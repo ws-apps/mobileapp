@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using MvvmCross.Core.Navigation;
 using MvvmCross.Core.ViewModels;
@@ -171,13 +172,20 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             var version = userAgent.ToString();
             var phone = platformConstants.PhoneModel;
             var os = platformConstants.OperatingSystem;
-            //2 leading newlines, so user user can type something above this info
-            var message = $"\n\nVersion: {version}\nPhone: {phone}\nOS: {os}";
+
+            var messageBuilder = new StringBuilder();
+            messageBuilder.Append("\n\n"); // 2 leading newlines, so user user can type something above this info
+            messageBuilder.Append($"Version: {version}\n");
+            if (phone != null)
+            {
+                messageBuilder.Append($"Phone: {phone}\n");
+            }
+            messageBuilder.Append($"OS: {os}");
 
             var mailResult = await mailService.Send(
                 feedbackRecipient,
                 platformConstants.FeedbackEmailSubject,
-                message
+                messageBuilder.ToString()
             );
 
             if (mailResult.Success || string.IsNullOrEmpty(mailResult.ErrorTitle))
@@ -205,11 +213,11 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         {
             if (IsManualModeEnabled)
             {
-                userPreferences.EnableTimerMode();
+                userPreferences.EnableManualMode();
             }
             else
             {
-                userPreferences.EnableManualMode();
+                userPreferences.EnableTimerMode();
             }
         }
 

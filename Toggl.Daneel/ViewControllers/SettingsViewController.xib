@@ -18,6 +18,7 @@
                 <outlet property="EmailView" destination="x3h-xq-GmG" id="dUK-XO-Vs2"/>
                 <outlet property="FeedbackView" destination="mmI-mx-iUP" id="R6U-Ap-C30"/>
                 <outlet property="HelpView" destination="RBh-e3-uJT" id="VYt-W5-p4y"/>
+                <outlet property="LoggingOutActivityIndicatorView" destination="qYE-D7-hWS" id="i7D-aw-z8c"/>
                 <outlet property="LoggingOutIndicator" destination="qYE-D7-hWS" id="qPl-XA-dj4"/>
                 <outlet property="LoggingOutLabel" destination="agY-8S-Buy" id="yr0-19-vIP"/>
                 <outlet property="LoggingOutView" destination="9pV-m0-9wY" id="1O8-3P-zPS"/>
@@ -30,6 +31,7 @@
                 <outlet property="SyncedIcon" destination="2Xf-GA-0Ym" id="BfG-Gy-Dva"/>
                 <outlet property="SyncedLabel" destination="iJW-AF-Ph9" id="3St-Va-wwC"/>
                 <outlet property="SyncedView" destination="mJh-gC-yPW" id="OZ2-Nh-oY5"/>
+                <outlet property="SyncingActivityIndicatorView" destination="05J-Mj-sE1" id="OQC-Je-kPB"/>
                 <outlet property="SyncingIndicator" destination="05J-Mj-sE1" id="Pw9-T1-qdo"/>
                 <outlet property="SyncingLabel" destination="FaX-g8-EOP" id="0n2-5c-AcE"/>
                 <outlet property="SyncingView" destination="305" id="HUL-5W-ZWG"/>
@@ -348,7 +350,7 @@
                             </constraints>
                         </view>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tll-6e-YWy">
-                            <rect key="frame" x="16" y="43" width="359" height="1"/>
+                            <rect key="frame" x="0.0" y="43" width="375" height="1"/>
                             <color key="backgroundColor" red="0.90980392160000001" green="0.90980392160000001" blue="0.90980392160000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="1" id="Xfr-2h-brj"/>
@@ -363,7 +365,7 @@
                         <constraint firstItem="1nK-Tu-vws" firstAttribute="leading" secondItem="mmI-mx-iUP" secondAttribute="leading" id="eb9-F3-IKC"/>
                         <constraint firstItem="7KY-Cw-c2h" firstAttribute="centerY" secondItem="mmI-mx-iUP" secondAttribute="centerY" id="goJ-ia-VCH"/>
                         <constraint firstAttribute="trailing" secondItem="1nK-Tu-vws" secondAttribute="trailing" id="irE-zB-ksN"/>
-                        <constraint firstItem="tll-6e-YWy" firstAttribute="leading" secondItem="mmI-mx-iUP" secondAttribute="leading" constant="16" id="kIA-8p-GOO"/>
+                        <constraint firstItem="tll-6e-YWy" firstAttribute="leading" secondItem="mmI-mx-iUP" secondAttribute="leading" id="kIA-8p-GOO"/>
                         <constraint firstAttribute="height" constant="44" id="oYf-Rw-XeP"/>
                         <constraint firstAttribute="trailing" secondItem="tll-6e-YWy" secondAttribute="trailing" id="pXs-nK-xm7"/>
                         <constraint firstItem="1nK-Tu-vws" firstAttribute="top" secondItem="mmI-mx-iUP" secondAttribute="top" id="rJ2-93-vrw"/>

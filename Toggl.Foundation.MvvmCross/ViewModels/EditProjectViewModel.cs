@@ -35,6 +35,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private HashSet<string> projectNames = new HashSet<string>();
 
         public bool IsPrivate { get; set; }
+
         public bool IsNameAlreadyTaken { get; set; }
 
         [DependsOn(nameof(Name), nameof(IsNameAlreadyTaken))]
@@ -67,6 +68,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public IMvxAsyncCommand PickWorkspaceCommand { get; }
 
+        public IMvxCommand TogglePrivateProjectCommand { get; }
+
         public EditProjectViewModel(
             ITogglDataSource dataSource,
             IDialogService dialogService,
@@ -85,6 +88,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             PickColorCommand = new MvxAsyncCommand(pickColor);
             PickClientCommand = new MvxAsyncCommand(pickClient);
             PickWorkspaceCommand = new MvxAsyncCommand(pickWorkspace);
+            TogglePrivateProjectCommand = new MvxCommand(togglePrivateProject);
         }
 
         public override void Prepare(string parameter)
@@ -124,6 +128,11 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         {
             Color = await navigationService.Navigate<SelectColorViewModel, ColorParameters, MvxColor>(
                 ColorParameters.Create(Color, isPro));
+        }
+
+        private void togglePrivateProject()
+        {
+            IsPrivate = !IsPrivate;
         }
 
         private async Task done()
@@ -189,7 +198,9 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         
         private async Task pickClient()
         {
-            var selectedClientId = await navigationService.Navigate<SelectClientViewModel, long, long?>(workspaceId);
+            var parameter = SelectClientParameters.WithIds(workspaceId, clientId);
+            var selectedClientId = 
+                await navigationService.Navigate<SelectClientViewModel, SelectClientParameters, long?>(parameter);
             if (selectedClientId == null) return;
 
             if (selectedClientId.Value == 0)

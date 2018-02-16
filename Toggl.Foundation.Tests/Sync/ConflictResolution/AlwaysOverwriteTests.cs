@@ -8,7 +8,7 @@ namespace Toggl.Foundation.Tests.Sync.ConflictResolution
 {
     public sealed class AlwaysOverwriteTests
     {
-        [Fact]
+        [Fact, LogIfTooSlow]
         public void ThrowsWhenIncomingEntityIsNull()
         {
             var existingEntity = new TestModel();
@@ -20,7 +20,7 @@ namespace Toggl.Foundation.Tests.Sync.ConflictResolution
             resolvingWithExistingLocalEntity.ShouldThrow<ArgumentNullException>();
         }
 
-        [Fact]
+        [Fact, LogIfTooSlow]
         public void UpdateWhenThereIsAnExistingEntityLocally()
         {
             var existingEntity = new TestModel();
@@ -31,7 +31,7 @@ namespace Toggl.Foundation.Tests.Sync.ConflictResolution
             mode.Should().Be(ConflictResolutionMode.Update);
         }
 
-        [Fact]
+        [Fact, LogIfTooSlow]
         public void CreateNewWhenThereIsNoExistingEntity()
         {
             var incomingEntity = new TestModel();

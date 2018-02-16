@@ -36,11 +36,31 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <AndroidCreatePackagePerAbi>true</AndroidCreatePackagePerAbi>
+    <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
     <AndroidHttpClientHandlerType>Xamarin.Android.Net.AndroidClientHandler</AndroidHttpClientHandlerType>
     <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
-    <AndroidSupportedAbis>armeabi-v7a;armeabi;x86_64</AndroidSupportedAbis>
+    <AndroidSupportedAbis>armeabi-v7a;armeabi;x86_64;x86;arm64-v8a</AndroidSupportedAbis>
     <OutputPath>..\bin</OutputPath>
     <DefineConstants>__DROID__</DefineConstants>
+    <DefineConstants></DefineConstants>
+    <AndroidKeyStore>True</AndroidKeyStore>
+    <AndroidSigningKeyStore>../giskard.keystore</AndroidSigningKeyStore>
+    <AndroidSigningStorePass>{KEYSTORE_PASSWORD}</AndroidSigningStorePass>
+    <AndroidSigningKeyAlias>{KEYSTORE_ALIAS}</AndroidSigningKeyAlias>
+    <AndroidSigningKeyPass>{KEYSTORE_ALIAS_PASSWORD}</AndroidSigningKeyPass>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release.PlayStore|AnyCPU' ">
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Release.PlayStore</OutputPath>
+    <DefineConstants>USE_ANALYTICS;USE_PRODUCTION_API</DefineConstants>
+    <WarningLevel>4</WarningLevel>
+    <AndroidLinkSkip></AndroidLinkSkip>
+    <AndroidLinkMode>SdkOnly</AndroidLinkMode>
+    <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
+    <AndroidSupportedAbis>armeabi-v7a;armeabi;arm64-v8a;x86_64</AndroidSupportedAbis>
+    <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
+    <AndroidCreatePackagePerAbi>true</AndroidCreatePackagePerAbi>
+    <AndroidHttpClientHandlerType>Xamarin.Android.Net.AndroidClientHandler</AndroidHttpClientHandlerType>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -232,13 +252,13 @@
     <Compile Include="Activities\BrowserActivity.cs" />
     <Compile Include="Services\MailService.cs" />
     <Compile Include="Extensions\CircularRevealAnimation.cs" />
+    <Compile Include="Activities\EditTimeEntryActivity.cs" />
     <Compile Include="ApplicationShortcutCreator.cs" />
+    <Compile Include="Bindings\TextViewTagListTargetBinding.cs" />
     <Compile Include="TemplateSelectors\StartTimeEntrySuggestionsTemplateSelector.cs" />
     <Compile Include="Views\StartTimeEntryRecyclerView.cs" />
     <Compile Include="Adapters\StartTimeEntryRecyclerAdapter.cs" />
     <Compile Include="Adapters\SegmentedRecyclerAdapter.cs" />
-    <Compile Include="Dialogs\TogglDatePicker.cs" />
-    <Compile Include="Dialogs\TogglTimePicker.cs" />
     <Compile Include="Autocomplete\AutocompleteTextWatcher.cs" />
     <Compile Include="Autocomplete\TokenExtensions.cs" />
     <Compile Include="Autocomplete\TokenSpan.cs" />
@@ -247,7 +267,17 @@
     <Compile Include="Autocomplete\TagsTokenSpan.cs" />
     <Compile Include="Views\StartTimeEntryRecyclerViewHolder.cs" />
     <Compile Include="Services\AnalyticsService.cs" />
+    <Compile Include="Fragments\SelectDateTimeFragment.cs" />
     <Compile Include="Bindings\FabVisibilityTargetBinding.cs" />
+    <Compile Include="Extensions\ActivityExtensions.cs" />
+    <Compile Include="Helper\ApiAvailability.cs" />
+    <Compile Include="Activities\EditProjectActivity.cs" />
+    <Compile Include="Adapters\CreateSuggestionSegmentedRecyclerAdapter.cs" />
+    <Compile Include="Views\DurationEditText.cs" />
+    <Compile Include="Activities\SelectClientActivity.cs" />
+    <Compile Include="Adapters\SelectClientRecyclerAdapter.cs" />
+    <Compile Include="TemplateSelectors\SelectClientTemplateSelector.cs" />
+    <Compile Include="Views\SelectClientRecyclerView.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\AndroidManifest.xml" />
@@ -271,6 +301,31 @@
     <AndroidResource Include="Resources\drawable-xhdpi\ic_launcher.png" />
     <AndroidResource Include="Resources\drawable-xxhdpi\ic_launcher.png" />
     <AndroidResource Include="Resources\drawable-xxxhdpi\ic_launcher.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\padlock.png" />
+    <AndroidResource Include="Resources\drawable-mdpi\padlock.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\padlock.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\padlock.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\padlock.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\workspace.png" />
+    <AndroidResource Include="Resources\drawable-mdpi\workspace.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\workspace.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\workspace.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\workspace.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\check.png" />
+    <AndroidResource Include="Resources\drawable-mdpi\check.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\check.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\check.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\check.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\client.png" />
+    <AndroidResource Include="Resources\drawable-mdpi\client.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\client.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\client.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\client.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\add_new.png" />
+    <AndroidResource Include="Resources\drawable-mdpi\add_new.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\add_new.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\add_new.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\add_new.png" />
     <AndroidResource Include="Resources\layout\MainActivity.axml" />
     <AndroidResource Include="Resources\layout\OnboardingActivity.axml" />
     <AndroidResource Include="Resources\layout\LoginActivity.axml" />
@@ -457,7 +512,13 @@
     <AndroidResource Include="Resources\layout\StartTimeEntryActivityWorkspaceHeader.axml" />
     <AndroidResource Include="Resources\layout\StartTimeEntryActivityNoEntityCell.axml" />
     <AndroidResource Include="Resources\layout\StartTimeEntryActivityEmptyCell.axml" />
+    <AndroidResource Include="Resources\layout\EditLayout.axml" />
     <AndroidResource Include="Resources\values\Dimen.xml" />
+    <AndroidResource Include="Resources\layout\EditProjectActivity.axml" />
+    <AndroidResource Include="Resources\layout\SelectTagsActivityCell.axml" />
+    <AndroidResource Include="Resources\layout\AbcCreateEntityCell.axml" />
+    <AndroidResource Include="Resources\layout\SelectClientActivity.axml" />
+    <AndroidResource Include="Resources\layout\SelectClientActivityCell.axml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Toggl.Foundation\Toggl.Foundation.csproj">
@@ -487,7 +548,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Presenters\" />
-    <Folder Include="Dialogs\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <Import Project="..\packages\Fody.2.2.0\build\netstandard1.2\Fody.targets" Condition="Exists('..\packages\Fody.2.2.0\build\netstandard1.2\Fody.targets')" />

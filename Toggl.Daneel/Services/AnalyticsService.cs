@@ -1,35 +1,37 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Firebase.Analytics;
 using Foundation;
-using Toggl.Foundation.Services;
+using Toggl.Foundation.Analytics;
 
 namespace Toggl.Daneel.Services
 {
-    public sealed class AnalyticsService : IAnalyticsService
+    public sealed class AnalyticsService : BaseAnalyticsService
     {
-        private static readonly NSString onboardingSkipEventName = new NSString("OnboardingSkip");
-        private static readonly NSString pageParameter = new NSString("PageWhenSkipWasClicked");
+        private const int maxAppCenterStringLength = 64;
 
-        public void TrackOnboardingSkipEvent(string pageName)
+        protected override void NativeTrackEvent(string eventName, Dictionary<string, string> parameters)
         {
-            var dict = new NSDictionary<NSString, NSObject>(pageParameter, new NSString(pageName));
-            Analytics.LogEvent(onboardingSkipEventName, dict);
+            Microsoft.AppCenter.Analytics.Analytics.TrackEvent(eventName, trimLongParameters(parameters));
+
+            Analytics.LogEvent(new NSString(eventName), NSDictionary<NSString, NSObject>.FromObjectsAndKeys(
+                parameters.Values.ToArray(),
+                parameters.Keys.ToArray()
+            ));
         }
 
-        public void TrackCurrentPage(Type viewModelType)
+        private Dictionary<string, string> trimLongParameters(Dictionary<string, string> parameters)
         {
+            var validParameters = new Dictionary<string, string>();
+            foreach (var (key, value) in parameters)
+            {
+                validParameters.Add(trimForAppCenter(key), trimForAppCenter(value));
+            }
+
+            return validParameters;
         }
 
-        public void TrackLoginEvent()
-        {
-        }
-
-        public void TrackNonFatalException(Exception ex)
-        {
-        }
-
-        public void TrackSignUpEvent()
-        {
-        }
+        private string trimForAppCenter(string text)
+            => text.Length > maxAppCenterStringLength ? text.Substring(0, maxAppCenterStringLength) : text;
     }
 }

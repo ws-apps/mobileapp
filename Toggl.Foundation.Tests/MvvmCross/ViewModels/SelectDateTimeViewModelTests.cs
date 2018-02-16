@@ -16,8 +16,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             protected override SelectDateTimeViewModel CreateViewModel()
                 => new SelectDateTimeViewModel(NavigationService);
 
-            protected DatePickerParameters GenerateParameterForTime(DateTimeOffset now)
-                => DatePickerParameters.WithDates(now, now.AddHours(-1), now.AddHours(+1));
+            protected DateTimePickerParameters GenerateParameterForTime(DateTimeOffset now)
+                => DateTimePickerParameters.WithDates(DateTimePickerMode.DateTime, now, now.AddHours(-1), now.AddHours(+1));
         }
 
         public class TheConstructor

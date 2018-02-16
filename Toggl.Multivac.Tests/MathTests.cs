@@ -12,7 +12,7 @@ namespace Toggl.Multivac.Tests
     {
         public sealed class TheTimeToAngleMethod
         {
-            [Theory]
+            [Theory, LogIfTooSlow]
             [MemberData(nameof(MathTests.TimeToAngleTestData), MemberType = typeof(MathTests))]
             public void CalculatesCorrectAngleForTheGivenTime(double expectedAngle, int minutes, int seconds)
             {
@@ -24,7 +24,7 @@ namespace Toggl.Multivac.Tests
 
         public sealed class TheTimeToAngleOnTheDialMethod
         {
-            [Theory]
+            [Theory, LogIfTooSlow]
             [MemberData(nameof(MathTests.TimeToAngleTestData), MemberType = typeof(MathTests))]
             public void CalculatesCorrectAngleForTheGivenTimeAdjustedForUseOnTheClockRotatedBy90DegreesToTheLeft(double expectedAngle, int minutes, int seconds)
             {
@@ -36,7 +36,7 @@ namespace Toggl.Multivac.Tests
 
         public sealed class TheAngleToTimeMethod
         {
-            [Theory]
+            [Theory, LogIfTooSlow]
             [MemberData(nameof(MathTests.TimeToAngleTestData), MemberType = typeof(MathTests))]
             public void CalculatesCorrectTimeDayForAGivenAngle(double angle, int minutes, int seconds)
             {
@@ -50,7 +50,7 @@ namespace Toggl.Multivac.Tests
 
         public sealed class TheAngleBetweenMethod
         {
-            [Theory]
+            [Theory, LogIfTooSlow]
             [MemberData(nameof(AngleBetweenTestData))]
             public void CalculatesTheAngleBetweenTwoPointsWell(Point a, Point b, double expectedAngle)
             {
@@ -98,7 +98,7 @@ namespace Toggl.Multivac.Tests
 
         public sealed class ThePointOnCircumferenceMethod
         {
-            [Theory]
+            [Theory, LogIfTooSlow]
             [MemberData(nameof(CircumferenceTestData))]
             public void CalculatesCorrectPositionOnCircumference(double angle, double radius, Point expectedPoint)
             {
@@ -126,7 +126,7 @@ namespace Toggl.Multivac.Tests
 
         public sealed class TheIsBetweenMethod
         {
-            [Theory]
+            [Theory, LogIfTooSlow]
             [MemberData(nameof(IsBetweenData))]
             public void DeterminesThatTheAngleIsInBetweenTheTwoOtherAngles(double angle, double start, double end)
             {
@@ -135,7 +135,7 @@ namespace Toggl.Multivac.Tests
                 isBetween.Should().BeTrue();
             }
 
-            [Theory]
+            [Theory, LogIfTooSlow]
             [MemberData(nameof(IsBetweenData))]
             public void DeterminesThatTheAngleIsNotInBetweenTheTwoOtherAngles(double angle, double end, double start)
             {

@@ -5,6 +5,7 @@ using Android.Support.V7.Widget;
 using Android.Views;
 using MvvmCross.Binding.Droid.BindingContext;
 using MvvmCross.Core.ViewModels;
+using Toggl.Foundation;
 using Toggl.Foundation.Autocomplete.Suggestions;
 using Toggl.Foundation.MvvmCross.Collections;
 using Toggl.Giskard.TemplateSelectors;
@@ -13,9 +14,11 @@ using Toggl.Giskard.Views;
 namespace Toggl.Giskard.Adapters
 {
     public sealed class StartTimeEntryRecyclerAdapter
-        : SegmentedRecyclerAdapter<WorkspaceGroupedCollection<AutocompleteSuggestion>, AutocompleteSuggestion>
+        : CreateSuggestionGroupedTableViewSource<WorkspaceGroupedCollection<AutocompleteSuggestion>, AutocompleteSuggestion>
     {
         public bool UseGrouping { get; set; }
+
+        public bool IsSuggestingProjects { get; set; }
 
         public IMvxCommand<ProjectSuggestion> ToggleTasksCommand { get; set; }
 
@@ -29,10 +32,28 @@ namespace Toggl.Giskard.Adapters
         }
 
         public override int ItemCount
-            => UseGrouping ? base.ItemCount : Collection.FirstOrDefault()?.Count ?? 0;
+        {
+            get
+            {
+                if (UseGrouping)
+                    return base.ItemCount;
+
+                return Collection.FirstOrDefault()?.Count ?? 0
+                    + (IsSuggestingCreation ? 1 : 0);
+            }
+        }
 
         public override object GetItem(int viewPosition)
-            => UseGrouping ? base.GetItem(viewPosition) : Collection.First()[viewPosition];
+        {
+            if (UseGrouping)
+                return base.GetItem(viewPosition);
+
+            if (IsSuggestingCreation && viewPosition == 0)
+                return GetCreateSuggestionItem();
+
+            var actualViewPosition = viewPosition - (IsSuggestingCreation ? 1 : 0);
+            return Collection.First()[actualViewPosition];
+        }
 
         protected override MvxObservableCollection<WorkspaceGroupedCollection<AutocompleteSuggestion>> Collection
             => ItemsSource as MvxObservableCollection<WorkspaceGroupedCollection<AutocompleteSuggestion>>;
@@ -53,5 +74,12 @@ namespace Toggl.Giskard.Adapters
 
             return viewHolder;
         }
+
+        protected override int SuggestCreationViewType => StartTimeEntrySuggestionsTemplateSelector.CreateEntity;
+
+        protected override object GetCreateSuggestionItem()
+            => IsSuggestingProjects
+                ? $"{Resources.CreateProject} \"{Text}\""
+                : $"{Resources.CreateTag} \"{Text}\"";
     }
 }
