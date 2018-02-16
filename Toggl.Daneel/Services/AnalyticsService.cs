@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Firebase.Analytics;
 using Foundation;
@@ -8,6 +9,10 @@ namespace Toggl.Daneel.Services
 {
     public sealed class AnalyticsService : BaseAnalyticsService
     {
+        private const string exceptionEventName = "HandledException";
+        private const string exceptionTypeParameter = "ExceptionType";
+        private const string exceptionMessageParameter = "ExceptionMessage";
+        
         private const int maxAppCenterStringLength = 64;
 
         protected override void NativeTrackEvent(string eventName, Dictionary<string, string> parameters)
@@ -18,6 +23,15 @@ namespace Toggl.Daneel.Services
                 parameters.Values.ToArray(),
                 parameters.Keys.ToArray()
             ));
+        }
+
+        protected override void NativeTrackException(Exception exception)
+        {
+            NativeTrackEvent(exceptionEventName, new Dictionary<string, string>
+            {
+                [exceptionTypeParameter] = exception.GetType().FullName,
+                [exceptionMessageParameter] = exception.Message
+            });
         }
 
         private Dictionary<string, string> trimLongParameters(Dictionary<string, string> parameters)

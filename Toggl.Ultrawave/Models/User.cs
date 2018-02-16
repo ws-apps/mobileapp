@@ -19,11 +19,6 @@ namespace Toggl.Ultrawave.Models
 
         public string Fullname { get; set; }
 
-        [JsonProperty("timeofday_format")]
-        public string TimeOfDayFormat { get; set; }
-
-        public string DateFormat { get; set; }
-
         public BeginningOfWeek BeginningOfWeek { get; set; }
 
         public string Language { get; set; }

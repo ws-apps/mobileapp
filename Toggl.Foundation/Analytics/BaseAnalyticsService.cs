@@ -39,6 +39,13 @@ namespace Toggl.Foundation.Analytics
         {
         }
 
+        public void TrackSyncError(Exception exception)
+        {
+            NativeTrackException(exception);
+        }
+
         protected abstract void NativeTrackEvent(string eventName, Dictionary<string, string> parameters);
+
+        protected abstract void NativeTrackException(Exception exception);
     }
 }

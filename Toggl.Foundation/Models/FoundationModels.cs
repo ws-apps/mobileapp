@@ -184,10 +184,6 @@ namespace Toggl.Foundation.Models
 
         public string Fullname { get; }
 
-        public string TimeOfDayFormat { get; }
-
-        public string DateFormat { get; }
-
         public BeginningOfWeek BeginningOfWeek { get; }
 
         public string Language { get; }

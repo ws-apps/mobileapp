@@ -20,6 +20,20 @@ namespace Toggl.Ultrawave.Models
     }
 
     [Preserve(AllMembers = true)]
+    internal sealed partial class Preferences
+    {
+        public Preferences() { }
+
+        public Preferences(IPreferences entity)
+        {
+            TimeOfDayFormat = entity.TimeOfDayFormat;
+            DateFormat = entity.DateFormat;
+            DurationFormat = entity.DurationFormat;
+            CollapseTimeEntries = entity.CollapseTimeEntries;
+        }
+    }
+
+    [Preserve(AllMembers = true)]
     internal sealed partial class Project
     {
         public Project() { }
@@ -113,8 +127,6 @@ namespace Toggl.Ultrawave.Models
             DefaultWorkspaceId = entity.DefaultWorkspaceId;
             Email = entity.Email;
             Fullname = entity.Fullname;
-            TimeOfDayFormat = entity.TimeOfDayFormat;
-            DateFormat = entity.DateFormat;
             BeginningOfWeek = entity.BeginningOfWeek;
             Language = entity.Language;
             ImageUrl = entity.ImageUrl;

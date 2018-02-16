@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using Toggl.Foundation.Analytics;
 using Toggl.Multivac;
 using Toggl.Multivac.Extensions;
 using Toggl.Ultrawave.Exceptions;
@@ -13,6 +14,7 @@ namespace Toggl.Foundation.Sync
         private readonly object stateLock = new object();
         private readonly ISyncStateQueue queue;
         private readonly IStateMachineOrchestrator orchestrator;
+        private readonly IAnalyticsService analyticsService;
 
         private bool isFrozen;
 
@@ -23,13 +25,18 @@ namespace Toggl.Foundation.Sync
         public SyncState State => orchestrator.State;
         public IObservable<SyncProgress> ProgressObservable { get; }
 
-        public SyncManager(ISyncStateQueue queue, IStateMachineOrchestrator orchestrator)
+        public SyncManager(
+            ISyncStateQueue queue,
+            IStateMachineOrchestrator orchestrator,
+            IAnalyticsService analyticsService)
         {
             Ensure.Argument.IsNotNull(queue, nameof(queue));
             Ensure.Argument.IsNotNull(orchestrator, nameof(orchestrator));
+            Ensure.Argument.IsNotNull(analyticsService, nameof(analyticsService));
 
             this.queue = queue;
             this.orchestrator = orchestrator;
+            this.analyticsService = analyticsService;
 
             progress = new BehaviorSubject<SyncProgress>(SyncProgress.Unknown);
             ProgressObservable = progress.AsObservable();
@@ -110,6 +117,7 @@ namespace Toggl.Foundation.Sync
             else
             {
                 progress.OnNext(SyncProgress.Failed);
+                analyticsService.TrackSyncError(error);
             }
 
             if (error is ClientDeprecatedException

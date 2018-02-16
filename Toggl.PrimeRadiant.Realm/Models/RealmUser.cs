@@ -12,8 +12,6 @@ namespace Toggl.PrimeRadiant.Realm
 
         public DateTimeOffset At { get; set; }
 
-        public string DateFormat { get; set; }
-
         public long DefaultWorkspaceId { get; set; }
 
         //Realm doesn't support enums 
@@ -41,7 +39,5 @@ namespace Toggl.PrimeRadiant.Realm
         public string ImageUrl { get; set; }
 
         public string Language { get; set; }
-
-        public string TimeOfDayFormat { get; set; }
     }
 }

@@ -11,6 +11,7 @@ using NSubstitute;
 using Toggl.Foundation.Sync;
 using Xunit;
 using FsCheck.Xunit;
+using Toggl.Foundation.Analytics;
 using Toggl.Foundation.Tests.Generators;
 using static Toggl.Foundation.Sync.SyncState;
 using Toggl.Ultrawave.Exceptions;
@@ -26,27 +27,29 @@ namespace Toggl.Foundation.Tests.Sync
             protected Subject<SyncState> OrchestratorStates { get; } = new Subject<SyncState>();
             protected ISyncStateQueue Queue { get; } = Substitute.For<ISyncStateQueue>();
             protected IStateMachineOrchestrator Orchestrator { get; } = Substitute.For<IStateMachineOrchestrator>();
+            protected IAnalyticsService AnalyticsService { get; } = Substitute.For<IAnalyticsService>();
             protected ISyncManager SyncManager { get; }
 
             protected SyncManagerTestBase()
             {
                 Orchestrator.SyncCompleteObservable.Returns(OrchestratorSyncComplete.AsObservable());
                 Orchestrator.StateObservable.Returns(OrchestratorStates.AsObservable());
-                SyncManager = new SyncManager(Queue, Orchestrator);
+                SyncManager = new SyncManager(Queue, Orchestrator, AnalyticsService);
             }
         }
 
         public sealed class TheConstuctor : SyncManagerTestBase
         {
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(TwoParameterConstructorTestData))]
-            public void ThrowsIfAnyArgumentIsNull(bool useQueue, bool useOrchestrator)
+            [ClassData(typeof(ThreeParameterConstructorTestData))]
+            public void ThrowsIfAnyArgumentIsNull(bool useQueue, bool useOrchestrator, bool useAnalyticsService)
             {
                 var queue = useQueue ? Queue : null;
                 var orchestrator = useOrchestrator ? Orchestrator : null;
+                var analyticsService = useAnalyticsService ? AnalyticsService : null;
 
                 // ReSharper disable once ObjectCreationAsStatement
-                Action constructor = () => new SyncManager(queue, orchestrator);
+                Action constructor = () => new SyncManager(queue, orchestrator, analyticsService);
 
                 constructor.ShouldThrow<ArgumentNullException>();
             }
@@ -666,6 +669,26 @@ namespace Toggl.Foundation.Tests.Sync
                 queueCleared.WaitOne();
 
                 queued.Should().BeLessThan(cleared);
+            }
+
+            [Fact, LogIfTooSlow]
+            public void ReportsErrorToTheAnalyticsService()
+            {
+                var exception = new Exception();
+
+                OrchestratorSyncComplete.OnNext(new Error(exception));
+
+                AnalyticsService.Received().TrackSyncError(exception);
+            }
+
+            [Fact, LogIfTooSlow]
+            public void DoNotReportOfflineExceptionsToTheAnalyticsService()
+            {
+                var exception = new OfflineException();
+
+                OrchestratorSyncComplete.OnNext(new Error(exception));
+
+                AnalyticsService.DidNotReceive().TrackSyncError(Arg.Any<Exception>());
             }
 
             [Fact, LogIfTooSlow]

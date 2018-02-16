@@ -58,25 +58,6 @@ namespace Toggl.Ultrawave.Tests.Integration
             }
 
             [Fact, LogTestInfo]
-            public async Task ReturnsValidDateFormat()
-            {
-                var (togglApi, user) = await SetupTestUser();
-                string[] validFormats =
-                {
-                    "%m/%d/%Y",
-                    "%d-%m-%Y",
-                    "%m-%d-%Y",
-                    "%Y-%m-%d",
-                    "%d/%m/%Y",
-                    "%d.%m.%Y"
-                };
-
-                var userFromApi = await CallEndpointWith(togglApi);
-
-                userFromApi.DateFormat.Should().BeOneOf(validFormats);
-            }
-
-            [Fact, LogTestInfo]
             public async Task ReturnsValidBeginningOfWeek()
             {
                 var (togglApi, user) = await SetupTestUser();

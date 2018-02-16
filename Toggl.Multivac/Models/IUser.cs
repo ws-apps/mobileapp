@@ -12,10 +12,6 @@ namespace Toggl.Multivac.Models
 
         string Fullname { get; }
 
-        string TimeOfDayFormat { get; }
-
-        string DateFormat { get; }
-
         BeginningOfWeek BeginningOfWeek { get; }
 
         string Language { get; }

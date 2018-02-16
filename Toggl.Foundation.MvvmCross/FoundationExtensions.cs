@@ -2,6 +2,7 @@
 using System.Reactive.Concurrency;
 using MvvmCross.Core.Navigation;
 using MvvmCross.Platform;
+using Toggl.Foundation.Analytics;
 using Toggl.Foundation.DataSources;
 using Toggl.Foundation.Login;
 using Toggl.Foundation.MvvmCross.Services;
@@ -23,6 +24,8 @@ namespace Toggl.Foundation.MvvmCross
 
         internal ITimeService TimeService { get; }
 
+        internal IAnalyticsService AnalyticsService { get; }
+
         internal IGoogleService GoogleService { get; }
 
         internal SettingsStorage SettingsStorage { get; }
@@ -39,6 +42,7 @@ namespace Toggl.Foundation.MvvmCross
             IApiFactory apiFactory,
             ITogglDatabase database,
             ITimeService timeService,
+            IAnalyticsService analyticsService,
             IGoogleService googleService,
             IApplicationShortcutCreator shortcutCreator,
             IBackgroundService backgroundService,
@@ -49,6 +53,7 @@ namespace Toggl.Foundation.MvvmCross
             Database = database;
             ApiFactory = apiFactory;
             TimeService = timeService;
+            AnalyticsService = analyticsService;
             GoogleService = googleService;
             ShortcutCreator = shortcutCreator;
             BackgroundService = backgroundService;
@@ -101,6 +106,7 @@ namespace Toggl.Foundation.MvvmCross
                 self.ApiFactory,
                 self.Database,
                 timeService,
+                self.AnalyticsService,
                 self.GoogleService,
                 self.ShortcutCreator,
                 self.BackgroundService,
@@ -127,7 +133,7 @@ namespace Toggl.Foundation.MvvmCross
         public static void Initialize(this FoundationMvvmCross self, App app, IScheduler scheduler)
         {
             Func<ITogglDataSource, ISyncManager> createSyncManager(ITogglApi api) => dataSource =>
-                TogglSyncManager.CreateSyncManager(self.Database, api, dataSource, self.TimeService, retryDelayLimit, scheduler);
+                TogglSyncManager.CreateSyncManager(self.Database, api, dataSource, self.TimeService, self.AnalyticsService, retryDelayLimit, scheduler);
 
             ITogglDataSource createDataSource(ITogglApi api)
             => new TogglDataSource(api, self.Database, self.TimeService, self.ApiErrorHandlingService, self.BackgroundService, createSyncManager(api), TimeSpan.FromMinutes(5), self.ShortcutCreator)

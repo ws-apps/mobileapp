@@ -10,6 +10,7 @@ using Toggl.Foundation.DataSources;
 using System.Reactive.Linq;
 using System.Reactive;
 using System.Reactive.Subjects;
+using Toggl.Foundation.Analytics;
 
 namespace Toggl.Foundation
 {
@@ -20,6 +21,7 @@ namespace Toggl.Foundation
             ITogglApi api,
             ITogglDataSource dataSource,
             ITimeService timeService,
+            IAnalyticsService analyticsService,
             TimeSpan? retryLimit,
             IScheduler scheduler)
         {
@@ -34,7 +36,7 @@ namespace Toggl.Foundation
             var stateMachine = new StateMachine(transitions, scheduler, delayCancellation);
             var orchestrator = new StateMachineOrchestrator(stateMachine, entryPoints);
 
-            return new SyncManager(queue, orchestrator);
+            return new SyncManager(queue, orchestrator, analyticsService);
         }
 
         public static void ConfigureTransitions(

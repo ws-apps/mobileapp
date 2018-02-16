@@ -13,5 +13,7 @@ namespace Toggl.Foundation.Analytics
         void TrackNonFatalException(Exception ex);
 
         void TrackStartedTimeEntry(TimeEntryStartOrigin origin);
+
+        void TrackSyncError(Exception exception);
     }
 }

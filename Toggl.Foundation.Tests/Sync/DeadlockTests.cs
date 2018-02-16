@@ -8,6 +8,7 @@ using FluentAssertions;
 using FsCheck.Xunit;
 using Microsoft.Reactive.Testing;
 using NSubstitute;
+using Toggl.Foundation.Analytics;
 using Toggl.Foundation.Sync;
 using Toggl.Foundation.Tests.Sync.States;
 using Toggl.Multivac.Extensions;
@@ -36,13 +37,14 @@ namespace Toggl.Foundation.Tests.Sync
 
             protected void Reset()
             {
+                var analyticsService = Substitute.For<IAnalyticsService>();
                 Queue = new SyncStateQueue();
                 Transitions = new TransitionHandlerProvider();
                 Scheduler = new TestScheduler();
                 StateMachine = new StateMachine(Transitions, Scheduler, Substitute.For<ISubject<Unit>>());
                 EntryPoints = new StateMachineEntryPoints();
                 Orchestrator = new StateMachineOrchestrator(StateMachine, EntryPoints);
-                SyncManager = new SyncManager(Queue, Orchestrator);
+                SyncManager = new SyncManager(Queue, Orchestrator, analyticsService);
             }
 
             protected StateResult PreparePullTransitions(byte n)

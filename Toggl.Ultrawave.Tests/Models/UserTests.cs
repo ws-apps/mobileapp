@@ -11,7 +11,7 @@ namespace Toggl.Ultrawave.Tests.Models
         public sealed class TheUserModel
         {
             private string validJson =>
-                "{\"id\":9000,\"api_token\":\"1971800d4d82861d8f2c1651fea4d212\",\"default_workspace_id\":777,\"email\":\"johnt@swift.com\",\"fullname\":\"John Swift\",\"timeofday_format\":\"h:mm A\",\"date_format\":\"MM/DD/YYYY\",\"beginning_of_week\":0,\"language\":\"en_US\",\"image_url\":\"https://www.toggl.com/system/avatars/9000/small/open-uri20121116-2767-b1qr8l.png\",\"at\":\"2013-03-06T12:18:42+00:00\"}";
+                "{\"id\":9000,\"api_token\":\"1971800d4d82861d8f2c1651fea4d212\",\"default_workspace_id\":777,\"email\":\"johnt@swift.com\",\"fullname\":\"John Swift\",\"beginning_of_week\":0,\"language\":\"en_US\",\"image_url\":\"https://www.toggl.com/system/avatars/9000/small/open-uri20121116-2767-b1qr8l.png\",\"at\":\"2013-03-06T12:18:42+00:00\"}";
 
             private User validUser => new User
             {
@@ -20,8 +20,6 @@ namespace Toggl.Ultrawave.Tests.Models
                 DefaultWorkspaceId = 777,
                 Email = "johnt@swift.com".ToEmail(),
                 Fullname = "John Swift",
-                TimeOfDayFormat = "h:mm A",
-                DateFormat = "MM/DD/YYYY",
                 BeginningOfWeek = 0,
                 Language = "en_US",
                 ImageUrl = "https://www.toggl.com/system/avatars/9000/small/open-uri20121116-2767-b1qr8l.png",

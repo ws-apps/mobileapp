@@ -275,8 +275,6 @@ namespace Toggl.PrimeRadiant.Realm
             DefaultWorkspaceId = entity.DefaultWorkspaceId;
             Email = entity.Email;
             Fullname = entity.Fullname;
-            TimeOfDayFormat = entity.TimeOfDayFormat;
-            DateFormat = entity.DateFormat;
             BeginningOfWeek = entity.BeginningOfWeek;
             Language = entity.Language;
             ImageUrl = entity.ImageUrl;
