@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="SignUp">NEW TO TOGGL</string>
+    <string name="SignUp">New to Toggl</string>
     <string name="Login">Log in</string>
     <string name="Logout">Log out</string>
     <string name="AppName">Toggl</string>
@@ -18,6 +18,7 @@
     <string name="StartTime">Start time</string>
     <string name="EndTime">End time</string>
     <string name="Save">Save</string>
+
     <string name="SuggestionsTemplateSelector" translatable="false">Toggl.Giskard.TemplateSelectors.SuggestionsTemplateSelector, Toggl.Giskard</string>
     <string name="SelectClientTemplateSelector" translatable="false">Toggl.Giskard.TemplateSelectors.SelectClientTemplateSelector, Toggl.Giskard</string>
     <string name="TimeEntriesLogTemplateSelector" translatable="false">Toggl.Giskard.TemplateSelectors.TimeEntriesLogTemplateSelector, Toggl.Giskard</string>

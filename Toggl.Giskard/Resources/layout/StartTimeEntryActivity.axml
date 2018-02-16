@@ -7,9 +7,9 @@
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/StartTimeEntryDoneButton"
         local:MvxBind="Click DoneCommand"
+        android:src="@drawable/check_light"
         local:elevation="4dp"
         local:backgroundTint="@color/playButtonGreen"
-        android:src="@drawable/check_light"
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_marginRight="16dp"

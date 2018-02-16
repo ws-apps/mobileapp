@@ -9,16 +9,18 @@
         android:layout_height="48dp"
         android:layout_width="match_parent">
         <Button
-            android:contentDescription="Sign up button"
+            android:id="@+id/OnboardingSignUpButton"
             local:MvxBind="Click SignUpCommand"
-            android:background="@android:color/transparent"
+            android:textAllCaps="true"
             android:text="@string/SignUp"
+            android:background="@android:color/transparent"
             android:layout_weight="1"
             android:layout_height="match_parent"
             android:layout_width="0dp" />
         <Button
-            android:contentDescription="Login button"
+            android:id="@+id/OnboardingLoginButton"
             local:MvxBind="Click LoginCommand"
+            android:textAllCaps="true"
             android:text="@string/Login"
             android:background="@android:color/transparent"
             android:layout_weight="1"

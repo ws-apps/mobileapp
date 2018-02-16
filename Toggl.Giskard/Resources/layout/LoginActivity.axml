@@ -16,7 +16,6 @@
     <EditText
         android:id="@+id/LoginEmailTextField"
         local:MvxBind="Text EmailToString(Email); Visibility Visibility(EmailFieldVisible); Focus IsEmailFocused"
-        android:inputType="textEmailAddress"
         android:lines="1"
         android:maxLines="1"
         android:focusable="true"
@@ -24,6 +23,7 @@
         android:paddingLeft="16dp"
         android:hint="@string/EmailAddress"
         android:focusableInTouchMode="true"
+        android:inputType="textEmailAddress"
         android:textColor="@color/defaultEditText"
         android:textColorHint="@color/placeholderText"
         android:background="@android:color/transparent"
@@ -146,6 +146,7 @@
         android:layout_height="wrap_content"
         android:layout_above="@id/LoginTermsOfServiceLabel" />
     <android.support.design.widget.FloatingActionButton
+        android:id="@+id/LoginNextButton"
         local:MvxBind="Click NextCommand; FabVisibility NextIsEnabled"
         android:src="@drawable/next_light"
         local:elevation="4dp"
@@ -159,7 +160,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true" />
-    <ProgressBar xmlns:tools="http://schemas.android.com/tools"
+    <ProgressBar
         android:id="@+id/LoginProgressBar"
         local:MvxBind="Visibility Visibility(IsLoading)"
         style="?android:attr/progressBarStyleLarge"
