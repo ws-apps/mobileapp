@@ -49,15 +49,7 @@ private Action BuildSolution(string configuration, string platform = "")
         Configuration = configuration
     };
 
-<<<<<<< HEAD
-    if (!uploadSymbols) 
-        return () => MSBuild(togglSolution, buildSettings);
-
-    return () =>
-    {
-        MSBuild(togglSolution, buildSettings);
-        UploadSymbols();
-    };
+	return () => MSBuild(togglSolution, buildSettings);
 }
 
 private Action GenerateApk(string configuration)
