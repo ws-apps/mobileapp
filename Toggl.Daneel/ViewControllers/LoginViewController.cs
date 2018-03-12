@@ -96,6 +96,10 @@ namespace Toggl.Daneel.ViewControllers
                       .For(v => v.BindTap())
                       .To(vm => vm.StartPasswordManagerCommand);
 
+            bindingSet.Bind(TryLoggingInInsteadButton)
+                      .For(v => v.BindTap())
+                      .To(vm => vm.ChangeSignUpToLoginCommand);
+
             //Enabled
             bindingSet.Bind(EmailTextField)
                       .For(v => v.BindShouldReturn())
@@ -151,6 +155,11 @@ namespace Toggl.Daneel.ViewControllers
             bindingSet.Bind(PasswordManagerButton)
                       .For(v => v.BindAnimatedVisibility())
                       .To(vm => vm.PasswordManagerVisible);
+
+            bindingSet.Bind(TryLoggingInInsteadButton)
+                      .For(v => v.BindAnimatedVisibility())
+                      .To(vm => vm.TryLoggingInInsteadOfSignup);
+
             //State
             bindingSet.Bind(EmailTextField)
                       .For(v => v.BindFocus())

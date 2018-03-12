@@ -60,6 +60,9 @@ namespace Toggl.Daneel.ViewControllers
 		[Outlet]
 		[GeneratedCode ("iOS Designer", "1.0")]
 		UIKit.UIButton TermsOfServiceButton { get; set; }
+
+		[Outlet]
+		UIKit.UIButton TryLoggingInInsteadButton { get; set; }
 		
 		void ReleaseDesignerOutlets ()
 		{
@@ -96,6 +99,11 @@ namespace Toggl.Daneel.ViewControllers
 			if (InfoLabel != null) {
 				InfoLabel.Dispose ();
 				InfoLabel = null;
+			}
+
+			if (TryLoggingInInsteadButton != null) {
+				TryLoggingInInsteadButton.Dispose ();
+				TryLoggingInInsteadButton = null;
 			}
 
 			if (PasswordManagerButton != null) {

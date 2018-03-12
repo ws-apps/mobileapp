@@ -7,28 +7,28 @@ namespace Toggl.Ultrawave.Exceptions
 {
     public class ApiException : Exception
     {
-        private readonly IRequest request;
+        internal IRequest Request { get; }
 
-        private readonly IResponse response;
+        internal IResponse Response { get; }
 
-        private string message;
+        private readonly string message;
 
         internal ApiException(IRequest request, IResponse response, string message)
         {
-            this.request = request;
-            this.response = response;
+            Request = request;
+            Response = response;
             this.message = message;
         }
 
         public string LocalizedApiErrorMessage
-            => response.RawData;
+            => Response.RawData;
 
         public override string ToString()
-            => $"{GetType().Name} for request {request.HttpMethod} {request.Endpoint}: "
+            => $"{GetType().Name} for request {Request.HttpMethod} {Request.Endpoint}: "
                 + $"Response: "
-                + $"(Status: [{(int)response.StatusCode} {response.StatusCode}]) "
-                + $"(Headers: [{SerializeHeaders(response.Headers)}]) "
-                + $"(Body: {response.RawData}) "
+                + $"(Status: [{(int)Response.StatusCode} {Response.StatusCode}]) "
+                + $"(Headers: [{SerializeHeaders(Response.Headers)}]) "
+                + $"(Body: {Response.RawData}) "
                 + $"(Message: {message})";
 
         internal static string SerializeHeaders(IEnumerable<KeyValuePair<string, IEnumerable<string>>> headers)

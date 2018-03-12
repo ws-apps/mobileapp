@@ -3,6 +3,7 @@ using System.Reactive.Linq;
 using Newtonsoft.Json;
 using Toggl.Multivac;
 using Toggl.Multivac.Models;
+using Toggl.Ultrawave.Exceptions;
 using Toggl.Ultrawave.Helpers;
 using Toggl.Ultrawave.Models;
 using Toggl.Ultrawave.Network;
@@ -13,6 +14,8 @@ namespace Toggl.Ultrawave.ApiClients
 {
     internal sealed class UserApi : BaseApi, IUserApi
     {
+        private const string userAlreadyExistsApiErrorMessage = "user with this email already exists";
+
         private readonly UserEndpoints endPoints;
         private readonly IJsonSerializer serializer;
 
@@ -55,7 +58,11 @@ namespace Toggl.Ultrawave.ApiClients
                 }
             };
             var json = serializer.Serialize(dto, SerializationReason.Post, null);
-            return CreateObservable<User>(endPoints.Post, new HttpHeader[0], json);
+            return CreateObservable<User>(endPoints.Post, new HttpHeader[0], json)
+                .Catch<IUser, BadRequestException>(badRequestException
+                    => badRequestException.LocalizedApiErrorMessage == userAlreadyExistsApiErrorMessage
+                        ? Observable.Throw<IUser>(new EmailIsAlreadyUsedException(badRequestException))
+                        : Observable.Throw<IUser>(badRequestException));
         }
 
         public IObservable<IUser> SignUpWithGoogle(string googleToken)

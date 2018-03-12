@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13527"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -24,6 +24,7 @@
                 <outlet property="ShowPasswordButton" destination="IEZ-w2-ebJ" id="name-outlet-IEZ-w2-ebJ"/>
                 <outlet property="SignUpLabels" destination="Eh2-5Y-rzg" id="name-outlet-Eh2-5Y-rzg"/>
                 <outlet property="TermsOfServiceButton" destination="9df-sA-oTS" id="name-outlet-9df-sA-oTS"/>
+                <outlet property="TryLoggingInInsteadButton" destination="qYy-QQ-Mn5" id="GdE-cr-kLb"/>
                 <outlet property="infoLabel" destination="3Dj-pA-An9" id="lqJ-3z-wnL"/>
                 <outlet property="view" destination="2" id="RRd-Eg-VrN"/>
             </connections>
@@ -71,12 +72,29 @@
                     </constraints>
                 </imageView>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Incorrect email/password. Please try again." textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3Dj-pA-An9">
-                    <rect key="frame" x="16" y="192" width="343" height="15"/>
+                    <rect key="frame" x="16" y="192" width="243.5" height="15"/>
                     <accessibility key="accessibilityConfiguration" label="LoginError"/>
                     <fontDescription key="fontDescription" type="system" pointSize="12"/>
                     <color key="textColor" red="0.99121707677841187" green="0.99630099534988403" blue="0.99603599309921265" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" hasAttributedTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="qYy-QQ-Mn5">
+                    <rect key="frame" x="16" y="207" width="125" height="15"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="15" id="bTS-0F-H78"/>
+                    </constraints>
+                    <state key="normal">
+                        <attributedString key="attributedTitle">
+                            <fragment content="Try logging in instead.">
+                                <attributes>
+                                    <color key="NSColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <font key="NSFont" metaFont="cellTitle"/>
+                                    <integer key="NSUnderline" value="1"/>
+                                </attributes>
+                            </fragment>
+                        </attributedString>
+                    </state>
+                </button>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="l7S-as-iux" customClass="ActivityIndicatorView">
                     <rect key="frame" x="335" y="159" width="24" height="24"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -171,12 +189,13 @@
                 <constraint firstItem="PiY-Rc-MrZ" firstAttribute="leading" secondItem="KpB-g5-xIZ" secondAttribute="trailing" constant="3" id="CRk-Gz-lus"/>
                 <constraint firstItem="965-7g-Gu6" firstAttribute="leading" secondItem="2" secondAttribute="leading" constant="16" id="CeJ-bb-SPH"/>
                 <constraint firstItem="965-7g-Gu6" firstAttribute="top" secondItem="2" secondAttribute="top" constant="159" id="D3H-zT-YZV"/>
-                <constraint firstAttribute="trailing" secondItem="3Dj-pA-An9" secondAttribute="trailing" constant="16" id="DmF-OJ-B2V"/>
                 <constraint firstItem="IEZ-w2-ebJ" firstAttribute="centerY" secondItem="965-7g-Gu6" secondAttribute="centerY" id="EGn-Lh-RBk"/>
                 <constraint firstItem="8lc-P8-x4K" firstAttribute="top" secondItem="W8s-Uc-eM2" secondAttribute="bottom" constant="18" id="F5O-m2-Nrj"/>
                 <constraint firstItem="3Dj-pA-An9" firstAttribute="leading" secondItem="2" secondAttribute="leading" constant="16" id="FQL-QJ-siE"/>
                 <constraint firstItem="8lc-P8-x4K" firstAttribute="top" secondItem="Eh2-5Y-rzg" secondAttribute="bottom" constant="18" id="Jfa-6v-Zn6"/>
+                <constraint firstItem="qYy-QQ-Mn5" firstAttribute="leading" secondItem="3Dj-pA-An9" secondAttribute="leading" id="Kde-7u-dsw"/>
                 <constraint firstItem="Eh2-5Y-rzg" firstAttribute="leading" secondItem="2" secondAttribute="leading" constant="16" id="ME2-Ai-gil"/>
+                <constraint firstItem="qYy-QQ-Mn5" firstAttribute="top" secondItem="3Dj-pA-An9" secondAttribute="bottom" id="Nq9-te-Nl3"/>
                 <constraint firstItem="KpB-g5-xIZ" firstAttribute="centerY" secondItem="8lc-P8-x4K" secondAttribute="centerY" id="VRR-vU-rmD"/>
                 <constraint firstItem="W8s-Uc-eM2" firstAttribute="leading" secondItem="2" secondAttribute="leading" constant="16" id="Y7f-dy-vw7"/>
                 <constraint firstAttribute="trailing" secondItem="zrB-CR-ZBC" secondAttribute="trailing" id="Ydm-yz-dwx"/>

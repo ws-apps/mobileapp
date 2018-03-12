@@ -64,6 +64,12 @@ Please try again.</value>
     <data name="GenericSignUpError">
         <value>Sorry, we’re having trouble signing you up. Please try again.</value>
     </data>
+    <data name="EmailIsAlreadyUsedError">
+      <value>User with this email already exists.</value>
+    </data>
+    <data name="TryLoggingInInstead">
+      <value>Try logging in instead.</value>
+    </data>
     <data name="StartTimeEntryPlaceholder">
         <value>What are you working on?</value>
     </data>

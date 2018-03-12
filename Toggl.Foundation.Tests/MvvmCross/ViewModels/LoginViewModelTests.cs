@@ -1276,6 +1276,107 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             }
         }
 
+        public sealed class TheChangeSignUpToLoginCommand : LoginViewModelTest
+        {
+            [Fact]
+            public void CannotExecuteTheCommandWhenInLoginMode()
+            {
+                ViewModel.Prepare(LoginType.Login);
+
+                var canExecute = ViewModel.ChangeSignUpToLoginCommand.CanExecute();
+
+                canExecute.Should().BeFalse();
+            }
+
+            [Fact]
+            public void CanBeExecutedWhenInSignUpMode()
+            {
+                ViewModel.Prepare(LoginType.SignUp);
+
+                var canExecute = ViewModel.ChangeSignUpToLoginCommand.CanExecute();
+
+                canExecute.Should().BeTrue();
+            }
+
+            [Fact]
+            public async Task ClearsTheInfoText()
+            {
+                await trySignUpWithExistingEmail();
+
+                ViewModel.ChangeSignUpToLoginCommand.Execute();
+
+                ViewModel.InfoText.Length.Should().Be(0);
+            }
+
+            [Fact]
+            public async Task ClearsThePassword()
+            {
+                await trySignUpWithExistingEmail();
+
+                ViewModel.ChangeSignUpToLoginCommand.Execute();
+
+                ViewModel.Password.Should().Be(Password.Empty);
+            }
+
+            [Fact]
+            public async Task KeepsTheEmail()
+            {
+                await trySignUpWithExistingEmail();
+
+                ViewModel.ChangeSignUpToLoginCommand.Execute();
+
+                ViewModel.Email.Should().Be(ValidEmail);
+            }
+
+            [Fact]
+            public async Task ChangesLoginTypeToLogin()
+            {
+                await trySignUpWithExistingEmail();
+
+                ViewModel.ChangeSignUpToLoginCommand.Execute();
+
+                ViewModel.IsLogin.Should().BeTrue();
+            }
+
+            [Fact]
+            public async Task ChangesCurrentPageToEmailPage()
+            {
+                await trySignUpWithExistingEmail();
+
+                ViewModel.ChangeSignUpToLoginCommand.Execute();
+
+                ViewModel.IsEmailPage.Should().BeTrue();
+            }
+
+            [Fact]
+            public async Task ClearsTheTryLoggingInInsteadOfSignupFlag()
+            {
+                await trySignUpWithExistingEmail();
+
+                ViewModel.ChangeSignUpToLoginCommand.Execute();
+
+                ViewModel.TryLoggingInInsteadOfSignup.Should().BeFalse();
+            }
+
+            private async Task trySignUpWithExistingEmail()
+            {
+                var request = Substitute.For<IRequest>();
+                var response = Substitute.For<IResponse>();
+                var badRequestException = new BadRequestException(request, response);
+                var emailTakenException = new EmailIsAlreadyUsedException(badRequestException);
+                LoginManager.SignUp(Arg.Any<Email>(), Arg.Any<Password>())
+                    .Returns(Observable.Throw<ITogglDataSource>(emailTakenException));
+
+                ViewModel.Prepare(LoginType.SignUp);
+                await ViewModel.Initialize();
+
+                ViewModel.Email = ValidEmail;
+                ViewModel.NextCommand.Execute();
+                ViewModel.Password = ValidPassword;
+                ViewModel.NextCommand.Execute();
+            }
+        }
+
         public sealed class ApiErrorHandling
         {
             public abstract class BaseApiErrorHandlingTests : LoginViewModelTest

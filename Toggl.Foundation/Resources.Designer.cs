@@ -143,6 +143,22 @@ namespace Toggl.Foundation {
             }
         }
         
+        public static string EmailIsAlreadyUsedError
+        {
+            get
+            {
+                return ResourceManager.GetString("EmailIsAlreadyUsedError", resourceCulture);
+            }
+        }
+        
+        public static string TryLoggingInInstead
+        {
+            get
+            {
+                return ResourceManager.GetString("TryLoggingInInstead", resourceCulture);
+            }
+        }
+        
         public static string StartTimeEntryPlaceholder {
             get {
                 return ResourceManager.GetString("StartTimeEntryPlaceholder", resourceCulture);
