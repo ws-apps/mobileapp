@@ -8,7 +8,7 @@ namespace Toggl.Giskard.Bindings
     {
         public const string BindingName = "VerticalFlip";
 
-        public override MvxBindingMode DefaultMode => MvxBindingMode.Default;
+        public override MvxBindingMode DefaultMode => MvxBindingMode.OneWay;
 
         public ImageViewVerticalFlipTargetBinding(ImageView target) 
             : base(target)
