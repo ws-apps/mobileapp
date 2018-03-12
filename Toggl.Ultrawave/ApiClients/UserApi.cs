@@ -28,13 +28,14 @@ namespace Toggl.Ultrawave.ApiClients
         }
 
         public IObservable<IUser> Get()
-            => CreateObservable<User>(endPoints.Get, AuthHeader);
+            => CreateObservable<User>(endPoints.Get, AuthHeader, responseValidator: checkForApiToken);
 
         public IObservable<IUser> GetWithGoogle()
-            => CreateObservable<User>(endPoints.GetWithGoogle, AuthHeader);
+            => CreateObservable<User>(endPoints.GetWithGoogle, AuthHeader, responseValidator: checkForApiToken);
 
         public IObservable<IUser> Update(IUser user)
-            => CreateObservable(endPoints.Put, AuthHeader, user as User ?? new User(user), SerializationReason.Post);
+            => CreateObservable(endPoints.Put, AuthHeader, user as User ?? new User(user),
+                SerializationReason.Post, responseValidator: checkForApiToken);
 
         public IObservable<string> ResetPassword(Email email)
         {
@@ -58,7 +59,7 @@ namespace Toggl.Ultrawave.ApiClients
                 }
             };
             var json = serializer.Serialize(dto, SerializationReason.Post, null);
-            return CreateObservable<User>(endPoints.Post, new HttpHeader[0], json)
+            return CreateObservable<User>(endPoints.Post, new HttpHeader[0], json, checkForApiToken)
                 .Catch<IUser, BadRequestException>(badRequestException
                     => badRequestException.LocalizedApiErrorMessage == userAlreadyExistsApiErrorMessage
                         ? Observable.Throw<IUser>(new EmailIsAlreadyUsedException(badRequestException))
@@ -78,7 +79,13 @@ namespace Toggl.Ultrawave.ApiClients
             };
 
             var json = serializer.Serialize(parameters, SerializationReason.Post, null);
-            return CreateObservable<User>(endPoints.PostWithGoogle, new HttpHeader[0], json);
+            return CreateObservable<User>(endPoints.PostWithGoogle, new HttpHeader[0], json, checkForApiToken);
+        }
+
+        private void checkForApiToken(IRequest request, IResponse response, User user)
+        {
+            if (string.IsNullOrWhiteSpace(user.ApiToken))
+                throw new UserIsMissingApiTokenException(request, response);
         }
 
         [Preserve(AllMembers = true)]

@@ -118,6 +118,59 @@ namespace Toggl.Ultrawave.Tests.ApiClients
                     .ShouldThrow<DeserializationException<string>>()
                     .Which.Json.Should().Be(rawResponse);
             }
+
+            [Fact, LogIfTooSlow]
+            public async void PassesTheResponseAndItsDataToTheValidator()
+            {
+                var expectedData = "It lives";
+                var expectedResponse = new Response(expectedData, true, "text/plain",
+                    new List<KeyValuePair<string, IEnumerable<string>>>(), OK);
+                apiClient.Send(Arg.Any<Request>()).Returns(x => expectedResponse);
+                serializer.Deserialize<string>(Arg.Any<string>()).Returns(expectedData);
+
+                var credentials = Credentials.WithPassword(
+                    "susancalvin@psychohistorian.museum".ToEmail(),
+                    "theirobotmoviesucked123".ToPassword());
+                var endpoint = Endpoint.Get(BaseUrls.ForApi(ApiEnvironment.Staging), "");
+                var testApi = new TestApi(endpoint, apiClient, serializer, credentials, endpoint);
+
+                IRequest receivedRequest = null;
+                IResponse receivedResponse = null;
+                string receivedData = null;
+                var observable = testApi.TestCreateObservable<string>(endpoint, Enumerable.Empty<HttpHeader>(), "",
+                    (request, response, data) => (receivedRequest, receivedResponse, receivedData) = (request, response, data));
+                
+                await observable.SingleAsync();
+
+                receivedRequest.HttpMethod.Should().Be(endpoint.Method);
+                receivedRequest.Endpoint.Should().Be(endpoint.Url);
+                receivedResponse.Should().Be(expectedResponse);
+                receivedData.Should().Be(expectedData);
+            }
+            
+            [Fact, LogIfTooSlow]
+            public void EmitsTheThrownExceptionIfTheValidatorThrows()
+            {
+                apiClient.Send(Arg.Any<Request>()).Returns(x => new Response("It lives", true, "text/plain", new List<KeyValuePair<string, IEnumerable<string>>>(), OK));
+
+                var credentials = Credentials.WithPassword(
+                    "susancalvin@psychohistorian.museum".ToEmail(),
+                    "theirobotmoviesucked123".ToPassword());
+                var endpoint = Endpoint.Get(BaseUrls.ForApi(ApiEnvironment.Staging), "");
+                var testApi = new TestApi(endpoint, apiClient, serializer, credentials, endpoint);
+
+                var exampleExceptionMessage = "What is this.";
+                var exception = new TestException(exampleExceptionMessage);
+                var observable = testApi.TestCreateObservable<string>(endpoint, Enumerable.Empty<HttpHeader>(), "",
+                    (request, response, data) => throw exception);
+                
+                Func<Task> theObservableReturnedWhenTheValidatorThrows =
+                    async () => await observable;
+
+                theObservableReturnedWhenTheValidatorThrows
+                    .ShouldThrow<TestException>()
+                    .WithMessage(exampleExceptionMessage);
+            }
         }
     }
 }

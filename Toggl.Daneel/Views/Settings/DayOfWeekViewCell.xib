@@ -19,20 +19,31 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Monday" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fae-Vg-hJb">
-                        <rect key="frame" x="16" y="13.5" width="62" height="21"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <rect key="frame" x="16" y="15.5" width="55" height="18"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" image="icCheckBoxChecked" translatesAutoresizingMaskIntoConstraints="NO" id="jYg-u4-Tp0">
                         <rect key="frame" x="290" y="17" width="14" height="14"/>
                     </imageView>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="h3K-9N-0Jb" userLabel="Separator">
+                        <rect key="frame" x="0.0" y="46.5" width="320" height="1"/>
+                        <color key="backgroundColor" red="0.90980392160000001" green="0.90980392160000001" blue="0.90980392160000001" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="1" id="Gkn-Ue-YNr"/>
+                            <constraint firstAttribute="height" constant="1" id="eTe-Og-Fdw"/>
+                        </constraints>
+                    </view>
                 </subviews>
                 <constraints>
+                    <constraint firstAttribute="trailing" secondItem="h3K-9N-0Jb" secondAttribute="trailing" id="1dG-iU-yUs"/>
                     <constraint firstAttribute="trailing" secondItem="jYg-u4-Tp0" secondAttribute="trailing" constant="16" id="4Kb-Vs-iAA"/>
                     <constraint firstItem="jYg-u4-Tp0" firstAttribute="centerY" secondItem="YTl-1W-gDM" secondAttribute="centerY" id="Kdk-mt-hfY"/>
+                    <constraint firstAttribute="bottom" secondItem="h3K-9N-0Jb" secondAttribute="bottom" id="V4N-GS-cBj"/>
                     <constraint firstItem="fae-Vg-hJb" firstAttribute="leading" secondItem="YTl-1W-gDM" secondAttribute="leading" constant="16" id="fsR-AQ-4ch"/>
                     <constraint firstItem="fae-Vg-hJb" firstAttribute="centerY" secondItem="YTl-1W-gDM" secondAttribute="centerY" id="n5c-dO-nAm"/>
+                    <constraint firstItem="h3K-9N-0Jb" firstAttribute="leading" secondItem="YTl-1W-gDM" secondAttribute="leading" id="q90-WJ-Xl7"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>

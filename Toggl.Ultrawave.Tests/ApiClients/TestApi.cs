@@ -20,8 +20,9 @@ namespace Toggl.Ultrawave.Tests.ApiClients
             this.endpoint = endpoint;
         }
 
-        public IObservable<T> TestCreateObservable<T>(Endpoint endpoint, IEnumerable<HttpHeader> headers, string body = "")
-            => CreateObservable<T>(endpoint, headers, body);
+        public IObservable<T> TestCreateObservable<T>(Endpoint endpoint, IEnumerable<HttpHeader> headers,
+            string body = "", ResponseValidator<T> responseValidator = null)
+            => CreateObservable(endpoint, headers, body, responseValidator);
 
         public IObservable<string> Get()
         {

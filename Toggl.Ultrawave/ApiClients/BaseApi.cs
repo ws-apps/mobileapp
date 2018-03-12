@@ -16,6 +16,8 @@ namespace Toggl.Ultrawave.ApiClients
 {
     internal abstract class BaseApi
     {
+        internal delegate void ResponseValidator<T>(IRequest request, IResponse response, T data);
+        
         private readonly IApiClient apiClient;
         private readonly IJsonSerializer serializer;
 
@@ -32,8 +34,8 @@ namespace Toggl.Ultrawave.ApiClients
 
             this.apiClient = apiClient;
             this.serializer = serializer;
-            this.AuthHeader = credentials.Header;
             this.loggedEndpoint = loggedEndpoint;
+            AuthHeader = credentials.Header;
         }
 
         protected IObservable<List<TInterface>> CreateListObservable<TModel, TInterface>(Endpoint endpoint, HttpHeader header, List<TModel> entities, SerializationReason serializationReason, IWorkspaceFeatureCollection features = null)
@@ -55,54 +57,52 @@ namespace Toggl.Ultrawave.ApiClients
             return observable.Select(items => items?.ToList<TInterface>());
         }
 
-        protected IObservable<T> CreateObservable<T>(Endpoint endpoint, HttpHeader header, T entity, SerializationReason serializationReason, IWorkspaceFeatureCollection features = null) {
-            var body = serializer.Serialize<T>(entity, serializationReason, features);
-            return CreateObservable<T>(endpoint, header, body);
+        protected IObservable<T> CreateObservable<T>(Endpoint endpoint, HttpHeader header, T entity,
+            SerializationReason serializationReason, IWorkspaceFeatureCollection features = null,
+            ResponseValidator<T> responseValidator = null)
+        {
+            var body = serializer.Serialize(entity, serializationReason, features);
+            return CreateObservable(endpoint, header, body, responseValidator);
         }
         
-        protected IObservable<T> CreateObservable<T>(Endpoint endpoint, HttpHeader header, string body = "")
-            => CreateObservable<T>(endpoint, new[] { header }, body);
+        protected IObservable<T> CreateObservable<T>(Endpoint endpoint, HttpHeader header, string body = "",
+            ResponseValidator<T> responseValidator = null)
+        => CreateObservable(endpoint, new[] { header }, body, responseValidator);
 
-        protected IObservable<T> CreateObservable<T>(Endpoint endpoint, IEnumerable<HttpHeader> headers, string body = "")
+        protected IObservable<T> CreateObservable<T>(Endpoint endpoint, IEnumerable<HttpHeader> headers, string body = "",
+            ResponseValidator<T> responseValidator = null)
             => createObservable(endpoint, headers, body, async (rawData) =>
                 !string.IsNullOrEmpty(rawData)
                     ? await Task.Run(() => serializer.Deserialize<T>(rawData)).ConfigureAwait(false)
-                    : default(T));
+                    : default(T),
+                responseValidator);
 
         protected IObservable<string> CreateObservable(Endpoint endpoint, IEnumerable<HttpHeader> headers, string body = "")
-            => createObservable(endpoint, headers, body, (rawData) => Task.FromResult(rawData));
+            => createObservable(endpoint, headers, body, Task.FromResult);
 
-        private IObservable<T> createObservable<T>(Endpoint endpoint, IEnumerable<HttpHeader> headers, string body, Func<string, Task<T>> process)
+        private IObservable<T> createObservable<T>(Endpoint endpoint,
+            IEnumerable<HttpHeader> headers, string body, Func<string, Task<T>> process,
+            ResponseValidator<T> responseValidator = null)
         {
-            var request = new Request(body, endpoint.Url, headers, endpoint.Method);
+            var headerList = headers as IList<HttpHeader> ?? headers.ToList();
+            var request = new Request(body, endpoint.Url, headerList, endpoint.Method);
+            
             return Observable.Create<T>(async observer =>
             {
-                IResponse response;
-                try
-                {
-                    response = await apiClient.Send(request).ConfigureAwait(false);
-                }
-                catch (HttpRequestException exception)
-                {
-                    observer.OnError(new OfflineException(exception));
-                    return;
-                }
-
-                if (!response.IsSuccess)
-                {
-                    var exception = await getExceptionFor(request, response, headers);
-                    observer.OnError(exception);
-                    return;
-                }
-
                 T data;
                 try
                 {
-                    data = await process(response.RawData);
+                    var response = await sendRequest(request).ConfigureAwait(false);
+
+                    await throwIfRequestFailed(request, response, headerList).ConfigureAwait(false);
+
+                    data = await processResponseData(request, response, process).ConfigureAwait(false);
+
+                    validateResponse(request, response, data, responseValidator);
                 }
-                catch
+                catch (Exception e)
                 {
-                    observer.OnError(new DeserializationException<T>(request, response, response.RawData));
+                    observer.OnError(e);
                     return;
                 }
 
@@ -111,6 +111,41 @@ namespace Toggl.Ultrawave.ApiClients
             });
         }
 
+        private async Task<IResponse> sendRequest(IRequest request)
+        {
+            try
+            {
+                return await apiClient.Send(request).ConfigureAwait(false);
+            }
+            catch (HttpRequestException exception)
+            {
+                throw new OfflineException(exception);
+            }
+        }
+
+        private async Task throwIfRequestFailed(IRequest request, IResponse response, IEnumerable<HttpHeader> headers)
+        {
+            if (response.IsSuccess)
+                return;
+
+            throw await getExceptionFor(request, response, headers).ConfigureAwait(false);
+        }
+
+        private static async Task<T> processResponseData<T>(IRequest request, IResponse response, Func<string, Task<T>> process)
+        {
+            try
+            {
+                return await process(response.RawData).ConfigureAwait(false);
+            }
+            catch
+            {
+                throw new DeserializationException<T>(request, response, response.RawData);
+            }
+        }
+
+        private static void validateResponse<T>(IRequest request, IResponse response, T data, ResponseValidator<T> validateResponse)
+            => validateResponse?.Invoke(request, response, data);
+
         private async Task<Exception> getExceptionFor(
             IRequest request,
             IResponse response,
@@ -118,7 +153,7 @@ namespace Toggl.Ultrawave.ApiClients
         {
             try
             {
-                if (response.StatusCode == HttpStatusCode.Forbidden && await isLoggedIn(headers) == false)
+                if (response.StatusCode == HttpStatusCode.Forbidden && await isLoggedIn(headers).ConfigureAwait(false) == false)
                     return new UnauthorizedException(request, response);
             }
             catch (HttpRequestException)
