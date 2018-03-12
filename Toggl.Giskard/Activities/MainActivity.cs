@@ -25,8 +25,6 @@ namespace Toggl.Giskard.Activities
         private FloatingActionButton playButton;
         private FloatingActionButton stopButton;
 
-        public View SuggestionsContainer { get; set; }
-
         protected override void OnCreate(Bundle bundle)
         {
             this.ChangeStatusBarColor(Color.ParseColor("#2C2C2C"));
@@ -35,7 +33,6 @@ namespace Toggl.Giskard.Activities
             SetContentView(Resource.Layout.MainActivity);
 
             OverridePendingTransition(Resource.Animation.abc_fade_in, Resource.Animation.abc_fade_out);
-            SuggestionsContainer = FindViewById(Resource.Id.MainSuggestionsContainer);
 
             SetSupportActionBar(FindViewById<Toolbar>(Resource.Id.Toolbar));
             SupportActionBar.SetDisplayHomeAsUpEnabled(false);

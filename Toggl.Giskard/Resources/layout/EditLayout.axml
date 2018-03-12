@@ -14,7 +14,6 @@
         android:padding="0dp"
         android:textSize="15sp"
         android:focusable="true"
-        android:minHeight="56dp"
         android:maxHeight="224dp"
         android:background="@null"
         android:paddingLeft="16dp"
@@ -23,6 +22,7 @@
         android:textAlignment="viewStart"
         android:focusableInTouchMode="true"
         android:hint="@string/AddDescription"
+        android:minHeight="?attr/actionBarSize"
         android:textColor="@color/editTimeEntryText"
         android:textColorHint="@color/placeholderText"
         android:layout_marginTop="16dp"
@@ -54,6 +54,7 @@
         android:layout_below="@id/EditDescriptionBottomBorder" />
     <TextView
         android:id="@+id/EditAddProjectLabel"
+        local:MvxBind="Click SelectProjectCommand; Visibility !Visibility(Project)"
         tools:text=""
         android:textSize="15sp"
         android:gravity="center_vertical"
@@ -64,7 +65,7 @@
         android:layout_alignStart="@id/EditAddDescriptionLabel" />
     <TextView
         android:id="@+id/EditProject"
-        local:MvxBind="Text Project; TextColor RGBA(ProjectColor); Visibility Visibility(Project)"
+        local:MvxBind="Text Project; TextColor RGBA(ProjectColor); Visibility Visibility(Project); Click SelectProjectCommand"
         tools:text="Superday"
         android:textSize="15sp"
         android:gravity="center_vertical"
@@ -92,6 +93,7 @@
         android:layout_width="match_parent"
         android:layout_below="@id/EditAddProjectLabel" />
     <ImageView
+        local:MvxBind="Click SelectTagsCommand"
         android:id="@+id/EditTagsIcon"
         android:scaleType="center"
         android:src="@drawable/tag"
@@ -100,7 +102,7 @@
         android:layout_below="@id/EditProjectIcon" />
     <TextView
         android:id="@+id/EditAddTagsLabel"
-        local:MvxBind="Visibility Visibility(!HasTags)"
+        local:MvxBind="Click SelectTagsCommand; Visibility Visibility(!HasTags)"
         android:textSize="15sp"
         android:text="@string/AddTags"
         android:gravity="center_vertical"
@@ -111,15 +113,16 @@
         android:layout_toRightOf="@id/EditTagsIcon" />
     <TextView
         android:id="@+id/EditTags"
-        local:MvxBind="Tags Tags; Visibility Visibility(HasTags)"
+        local:MvxBind="Click SelectTagsCommand; Tags Tags; Visibility(HasTags)"
         tools:text="tag1 tag2 tag3"
-        android:textSize="15sp"
+        android:textSize="12sp"
         android:gravity="center_vertical"
-        android:textColor="@color/placeholderText"
-        android:layout_height="48dp"
+        android:textColor="#48A"
         android:layout_width="match_parent"
         android:layout_alignTop="@id/EditTagsIcon"
-        android:layout_toRightOf="@id/EditTagsIcon" />
+        android:layout_alignBottom="@id/EditTagsIcon"
+        android:layout_toRightOf="@id/EditTagsIcon"
+        android:layout_height="48dp" />
     <View
         android:background="@color/separator"
         android:layout_height="0.5dp"
@@ -307,8 +310,8 @@
         android:elevation="4dp"
         android:minHeight="?attr/actionBarSize"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        android:layout_height="56dp"
-        android:layout_width="match_parent">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
         <TextView
             local:MvxBind="Click ConfirmCommand"
             android:textAllCaps="true"

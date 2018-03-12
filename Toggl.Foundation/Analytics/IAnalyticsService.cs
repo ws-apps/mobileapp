@@ -5,8 +5,13 @@ namespace Toggl.Foundation.Analytics
     {
         void TrackOnboardingSkipEvent(string pageName);
 
-        void TrackLoginEvent();
-        void TrackSignUpEvent();
+        void TrackLoginEvent(AuthenticationMethod authenticationMethod);
+        void TrackSignUpEvent(AuthenticationMethod authenticationMethod);
+        void TrackResetPassword();
+
+        void TrackPasswordManagerButtonClicked();
+        void TrackPasswordManagerContainsValidEmail();
+        void TrackPasswordManagerContainsValidPassword();
 
         void TrackCurrentPage(Type viewModelType);
 

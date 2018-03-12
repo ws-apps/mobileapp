@@ -310,7 +310,8 @@ namespace Toggl.Foundation.Tests.Sync.States
                 IObservable<List<IProject>> projects = null,
                 IObservable<List<ITimeEntry>> timeEntries = null,
                 IObservable<List<ITag>> tags = null,
-                IObservable<List<ITask>> tasks = null)
+                IObservable<List<ITask>> tasks = null,
+                IObservable<IPreferences> preferences = null)
             => new FetchObservables(
                 old?.SinceParameters ?? sinceParameters,
                 old?.Workspaces ?? workspaces,
@@ -319,7 +320,8 @@ namespace Toggl.Foundation.Tests.Sync.States
                 old?.Projects ?? projects,
                 old?.TimeEntries ?? timeEntries,
                 old?.Tags ?? tags,
-                old?.Tasks ?? tasks);
+                old?.Tasks ?? tasks,
+                old?.Preferences ?? preferences);
 
             protected abstract TState CreateState(IRepository<TDatabaseInterface> repository, ISinceParameterRepository sinceParameterRepository);
 
@@ -367,7 +369,8 @@ namespace Toggl.Foundation.Tests.Sync.States
                     Observable.Throw<List<IProject>>(exception),
                     Observable.Throw<List<ITimeEntry>>(exception),
                     Observable.Throw<List<ITag>>(exception),
-                    Observable.Throw<List<ITask>>(exception));
+                    Observable.Throw<List<ITask>>(exception),
+                    Observable.Throw<IPreferences>(exception));
         }
     }
 }

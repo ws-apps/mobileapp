@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:local="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:background="@android:color/white"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:textSize="20sp"
+        android:text="@string/SelectColorTitle"
+        android:lineSpacingExtra="8sp"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@android:color/black"
+        android:layout_margin="24dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <mvvmcross.droid.support.v7.recyclerview.MvxRecyclerView
+        android:id="@+id/SelectColorRecyclerView"
+        local:MvxBind="ItemsSource SelectableColors; ItemClick SelectColorCommand"
+        local:MvxTemplateSelector="@string/SelectColorTemplateSelector"
+        android:scrollbars="vertical"
+        android:layout_height="146dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_width="match_parent" />
+    <toggl.giskard.views.HueSaturationPickerView
+        local:MvxBind="Hue Hue; Saturation Saturation; Value Value; Visibility Visibility(AllowCustomColors)"
+        android:layout_height="80dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="10dp"
+        android:layout_width="match_parent" />
+    <toggl.giskard.views.ValueSlider
+        local:MvxBind="Hue Hue; Saturation Saturation; Progress DecimalToPercentage(Complement(Value)); Visibility Visibility(AllowCustomColors)"
+        android:max="75"
+        android:thumb="@drawable/ValueSliderThumb"
+        android:layout_height="18dp"
+        android:layout_width="match_parent" />
+    <LinearLayout
+        android:orientation="horizontal"
+        android:gravity="right"
+        android:layout_height="52dp"
+        android:layout_width="match_parent">
+        <Button
+            local:MvxBind="Click CloseCommand"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:textAllCaps="true"
+            android:text="@string/Cancel"
+            android:textColor="#328fff"
+            android:letterSpacing="0.04"
+            android:fontFamily="sans-serif-medium"
+            android:background="?attr/selectableItemBackground"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <Button
+            local:MvxBind="Click SaveCommand"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:textAllCaps="true"
+            android:text="@string/Done"
+            android:textColor="#328fff"
+            android:letterSpacing="0.04"
+            android:fontFamily="sans-serif-medium"
+            android:background="?attr/selectableItemBackground"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+</LinearLayout>

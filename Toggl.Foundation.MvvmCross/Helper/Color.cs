@@ -42,9 +42,17 @@ namespace Toggl.Foundation.MvvmCross.Helper
         {
             private static readonly MvxColor lightGrey = new MvxColor(181, 188, 192);
 
+            public static readonly MvxColor SpiderNetColor = new MvxColor(0, 0, 0);
+
             public static readonly MvxColor CardBorder = new MvxColor(232, 232, 232);
 
             public static readonly MvxColor CurrentTimeEntryClientColor = new MvxColor(94, 91, 91);
+
+            public static readonly MvxColor SuggestionsTitle = new MvxColor(94, 91, 91);
+
+            public static readonly MvxColor SpiderHinge = new MvxColor(50, 50, 50);
+
+            public static readonly MvxColor WelcomeBackText = new MvxColor(181, 188, 192);
 
             public static readonly MvxColor PullToRefresh = lightGrey;
             public static readonly MvxColor Syncing = lightGrey;
@@ -56,8 +64,6 @@ namespace Toggl.Foundation.MvvmCross.Helper
         public static class TimeEntriesLog
         {
             public static readonly MvxColor ClientColor = new MvxColor(163, 163, 163);
-
-            public static readonly MvxColor ButtonBorder = new MvxColor(243, 243, 243);
 
             public static readonly MvxColor SectionFooter = new MvxColor(250, 251, 252);
 
@@ -176,6 +182,7 @@ namespace Toggl.Foundation.MvvmCross.Helper
         public static class Suggestions
         {
             public static readonly MvxColor ClientColor = new MvxColor(163, 163, 163);
+            public static readonly MvxColor HeaderText = new MvxColor(94, 91, 91);
         }
 
         public static class Settings

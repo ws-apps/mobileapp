@@ -90,14 +90,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         {
             protected void PrepareActionSheet(bool confirm)
             {
-                var result = confirm ? Resources.Delete : Resources.Cancel;
-
-                DialogService.ShowMultipleChoiceDialog(
-                    Arg.Is(Resources.Cancel),
-                    Arg.Is<MultipleChoiceDialogAction>(
-                        action => action.Text == Resources.Delete
-                               && action.Destructive == true)
-                ).Returns(Task.FromResult(result));
+                DialogService.ConfirmDestructiveAction(ActionType.DeleteExistingTimeEntry)
+                    .Returns(Task.FromResult(confirm));
             }
 
             [Fact, LogIfTooSlow]
@@ -105,12 +99,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             {
                 await ViewModel.DeleteCommand.ExecuteAsync();
 
-                await DialogService.Received().ShowMultipleChoiceDialog(
-                    Arg.Is(Resources.Cancel),
-                    Arg.Is<MultipleChoiceDialogAction>(
-                        action => action.Text == Resources.Delete
-                               && action.Destructive == true)
-                );
+                await DialogService.Received().ConfirmDestructiveAction(ActionType.DeleteExistingTimeEntry);
             }
 
             public sealed class WhenUserConfirms : TheDeleteCommand

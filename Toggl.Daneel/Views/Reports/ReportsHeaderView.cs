@@ -6,6 +6,7 @@ using MvvmCross.Binding.iOS.Views;
 using MvvmCross.Plugins.Color.iOS;
 using Toggl.Daneel.Converters;
 using Toggl.Daneel.Extensions;
+using Toggl.Foundation.MvvmCross.Combiners;
 using Toggl.Foundation.MvvmCross.Converters;
 using Toggl.Foundation.MvvmCross.Helper;
 using Toggl.Foundation.MvvmCross.ViewModels;
@@ -36,6 +37,8 @@ namespace Toggl.Daneel.Views.Reports
             var templateImage = TotalDurationGraph.Image.ImageWithRenderingMode(UIImageRenderingMode.AlwaysTemplate);
             TotalDurationGraph.Image = templateImage;
 
+            var durationCombiner = new DurationValueCombiner();
+
             this.DelayBind(() =>
             {
                 var bindingSet = this.CreateBindingSet<ReportsHeaderView, ReportsViewModel>();
@@ -47,9 +50,10 @@ namespace Toggl.Daneel.Views.Reports
                           .WithConversion(new ReportPercentageLabelValueConverter());
 
                 bindingSet.Bind(TotalDurationLabel)
-                          .For(v => v.AttributedText)
-                          .To(vm => vm.TotalTime)
-                          .WithConversion(new TimeSpanReportLabelValueConverter());
+                          .For(v => v.Text)
+                          .ByCombining(durationCombiner,
+                              vm => vm.TotalTime,
+                              vm => vm.DurationFormat);
 
                 //Loading chart
                 bindingSet.Bind(LoadingPieChartView)

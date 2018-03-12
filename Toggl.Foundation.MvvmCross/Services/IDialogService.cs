@@ -10,10 +10,14 @@ namespace Toggl.Foundation.MvvmCross.Services
             string confirmButtonText,
             string dismissButtonText);
 
-        Task<string> ShowMultipleChoiceDialog(
-            string cancelText,
-            params MultipleChoiceDialogAction[] actions);
+        Task Alert(string title, string message, string buttonTitle);
 
-        Task<object> Alert(string title, string message, string buttonTitle);
+        Task<bool> ConfirmDestructiveAction(ActionType type);
+    }
+
+    public enum ActionType
+    {
+        DiscardNewTimeEntry,
+        DeleteExistingTimeEntry
     }
 }

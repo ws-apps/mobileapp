@@ -1,6 +1,7 @@
 ﻿using System;
 using Toggl.Foundation.Models;
 using Toggl.Foundation.Sync.States;
+using Toggl.Foundation.Tests.Mocks;
 using Toggl.Multivac.Models;
 using Toggl.PrimeRadiant;
 using Toggl.PrimeRadiant.Models;
@@ -18,10 +19,10 @@ namespace Toggl.Foundation.Tests.Sync.States
         private class TheStartMethod : TheStartMethod<IDatabaseClient, IClient>
         {
             protected override IDatabaseClient CreateDirtyEntityWithNegativeId()
-                => Client.Dirty(new Ultrawave.Models.Client { Id = -123, Name = Guid.NewGuid().ToString() });
+                => Client.Dirty(new MockClient { Id = -123, Name = Guid.NewGuid().ToString() });
 
             protected override IDatabaseClient CreateCleanWithPositiveIdFrom(IDatabaseClient entity)
-                => Client.Clean(new Ultrawave.Models.Client { Id = 456, Name = entity.Name });
+                => Client.Clean(new MockClient { Id = 456, Name = entity.Name });
 
             protected override IDatabaseClient CreateCleanEntityFrom(IDatabaseClient entity)
                 => Client.Clean(entity);

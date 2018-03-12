@@ -4,6 +4,7 @@ using System.Reactive.Linq;
 using NSubstitute;
 using Toggl.Foundation.Models;
 using Toggl.Foundation.Sync.States;
+using Toggl.Foundation.Tests.Mocks;
 using Toggl.PrimeRadiant;
 using Toggl.PrimeRadiant.Models;
 
@@ -22,7 +23,7 @@ namespace Toggl.Foundation.Tests.Sync.States.Push
                 => new PushTagsState(repository);
 
             protected override IDatabaseTag CreateUnsyncedEntity(DateTimeOffset lastUpdate = default(DateTimeOffset))
-                => Tag.Dirty(new Ultrawave.Models.Tag { At = lastUpdate });
+                => Tag.Dirty(new MockTag { At = lastUpdate });
 
             protected override void SetupRepositoryToReturn(IRepository<IDatabaseTag> repository, IDatabaseTag[] entities)
             {

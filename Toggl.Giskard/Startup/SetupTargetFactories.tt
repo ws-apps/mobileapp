@@ -40,7 +40,11 @@ namespace Toggl.Giskard
         if (declarationLine == null) continue;
 
         var beginAt = declarationLine.IndexOf("<") + 1;
-        var length = declarationLine.IndexOf(", ") - beginAt;
+        var length = declarationLine.IndexOf(", ", beginAt) - beginAt;
+
+        if(length < 0)
+            length = declarationLine.IndexOf(">", beginAt) - beginAt;
+
         var viewName = declarationLine.Substring(beginAt, length);
 
         var bindingLine = lines.FirstOrDefault(line => line.Contains("const string BindingName"));

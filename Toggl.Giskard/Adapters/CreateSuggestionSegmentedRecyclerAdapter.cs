@@ -36,7 +36,8 @@ namespace Toggl.Giskard.Adapters
 
         public IMvxAsyncCommand CreateCommand { get; set; }
 
-        public override int ItemCount => base.ItemCount + (IsSuggestingCreation ? 1 : 0);
+        public override int ItemCount 
+            => base.ItemCount + (IsSuggestingCreation ? 1 : 0);
 
         protected abstract int SuggestCreationViewType { get; }
 

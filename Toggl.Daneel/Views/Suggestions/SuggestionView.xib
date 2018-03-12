@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="1" customClass="SuggestionView">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="64"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Landing page" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="D7P-XK-5vZ">
+                    <rect key="frame" x="16" y="11" width="93" height="18"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icContinue" translatesAutoresizingMaskIntoConstraints="NO" id="kjc-Uq-6AB">
+                    <rect key="frame" x="264" y="4" width="56" height="56"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="56" id="GEw-Du-Hqd"/>
+                        <constraint firstAttribute="width" constant="56" id="hjp-DX-w8k"/>
+                    </constraints>
+                </imageView>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icProjectDot" translatesAutoresizingMaskIntoConstraints="NO" id="ztf-Qj-KY1">
+                    <rect key="frame" x="16" y="40" width="6" height="6"/>
+                </imageView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Marketing" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ebs-ES-eMx">
+                    <rect key="frame" x="28" y="34.5" width="68.5" height="18"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <color key="textColor" red="0.2932400173611111" green="0.61116536458333337" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PFj-I8-nFs">
+                    <rect key="frame" x="102.5" y="35" width="37.5" height="18"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <color key="textColor" red="0.36862745098039218" green="0.35686274509803922" blue="0.35686274509803922" alpha="1" colorSpace="calibratedRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="D7P-XK-5vZ" firstAttribute="leading" secondItem="1" secondAttribute="leading" constant="16" id="7Fm-t1-rXP"/>
+                <constraint firstItem="ebs-ES-eMx" firstAttribute="centerY" secondItem="ztf-Qj-KY1" secondAttribute="centerY" id="A9E-59-alP"/>
+                <constraint firstAttribute="trailing" secondItem="kjc-Uq-6AB" secondAttribute="trailing" id="CwN-qs-Yoh"/>
+                <constraint firstItem="ebs-ES-eMx" firstAttribute="leading" secondItem="ztf-Qj-KY1" secondAttribute="trailing" constant="6" id="DiP-hr-lAR"/>
+                <constraint firstItem="ztf-Qj-KY1" firstAttribute="top" secondItem="1" secondAttribute="top" constant="40" id="FRh-VI-Af8"/>
+                <constraint firstItem="PFj-I8-nFs" firstAttribute="leading" secondItem="ebs-ES-eMx" secondAttribute="trailing" constant="6" id="ayK-oI-OEe"/>
+                <constraint firstItem="PFj-I8-nFs" firstAttribute="centerY" secondItem="ebs-ES-eMx" secondAttribute="centerY" id="eja-rf-LtX"/>
+                <constraint firstItem="kjc-Uq-6AB" firstAttribute="centerY" secondItem="1" secondAttribute="centerY" id="l16-2Q-WD7"/>
+                <constraint firstItem="D7P-XK-5vZ" firstAttribute="top" secondItem="1" secondAttribute="top" constant="11" id="msv-AK-amC"/>
+                <constraint firstItem="ztf-Qj-KY1" firstAttribute="leading" secondItem="1" secondAttribute="leading" constant="16" id="vCK-5Q-mCw"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="ClientLabel" destination="PFj-I8-nFs" id="ycp-kC-xir"/>
+                <outlet property="DescriptionLabel" destination="D7P-XK-5vZ" id="JbQ-Hd-eIn"/>
+                <outlet property="ProjectDot" destination="ztf-Qj-KY1" id="Ldz-o9-ewa"/>
+                <outlet property="ProjectLabel" destination="ebs-ES-eMx" id="NdZ-F3-vca"/>
+            </connections>
+        </view>
+    </objects>
+    <resources>
+        <image name="icContinue" width="10" height="11"/>
+        <image name="icProjectDot" width="6" height="6"/>
+    </resources>
+</document>

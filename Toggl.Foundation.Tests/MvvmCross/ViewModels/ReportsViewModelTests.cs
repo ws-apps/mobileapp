@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Threading;
 using FluentAssertions;
 using FsCheck.Xunit;
@@ -10,6 +11,8 @@ using Toggl.Foundation.MvvmCross.Parameters;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using Toggl.Foundation.Reports;
 using Toggl.Foundation.Tests.Generators;
+using Toggl.Multivac;
+using Toggl.PrimeRadiant.Models;
 using Xunit;
 
 namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
@@ -171,17 +174,21 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 ViewModel.CurrentDateRangeString.Should().Be($"{Resources.ThisWeek} ▾");
             }
 
-            [Theory, LogIfTooSlow]
+            [Theory]
             [MemberData(nameof(DateRangeFormattingTestData))]
             public void ReturnsSelectedDateRangeAsStringIfTheSelectedPeriodIsNotTheCurrentWeek(
-                int startYear, int startMonth, int startDay,
-                int endYear, int endMonth, int endDay,
-                CultureInfo deviceCulture,
+                DateTimeOffset start,
+                DateTimeOffset end,
+                DateFormat dateFormat,
                 string expectedResult)
             {
-                Thread.CurrentThread.CurrentCulture = deviceCulture;
-                var start = new DateTimeOffset(startYear, startMonth, startDay, 10, 12, 13, TimeSpan.Zero);
-                var end = new DateTimeOffset(endYear, endMonth, endDay, 12, 34, 1, TimeSpan.Zero);
+                TimeService.CurrentDateTime.Returns(DateTimeOffset.UtcNow);
+                var preferences = Substitute.For<IDatabasePreferences>();
+                preferences.DateFormat.Returns(dateFormat);
+                var preferencesSubject = new Subject<IDatabasePreferences>();
+                DataSource.Preferences.Current.Returns(preferencesSubject.AsObservable());
+                ViewModel.Prepare(0);
+                preferencesSubject.OnNext(preferences);
 
                 ViewModel.ChangeDateRangeCommand.Execute(
                     DateRangeParameter.WithDates(start, end));
@@ -191,41 +198,38 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
             public static IEnumerable<object[]> DateRangeFormattingTestData()
             {
-                var cultures = new[]
+                var dateFormats = new[]
                 {
-                    new CultureInfo("en-US"),
-                    new CultureInfo("en-GB"),
-                    new CultureInfo("de-DE"),
-                    new CultureInfo("jp-JP"),
-                    new CultureInfo("cs-CS"),
-                    new CultureInfo("ru-RU")
+                    DateFormat.FromLocalizedDateFormat("YYYY-MM-DD"),
+                    DateFormat.FromLocalizedDateFormat("DD.MM.YYYY"),
+                    DateFormat.FromLocalizedDateFormat("DD-MM-YYYY"),
+                    DateFormat.FromLocalizedDateFormat("MM/DD/YYYY"),
+                    DateFormat.FromLocalizedDateFormat("DD/MM/YYYY"),
+                    DateFormat.FromLocalizedDateFormat("MM-DD-YYYY")
                 };
 
-                foreach (var culture in cultures)
+                var ranges = new[]
                 {
-                    yield return new object[]
-                    {
-                        2017, 12, 15,
-                        2017, 12, 25,
-                        culture,
-                        "15 Dec - 25 Dec ▾"
-                    };
+                    (new DateTimeOffset(2017, 12, 15, 10, 12, 13, TimeSpan.Zero), new DateTimeOffset(2017, 12, 15, 12, 34, 1, TimeSpan.Zero)),
+                    (new DateTimeOffset(2017, 1, 1, 10, 12, 13, TimeSpan.Zero), new DateTimeOffset(2017, 12, 30, 12, 34, 1, TimeSpan.Zero)),
+                    (new DateTimeOffset(2017, 11, 13, 10, 12, 13, TimeSpan.Zero), new DateTimeOffset(2018, 11, 13, 12, 34, 1, TimeSpan.Zero))
+                };
 
-                    yield return new object[]
-                    {
-                        2017, 1, 1,
-                        2017, 12, 30,
-                        culture,
-                        "1 Jan - 30 Dec ▾"
-                    };
+                string expectedTitleString(DateTimeOffset start, DateTimeOffset end, DateFormat dateFormat)
+                    => $"{start.ToString(dateFormat.Short)} - {end.ToString(dateFormat.Short)} ▾";
 
-                    yield return new object[]
+                foreach (var (start, end) in ranges)
+                {
+                    foreach (var dateFormat in dateFormats)
                     {
-                        2017, 11, 13,
-                        2018, 11, 13,
-                        culture,
-                        "13 Nov - 13 Nov ▾"
-                    };
+                        yield return new object[]
+                        {
+                            start,
+                            end,
+                            dateFormat,
+                            expectedTitleString(start, end, dateFormat)
+                        };
+                    }
                 }
             }
         }

@@ -12,7 +12,6 @@ using Toggl.PrimeRadiant.Models;
 using Toggl.Foundation.DTOs;
 using Toggl.Foundation.Exceptions;
 using Toggl.Foundation.Sync.ConflictResolution;
-using Toggl.Foundation.Shortcuts;
 
 namespace Toggl.Foundation.DataSources
 {
@@ -22,7 +21,6 @@ namespace Toggl.Foundation.DataSources
 
         private readonly IIdProvider idProvider;
         private readonly ITimeService timeService;
-        private readonly IApplicationShortcutCreator shortcutCreator;
         private readonly IRepository<IDatabaseTimeEntry> repository;
         private readonly Subject<IDatabaseTimeEntry> timeEntryCreatedSubject = new Subject<IDatabaseTimeEntry>();
         private readonly Subject<(long Id, IDatabaseTimeEntry Entity)> timeEntryUpdatedSubject = new Subject<(long, IDatabaseTimeEntry)>();
@@ -42,19 +40,16 @@ namespace Toggl.Foundation.DataSources
 
         public TimeEntriesDataSource(
             IIdProvider idProvider,
-            IApplicationShortcutCreator shortcutCreator,
             IRepository<IDatabaseTimeEntry> repository,
             ITimeService timeService)
         {
             Ensure.Argument.IsNotNull(idProvider, nameof(idProvider));
             Ensure.Argument.IsNotNull(repository, nameof(repository));
             Ensure.Argument.IsNotNull(timeService, nameof(timeService));
-            Ensure.Argument.IsNotNull(shortcutCreator, nameof(shortcutCreator));
 
             this.repository = repository;
             this.idProvider = idProvider;
             this.timeService = timeService;
-            this.shortcutCreator = shortcutCreator;
 
             TimeEntryCreated = timeEntryCreatedSubject.AsObservable();
             TimeEntryUpdated = timeEntryUpdatedSubject.AsObservable();
@@ -99,24 +94,6 @@ namespace Toggl.Foundation.DataSources
                          .IgnoreElements()
                          .Cast<Unit>()
                          .Concat(Observable.Return(Unit.Default));
-
-        public IObservable<IDatabaseTimeEntry> Start(StartTimeEntryDTO dto)
-            => idProvider.GetNextIdentifier()
-                .Apply(TimeEntry.Builder.Create)
-                .SetUserId(dto.UserId)
-                .SetTagIds(dto.TagIds)
-                .SetTaskId(dto.TaskId)
-                .SetStart(dto.StartTime)
-                .SetDuration(dto.Duration)
-                .SetBillable(dto.Billable)
-                .SetProjectId(dto.ProjectId)
-                .SetDescription(dto.Description)
-                .SetWorkspaceId(dto.WorkspaceId)
-                .SetAt(timeService.CurrentDateTime)
-                .SetSyncStatus(SyncStatus.SyncNeeded)
-                .Build()
-                .Apply(Create)
-                .Do(shortcutCreator.OnTimeEntryStarted);
 
         public IObservable<IDatabaseTimeEntry> Stop(DateTimeOffset stopTime)
             => repository

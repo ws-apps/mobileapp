@@ -104,6 +104,9 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         {
             foreach (var selectableColor in SelectableColors)
                 selectableColor.Selected = color.Color.ARGB == selectableColor.Color.ARGB;
+
+            if (AllowCustomColors) return;
+            save();
         }
 
         private Task close()

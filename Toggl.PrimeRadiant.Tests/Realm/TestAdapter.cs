@@ -8,13 +8,24 @@ namespace Toggl.PrimeRadiant.Tests.Realm
     public sealed class TestAdapter : IRealmAdapter<TestModel>
     {
         private readonly List<TestModel> list = new List<TestModel>();
+        private Func<long, Predicate<TestModel>> matchById; 
+
+        public TestAdapter()
+            : this(id => e => e.Id == id)
+        {
+        }
+
+        public TestAdapter(Func<long, Predicate<TestModel>> matchById)
+        {
+            this.matchById = matchById;
+        }
 
         public TestModel Get(long id)
-            => list.Single(e => e.Id == id);
+            => list.Single(entity => matchById(id)(entity));
 
         public TestModel Create(TestModel entity)
         {
-            if (list.Find(e => e.Id == entity.Id) != null)
+            if (list.Find(matchById(entity.Id)) != null)
                 throw new InvalidOperationException();
 
             list.Add(entity);
@@ -24,7 +35,7 @@ namespace Toggl.PrimeRadiant.Tests.Realm
 
         public TestModel Update(long id, TestModel entity)
         {
-            var index = list.FindIndex(e => e.Id == id);
+            var index = list.FindIndex(matchById(id));
 
             if (index == -1)
                 throw new InvalidOperationException();

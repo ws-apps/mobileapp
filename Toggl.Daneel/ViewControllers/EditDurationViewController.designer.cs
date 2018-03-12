@@ -16,6 +16,9 @@ namespace Toggl.Daneel.ViewControllers
 		UIKit.UIButton CloseButton { get; set; }
 
 		[Outlet]
+		UIKit.UIStackView ControlsStackView { get; set; }
+
+		[Outlet]
 		UIKit.UIDatePicker DatePicker { get; set; }
 
 		[Outlet]
@@ -40,6 +43,9 @@ namespace Toggl.Daneel.ViewControllers
 		UIKit.UIButton SetEndButton { get; set; }
 
 		[Outlet]
+		UIKit.UIStackView StackView { get; set; }
+
+		[Outlet]
 		UIKit.UILabel StartDateLabel { get; set; }
 
 		[Outlet]
@@ -56,6 +62,11 @@ namespace Toggl.Daneel.ViewControllers
 			if (CloseButton != null) {
 				CloseButton.Dispose ();
 				CloseButton = null;
+			}
+
+			if (ControlsStackView != null) {
+				ControlsStackView.Dispose ();
+				ControlsStackView = null;
 			}
 
 			if (DatePicker != null) {
@@ -116,6 +127,11 @@ namespace Toggl.Daneel.ViewControllers
 			if (WheelView != null) {
 				WheelView.Dispose ();
 				WheelView = null;
+			}
+
+			if (StackView != null) {
+				StackView.Dispose ();
+				StackView = null;
 			}
 		}
 	}

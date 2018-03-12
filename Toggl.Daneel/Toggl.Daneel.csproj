@@ -262,9 +262,6 @@
     <ImageAsset Include="Resources\Images.xcassets\icUpS.imageset\icUpS.png" />
     <ImageAsset Include="Resources\Images.xcassets\icUpS.imageset\icUpS%402x.png" />
     <ImageAsset Include="Resources\Images.xcassets\icUpS.imageset\icUpS%403x.png" />
-    <ImageAsset Include="Resources\Images.xcassets\playIcon.imageset\playIcon.png" />
-    <ImageAsset Include="Resources\Images.xcassets\playIcon.imageset\playIcon%402x.png" />
-    <ImageAsset Include="Resources\Images.xcassets\playIcon.imageset\playIcon%403x.png" />
     <ImageAsset Include="Resources\Images.xcassets\stopIcon.imageset\stopIcon.png" />
     <ImageAsset Include="Resources\Images.xcassets\stopIcon.imageset\stopIcon%402x.png" />
     <ImageAsset Include="Resources\Images.xcassets\stopIcon.imageset\stopIcon%403x.png" />
@@ -316,14 +313,6 @@
     <ImageAsset Include="Resources\Images.xcassets\icProjectDot.imageset\icProjectDot.png" />
     <ImageAsset Include="Resources\Images.xcassets\icProjectDot.imageset\icProjectDot%402x.png" />
     <ImageAsset Include="Resources\Images.xcassets\icProjectDot.imageset\icProjectDot%403x.png" />
-    <ImageAsset Include="Resources\Images.xcassets\icIllustrationTimer.imageset\Contents.json" />
-    <ImageAsset Include="Resources\Images.xcassets\icIllustrationTimer.imageset\icIllustrationTimer.png" />
-    <ImageAsset Include="Resources\Images.xcassets\icIllustrationTimer.imageset\icIllustrationTimer%402x.png" />
-    <ImageAsset Include="Resources\Images.xcassets\icIllustrationTimer.imageset\icIllustrationTimer%403x.png" />
-    <ImageAsset Include="Resources\Images.xcassets\icIllustrationPaws.imageset\Contents.json" />
-    <ImageAsset Include="Resources\Images.xcassets\icIllustrationPaws.imageset\icIllustrationPaws.png" />
-    <ImageAsset Include="Resources\Images.xcassets\icIllustrationPaws.imageset\icIllustrationPaws%402x.png" />
-    <ImageAsset Include="Resources\Images.xcassets\icIllustrationPaws.imageset\icIllustrationPaws%403x.png" />
     <ImageAsset Include="Resources\Images.xcassets\duration.imageset\Contents.json" />
     <ImageAsset Include="Resources\Images.xcassets\duration.imageset\duration.png" />
     <ImageAsset Include="Resources\Images.xcassets\duration.imageset\duration%402x.png" />
@@ -389,6 +378,10 @@
     <ImageAsset Include="Resources\Images.xcassets\icIllustrationTagsSmall.imageset\icIllustrationTagsS.png" />
     <ImageAsset Include="Resources\Images.xcassets\icIllustrationTagsSmall.imageset\icIllustrationTagsS%402x.png" />
     <ImageAsset Include="Resources\Images.xcassets\icIllustrationTagsSmall.imageset\icIllustrationTagsS%403x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\icJustSpider.imageset\Contents.json" />
+    <ImageAsset Include="Resources\Images.xcassets\icJustSpider.imageset\icJustSpider.png" />
+    <ImageAsset Include="Resources\Images.xcassets\icJustSpider.imageset\icJustSpider%402x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\icJustSpider.imageset\icJustSpider%403x.png" />
     <ImageAsset Include="Resources\Images.xcassets\icIllustrationProjectsSmall.imageset\Contents.json" />
     <ImageAsset Include="Resources\Images.xcassets\icIllustrationProjectsSmall.imageset\icIllustrationProjectsS.png" />
     <ImageAsset Include="Resources\Images.xcassets\icIllustrationProjectsSmall.imageset\icIllustrationProjectsS%402x.png" />
@@ -417,13 +410,14 @@
     <ImageAsset Include="Resources\Images.xcassets\icErrorEdit.imageset\icErrorEdit.png" />
     <ImageAsset Include="Resources\Images.xcassets\icErrorEdit.imageset\icErrorEdit%402x.png" />
     <ImageAsset Include="Resources\Images.xcassets\icErrorEdit.imageset\icErrorEdit%403x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\playIcon.imageset\play.png" />
+    <ImageAsset Include="Resources\Images.xcassets\playIcon.imageset\play%402x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\playIcon.imageset\play%403x.png" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="LaunchScreen.storyboard" />
     <InterfaceDefinition Include="ViewControllers\OnboardingViewController.xib" />
     <InterfaceDefinition Include="ViewControllers\LoginViewController.xib" />
-    <InterfaceDefinition Include="ViewControllers\TimeEntriesLogViewController.xib" />
-    <InterfaceDefinition Include="ViewControllers\SuggestionsViewController.xib" />
     <InterfaceDefinition Include="ViewControllers\MainViewController.xib" />
     <InterfaceDefinition Include="ViewControllers\EditTimeEntryViewController.xib" />
     <InterfaceDefinition Include="ViewControllers\StartTimeEntryViewController.xib" />
@@ -452,7 +446,6 @@
     <InterfaceDefinition Include="Views\StartTimeEntry\TaskSuggestionViewCell.xib" />
     <InterfaceDefinition Include="Views\StartTimeEntry\WorkspaceHeaderViewCell.xib" />
     <InterfaceDefinition Include="Views\Suggestions\SuggestionsEmptyViewCell.xib" />
-    <InterfaceDefinition Include="Views\Suggestions\SuggestionsViewCell.xib" />
     <InterfaceDefinition Include="Views\EntityCreation\ClientViewCell.xib" />
     <InterfaceDefinition Include="Views\EntityCreation\CreateEntityViewCell.xib" />
     <InterfaceDefinition Include="Views\EntityCreation\SelectableTagViewCell.xib" />
@@ -463,6 +456,14 @@
     <InterfaceDefinition Include="Views\Reports\ReportsLegendViewCell.xib" />
     <InterfaceDefinition Include="Views\Reports\ReportsHeaderView.xib" />
     <InterfaceDefinition Include="Views\StartTimeEntry\NoEntityInfoViewCell.xib" />
+    <InterfaceDefinition Include="Views\Suggestions\SuggestionView.xib" />
+    <InterfaceDefinition Include="Views\Log\TimeEntriesLogEmptyStateViewCell.xib" />
+    <InterfaceDefinition Include="Views\Settings\DateFormatViewCell.xib" />
+    <InterfaceDefinition Include="ViewControllers\SelectDateFormatViewController.xib" />
+    <InterfaceDefinition Include="ViewControllers\SelectDurationFormatViewController.xib" />
+    <InterfaceDefinition Include="Views\Settings\DurationFormatViewCell.xib" />
+    <InterfaceDefinition Include="ViewControllers\SelectBeginningOfWeekViewController.xib" />
+    <InterfaceDefinition Include="Views\Settings\DayOfWeekViewCell.xib" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
@@ -505,16 +506,7 @@
     <Compile Include="Binding\TextFieldFocusTargetBinding.cs" />
     <Compile Include="Presentation\TogglPresenter.cs" />
     <Compile Include="ViewControllers\Navigation\TogglNavigationController.cs" />
-    <Compile Include="ViewControllers\TimeEntriesLogViewController.cs" />
-    <Compile Include="ViewControllers\TimeEntriesLogViewController.designer.cs">
-      <DependentUpon>TimeEntriesLogViewController.cs</DependentUpon>
-    </Compile>
     <Compile Include="ViewSources\TimeEntriesLogViewSource.cs" />
-    <Compile Include="ViewSources\SuggestionsTableViewSource.cs" />
-    <Compile Include="ViewControllers\SuggestionsViewController.cs" />
-    <Compile Include="ViewControllers\SuggestionsViewController.designer.cs">
-      <DependentUpon>SuggestionsViewController.cs</DependentUpon>
-    </Compile>
     <Compile Include="ViewControllers\MainViewController.cs" />
     <Compile Include="ViewControllers\MainViewController.designer.cs">
       <DependentUpon>MainViewController.cs</DependentUpon>
@@ -556,7 +548,6 @@
       <DependentUpon>SelectDateTimeViewController.cs</DependentUpon>
     </Compile>
     <Compile Include="Extensions\TextExtensions.cs" />
-    <Compile Include="Views\MainScrollView.cs" />
     <Compile Include="ViewControllers\SelectProjectViewController.cs" />
     <Compile Include="ViewControllers\SelectProjectViewController.designer.cs">
       <DependentUpon>SelectProjectViewController.cs</DependentUpon>
@@ -612,7 +603,6 @@
       <DependentUpon>SelectClientViewController.cs</DependentUpon>
     </Compile>
     <Compile Include="ViewSources\CreateSuggestionGroupedTableViewSource.cs" />
-    <Compile Include="Converters\ComplementValueConverter.cs" />
     <Compile Include="Views\TextViewWithPlaceholder.cs" />
     <Compile Include="Binding\TextViewWithPlaceholderTextTargetBinding.cs" />
     <Compile Include="Binding\TextFieldPlaceholderTargetBinding.cs" />
@@ -680,10 +670,6 @@
     <Compile Include="Views\Suggestions\SuggestionsEmptyViewCell.designer.cs">
       <DependentUpon>SuggestionsEmptyViewCell.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\Suggestions\SuggestionsViewCell.cs" />
-    <Compile Include="Views\Suggestions\SuggestionsViewCell.designer.cs">
-      <DependentUpon>SuggestionsViewCell.cs</DependentUpon>
-    </Compile>
     <Compile Include="Views\Color\ValueSliderView.cs" />
     <Compile Include="Views\EditTimeEntry\TextViewWithCharacterCounter.cs" />
     <Compile Include="Views\EntityCreation\ClientViewCell.cs" />
@@ -748,6 +734,8 @@
     <Compile Include="Extensions\NoEntityInfoMessageExtensions.cs" />
     <Compile Include="Views\Reports\LoadingPieChartView.cs" />
     <Compile Include="PlatformConstants.cs" />
+    <Compile Include="Views\SpiderOnARopeView.cs" />
+    <Compile Include="Binding\SpiderOnARopeViewIsVisibleTargetBinding.cs" />
     <Compile Include="ApplicationShortcutCreator.cs" />
     <Compile Include="Extensions\PointExtensions.cs" />
     <Compile Include="Services\MailService.cs" />
@@ -760,6 +748,47 @@
     <Compile Include="Views\EditDuration\DurationField.cs" />
     <Compile Include="Views\EditDuration\NumberKeyPressedEventArgs.cs" />
     <Compile Include="Binding\ButtonImageTargetBinding.cs" />
+    <Compile Include="Views\Suggestions\SuggestionsView.cs" />
+    <Compile Include="Views\Suggestions\SuggestionView.cs" />
+    <Compile Include="Views\Suggestions\SuggestionView.designer.cs">
+      <DependentUpon>SuggestionView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewSources\MainTableViewSource.cs" />
+    <Compile Include="ViewSources\SwipeToRefreshTableViewDelegate.cs" />
+    <Compile Include="Converters\CollectionSizeToHeightConverter.cs" />
+    <Compile Include="Binding\LayoutConstraintConstantTargetBinding.cs" />
+    <Compile Include="Services\LicenseProvider.cs" />
+    <Compile Include="Views\Log\TimeEntriesLogEmptyStateViewCell.cs" />
+    <Compile Include="Views\Log\TimeEntriesLogEmptyStateViewCell.designer.cs">
+      <DependentUpon>TimeEntriesLogEmptyStateViewCell.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Settings\DateFormatViewCell.cs" />
+    <Compile Include="Views\Settings\DateFormatViewCell.designer.cs">
+      <DependentUpon>DateFormatViewCell.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewControllers\SelectDateFormatViewController.cs" />
+    <Compile Include="ViewControllers\SelectDateFormatViewController.designer.cs">
+      <DependentUpon>SelectDateFormatViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewSources\DateFormatsTableViewSource.cs" />
+    <Compile Include="ViewControllers\SelectDurationFormatViewController.cs" />
+    <Compile Include="ViewControllers\SelectDurationFormatViewController.designer.cs">
+      <DependentUpon>SelectDurationFormatViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewSources\DurationFormatsTableViewSource.cs" />
+    <Compile Include="Views\Settings\DurationFormatViewCell.cs" />
+    <Compile Include="Views\Settings\DurationFormatViewCell.designer.cs">
+      <DependentUpon>DurationFormatViewCell.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewControllers\SelectBeginningOfWeekViewController.cs" />
+    <Compile Include="ViewControllers\SelectBeginningOfWeekViewController.designer.cs">
+      <DependentUpon>SelectBeginningOfWeekViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewSources\BeginningOfWeekTableViewSource.cs" />
+    <Compile Include="Views\Settings\DayOfWeekViewCell.cs" />
+    <Compile Include="Views\Settings\DayOfWeekViewCell.designer.cs">
+      <DependentUpon>DayOfWeekViewCell.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Toggl.Foundation.MvvmCross\Toggl.Foundation.MvvmCross.csproj">
@@ -813,6 +842,8 @@
     <Folder Include="Views\EntityCreation\" />
     <Folder Include="Resources\Images.xcassets\icIllustrationTagsSmall.imageset\" />
     <Folder Include="Resources\Images.xcassets\icIllustrationProjectsSmall.imageset\" />
+    <Folder Include="Views\Settings\" />
+    <Folder Include="Resources\Images.xcassets\.imageset\" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="GoogleService-Info.plist" />

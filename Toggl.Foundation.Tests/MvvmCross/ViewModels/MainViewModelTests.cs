@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
@@ -7,6 +10,7 @@ using FsCheck.Xunit;
 using NSubstitute;
 using Toggl.Foundation.MvvmCross.Parameters;
 using Toggl.Foundation.MvvmCross.ViewModels;
+using Toggl.Foundation.Suggestions;
 using Toggl.Foundation.Sync;
 using Toggl.Foundation.Tests.Generators;
 using Toggl.PrimeRadiant.Models;
@@ -20,8 +24,6 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         public abstract class MainViewModelTest : BaseViewModelTests<MainViewModel>
         {
             protected ISubject<SyncProgress> ProgressSubject { get; } = new Subject<SyncProgress>();
-
-            protected IUserPreferences UserPreferences { get; } = Substitute.For<IUserPreferences>();
 
             protected override MainViewModel CreateViewModel()
             {
@@ -44,8 +46,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         {
             [Theory, LogIfTooSlow]
             [ClassData(typeof(FiveParameterConstructorTestData))]
-            public void ThrowsIfAnyOfTheArgumentsIsNull(bool useDataSource, 
-                                                        bool useTimeService, 
+            public void ThrowsIfAnyOfTheArgumentsIsNull(bool useDataSource,
+                                                        bool useTimeService,
                                                         bool useOnboardingStorage,
                                                         bool useNavigationService,
                                                         bool useUserPreferences)
@@ -327,7 +329,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             public async Task CanBeExecutedForTheSecondTimeIfAnotherTimeEntryIsStartedInTheMeantime()
             {
                 var secondTimeEntry = Substitute.For<IDatabaseTimeEntry>();
-                
+
                 await ViewModel.StopTimeEntryCommand.ExecuteAsync();
                 subject.OnNext(secondTimeEntry);
                 await ViewModel.StopTimeEntryCommand.ExecuteAsync();
@@ -483,6 +485,166 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             protected override string ExpectedValue => Client;
 
             protected override string ExpectedEmptyValue => "";
+        }
+
+        public sealed class TheIsWelcomeProperty : MainViewModelTest
+        {
+            [Theory]
+            [InlineData(0)]
+            [InlineData(1)]
+            [InlineData(28)]
+            public async Task ReturnsTheSameValueAsTimeEntriesLogViewModel(
+                int timeEntryCount)
+            {
+                var timeEntries = Enumerable
+                    .Range(0, timeEntryCount)
+                    .Select(createTimeEntry)
+                    .ToArray();
+                DataSource
+                    .TimeEntries
+                    .GetAll()
+                    .Returns(Observable.Return(timeEntries));
+                DataSource
+                    .TimeEntries
+                    .TimeEntryUpdated
+                    .Returns(Observable.Never<(long Id, IDatabaseTimeEntry Entity)>());
+                await ViewModel.Initialize();
+
+                ViewModel
+                    .IsWelcome
+                    .Should()
+                    .Be(ViewModel.TimeEntriesLogViewModel.IsWelcome);
+            }
+
+            private IDatabaseTimeEntry createTimeEntry(int id)
+            {
+                var timeEntry = Substitute.For<IDatabaseTimeEntry>();
+                timeEntry.Id.Returns(id);
+                timeEntry.Start.Returns(DateTimeOffset.Now);
+                timeEntry.Duration.Returns(100);
+                return timeEntry;
+            }
+        }
+
+        public abstract class InitialStateTest : MainViewModelTest
+        {
+            protected void PrepareSuggestion()
+            {
+                DataSource.TimeEntries.IsEmpty.Returns(Observable.Return(false));
+                var suggestionProvider = Substitute.For<ISuggestionProvider>();
+                var timeEntry = Substitute.For<IDatabaseTimeEntry>();
+                timeEntry.Id.Returns(123);
+                timeEntry.Start.Returns(DateTimeOffset.Now);
+                timeEntry.Duration.Returns((long?)null);
+                timeEntry.Description.Returns("something");
+                var suggestion = new Suggestion(timeEntry);
+                suggestionProvider.GetSuggestions().Returns(Observable.Return(suggestion));
+                var providers = new ReadOnlyCollection<ISuggestionProvider>(
+                    new List<ISuggestionProvider> { suggestionProvider }
+                );
+                SuggestionProviderContainer.Providers.Returns(providers);
+            }
+
+            protected void PrepareTimeEntry()
+            {
+                var timeEntry = Substitute.For<IDatabaseTimeEntry>();
+                timeEntry.Id.Returns(123);
+                timeEntry.Start.Returns(DateTimeOffset.Now);
+                timeEntry.Duration.Returns(100);
+                DataSource
+                    .TimeEntries
+                    .GetAll()
+                    .Returns(Observable.Return(new[] { timeEntry }));
+                DataSource
+                    .TimeEntries
+                    .TimeEntryUpdated
+                    .Returns(Observable.Never<(long Id, IDatabaseTimeEntry Entity)>());
+            }
+
+            protected void PrepareIsWelcome(bool isWelcome)
+            {
+                OnboardingStorage.IsNewUser().Returns(isWelcome);
+            }
+        }
+
+        public sealed class TheShouldShowEmptyStateProperty : InitialStateTest
+        {
+            [Fact]
+            public async Task ReturnsTrueWhenThereAreNoSuggestionsAndNoTimeEntriesAndIsWelcome()
+            {
+                PrepareIsWelcome(true);
+                await ViewModel.Initialize();
+
+                ViewModel.ShouldShowEmptyState.Should().BeTrue();
+            }
+
+            [Fact]
+            public async Task ReturnsFalseWhenThereAreSomeSuggestions()
+            {
+                PrepareSuggestion();
+
+                await ViewModel.Initialize();
+
+                ViewModel.ShouldShowEmptyState.Should().BeFalse();
+            }
+
+            [Fact]
+            public async Task ReturnsFalseWhenThereAreSomeTimeEntries()
+            {
+                PrepareTimeEntry();
+                
+                await ViewModel.Initialize();
+
+                ViewModel.ShouldShowEmptyState.Should().BeFalse();
+            }
+
+            [Fact]
+            public async Task ReturnsFalseWhenIsNotWelcome()
+            {
+                PrepareIsWelcome(false);
+                await ViewModel.Initialize();
+
+                ViewModel.ShouldShowEmptyState.Should().BeFalse();
+            }
+        }
+
+        public sealed class TheShouldShowWelcomeBackProperty : InitialStateTest
+        {
+            [Fact]
+            public async Task ReturnsTrueWhenThereAreNoSuggestionsAndNoTimeEntriesAndIsNotWelcome()
+            {
+                PrepareIsWelcome(false);
+                await ViewModel.Initialize();
+
+                ViewModel.ShouldShowWelcomeBack.Should().BeTrue();
+            }
+
+            [Fact]
+            public async Task ReturnsFalseWhenThereAreSomeSuggestions()
+            {
+                PrepareSuggestion();
+                await ViewModel.Initialize();
+
+                ViewModel.ShouldShowWelcomeBack.Should().BeFalse();
+            }
+
+            [Fact]
+            public async Task ReturnsFalseWhenThereAreSomeTimeEntries()
+            {
+                PrepareTimeEntry();
+                await ViewModel.Initialize();
+
+                ViewModel.ShouldShowWelcomeBack.Should().BeFalse();
+            }
+
+            [Fact]
+            public async Task ReturnsFalseWhenIsWelcome()
+            {
+                PrepareIsWelcome(true);
+                await ViewModel.Initialize();
+
+                ViewModel.ShouldShowWelcomeBack.Should().BeFalse();
+            }
         }
     }
 }

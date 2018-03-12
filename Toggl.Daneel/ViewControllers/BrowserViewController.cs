@@ -1,9 +1,9 @@
-﻿using System;
-using CoreGraphics;
+﻿using CoreGraphics;
 using Foundation;
 using MvvmCross.iOS.Views;
 using MvvmCross.iOS.Views.Presenters.Attributes;
 using MvvmCross.Plugins.Color.iOS;
+using Toggl.Foundation;
 using Toggl.Foundation.MvvmCross.Helper;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using UIKit;
@@ -20,13 +20,12 @@ namespace Toggl.Daneel.ViewControllers
         {
             base.ViewDidLoad();
 
-            Title = ViewModel.Title;
+            Title = Resources.Loading;
 
             setNavBar();
             buildUI();
 
-            webView.LoadRequest(new NSUrlRequest(new NSUrl(ViewModel.Url))
-            );
+            webView.LoadRequest(new NSUrlRequest(new NSUrl(ViewModel.Url)));
         }
 
         private void buildUI()
@@ -38,7 +37,9 @@ namespace Toggl.Daneel.ViewControllers
                 BackgroundColor = Color.NavigationBar.BackgroundColor.ToNativeColor()
             };
 
+
             webView = new WKWebView(View.Frame, new WKWebViewConfiguration());
+            webView.NavigationDelegate = this;
 
             View.Add(webView);
             View.Add(backgroundView);
@@ -53,6 +54,12 @@ namespace Toggl.Daneel.ViewControllers
             {
                 ForegroundColor = tintColor
             };
+        }
+
+        [Export("webView:didFinishNavigation:")]
+        public void OnNavigationFinished(WKWebView webView, WKNavigation navigation)
+        {
+            Title = ViewModel.Title;
         }
     }
 }

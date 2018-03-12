@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using MvvmCross.Core.ViewModels;
+using Toggl.Foundation.Models;
 using Toggl.Multivac;
 using Toggl.Multivac.Extensions;
 using Toggl.PrimeRadiant;
@@ -9,13 +10,13 @@ using Toggl.PrimeRadiant.Models;
 namespace Toggl.Foundation.MvvmCross.ViewModels
 {
     [Preserve(AllMembers = true)]
-    public sealed class TimeEntryViewModel : MvxNotifyPropertyChanged
+    public sealed class TimeEntryViewModel : MvxNotifyPropertyChanged, ITimeEntryPrototype
     {
         public long Id { get; }
         
         public long WorkspaceId { get; }
 
-        public bool Billable { get; }
+        public bool IsBillable { get; }
 
         public string Description { get; } = "";
 
@@ -31,9 +32,9 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public string TaskName { get; } = "";
 
-        public DateTimeOffset Start { get; }
+        public DateTimeOffset StartTime { get; }
 
-        public TimeSpan Duration { get; }
+        public TimeSpan? Duration { get; }
 
         public bool HasProject { get; }
 
@@ -45,17 +46,21 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public long[] TagIds { get; }
 
-        public TimeEntryViewModel(IDatabaseTimeEntry timeEntry)
+        public DurationFormat DurationFormat { get; set; }
+
+        public TimeEntryViewModel(IDatabaseTimeEntry timeEntry, DurationFormat durationFormat)
         {
             Ensure.Argument.IsNotNull(timeEntry, nameof(timeEntry));
 
             if (timeEntry.IsRunning())
                 throw new InvalidOperationException("It is not possible to show a running time entry in the log.");
 
+            DurationFormat = durationFormat;
+
             Id = timeEntry.Id;
             WorkspaceId = timeEntry.WorkspaceId;
-            Start = timeEntry.Start;
-            Billable = timeEntry.Billable;
+            StartTime = timeEntry.Start;
+            IsBillable = timeEntry.Billable;
             TagIds = timeEntry.TagIds.ToArray();
             Description = timeEntry.Description;
             HasProject = timeEntry.Project != null;

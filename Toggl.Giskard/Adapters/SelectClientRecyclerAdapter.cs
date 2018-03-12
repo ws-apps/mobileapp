@@ -1,4 +1,5 @@
 using System;
+using System.Windows.Input;
 using Android.Runtime;
 using Android.Support.V7.Widget;
 using Android.Views;
@@ -9,32 +10,8 @@ using Toggl.Giskard.TemplateSelectors;
 
 namespace Toggl.Giskard.Adapters
 {
-    public sealed class SelectClientRecyclerAdapter : MvxRecyclerAdapter
+    public sealed class SelectClientRecyclerAdapter : SelectCreatableEntityRecyclerAdapter
     {
-        public string Text { get; set; }
-
-        public IMvxAsyncCommand CreateCommand { get; set; }
-
-        private bool isSuggestingCreation;
-        public bool IsSuggestingCreation
-        {
-            get => isSuggestingCreation;
-            set
-            {
-                if (isSuggestingCreation == value) return;
-                isSuggestingCreation = value;
-
-                if (isSuggestingCreation)
-                {
-                    NotifyItemInserted(0);
-                }
-                else
-                {
-                    NotifyItemRemoved(0);
-                }
-            }
-        }
-
         public SelectClientRecyclerAdapter()
         {
         }
@@ -44,29 +21,10 @@ namespace Toggl.Giskard.Adapters
         {
         }
 
-        public override int ItemCount
-            => base.ItemCount + (IsSuggestingCreation ? 1 : 0);
+        protected override string SuggestingItemText
+            => $"Create client \"{Text.Trim()}\"";
 
-        public override object GetItem(int viewPosition)
-        {
-            if (IsSuggestingCreation && viewPosition == 0)
-                return $"Create client \"{Text.Trim()}\"";
-
-            var actualViewPosition = viewPosition - (IsSuggestingCreation ? 1 : 0);
-            return base.GetItem(actualViewPosition);
-        }
-
-        public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType)
-        {
-            var itemBindingContext = new MvxAndroidBindingContext(parent.Context, BindingContext.LayoutInflaterHolder);
-            var inflatedView = InflateViewForHolder(parent, viewType, itemBindingContext);
-            var viewHolder = new MvxRecyclerViewHolder(inflatedView, itemBindingContext)
-            {
-                Click = viewType == SelectClientTemplateSelector.CreateEntity ? CreateCommand : ItemClick,
-                LongClick = ItemLongClick,
-            };
-
-            return viewHolder;
-        }
+        protected override ICommand GetClickCommand(int viewType) =>
+            viewType == SelectClientTemplateSelector.CreateEntity ? CreateCommand : ItemClick;
     }
 }

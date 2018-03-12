@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
+using NSubstitute;
 using Toggl.Foundation.Models;
 using Toggl.Foundation.Sync.States;
 using Toggl.Multivac.Models;
 using Toggl.PrimeRadiant;
 using Toggl.PrimeRadiant.Models;
-using WorkspaceFeatureCollection = Toggl.Ultrawave.Models.WorkspaceFeatureCollection;
+using WorkspaceFeatureCollection = Toggl.Foundation.Tests.Mocks.MockWorkspaceFeatureCollection;
 
 namespace Toggl.Foundation.Tests.Sync.States
 {
@@ -56,7 +57,8 @@ namespace Toggl.Foundation.Tests.Sync.States
                 Observable.Return(new List<IProject>()),
                 Observable.Return(new List<ITimeEntry>()),
                 Observable.Return(new List<ITag>()),
-                Observable.Return(new List<ITask>()));
+                Observable.Return(new List<ITask>()),
+                Observable.Return(Substitute.For<IPreferences>()));
 
             protected override List<IWorkspaceFeatureCollection> CreateComplexListWhereTheLastUpdateEntityIsDeleted(DateTimeOffset? at)
                 => new List<IWorkspaceFeatureCollection>

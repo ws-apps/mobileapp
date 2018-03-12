@@ -8,10 +8,10 @@ using FsCheck;
 using NSubstitute;
 using Toggl.Foundation.Autocomplete;
 using Toggl.Foundation.Autocomplete.Suggestions;
+using Toggl.Foundation.Interactors;
 using Toggl.PrimeRadiant;
 using Toggl.PrimeRadiant.Models;
 using Xunit;
-using FsCheck.Xunit;
 
 namespace Toggl.Foundation.Tests.Autocomplete
 {
@@ -34,6 +34,7 @@ namespace Toggl.Foundation.Tests.Autocomplete
             protected IEnumerable<IDatabaseClient> Clients { get; }
             protected IEnumerable<IDatabaseProject> Projects { get; }
             protected IEnumerable<IDatabaseTimeEntry> TimeEntries { get; }
+            protected IInteractorFactory InteractorFactory { get; } = Substitute.For<IInteractorFactory>();
 
             protected AutocompleteProviderTest()
             {
@@ -136,7 +137,7 @@ namespace Toggl.Foundation.Tests.Autocomplete
                 [InlineData("Testing Toggl mobile apps")]
                 public async Task WhenTheUserBeginsTypingADescription(string description)
                 {
-                    var textFieldInfo = TextFieldInfo.Empty.WithTextAndCursor(description, 0);
+                    var textFieldInfo = TextFieldInfo.Empty(1).WithTextAndCursor(description, 0);
 
                     await Provider.Query(textFieldInfo);
 
@@ -150,7 +151,7 @@ namespace Toggl.Foundation.Tests.Autocomplete
                     string description)
                 {
                     var actualDescription = $"{description} @{description}";
-                    var textFieldInfo = TextFieldInfo.Empty.WithTextAndCursor(actualDescription, 0);
+                    var textFieldInfo = TextFieldInfo.Empty(1).WithTextAndCursor(actualDescription, 0);
 
                     await Provider.Query(textFieldInfo);
 
@@ -161,7 +162,7 @@ namespace Toggl.Foundation.Tests.Autocomplete
                 public async Task WhenTheUserHasAlreadySelectedAProjectAndTypesTheAtSymbol()
                 {
                     var description = $"Testing Mobile Apps @toggl";
-                    var textFieldInfo = TextFieldInfo.Empty
+                    var textFieldInfo = TextFieldInfo.Empty(1)
                         .WithTextAndCursor(description, description.Length)
                         .WithProjectInfo(WorkspaceId, ProjectId, ProjectName, ProjectColor);
                     
@@ -174,7 +175,7 @@ namespace Toggl.Foundation.Tests.Autocomplete
                 public async Task SearchesTheDescription()
                 {
                     const string description = "40";
-                    var textFieldInfo = TextFieldInfo.Empty.WithTextAndCursor(description, 0);
+                    var textFieldInfo = TextFieldInfo.Empty(1).WithTextAndCursor(description, 0);
 
                     var suggestions = await Provider.Query(textFieldInfo);
 
@@ -187,7 +188,7 @@ namespace Toggl.Foundation.Tests.Autocomplete
                 public async Task SearchesTheProjectsName()
                 {
                     const string description = "30";
-                    var textFieldInfo = TextFieldInfo.Empty.WithTextAndCursor(description, 0);
+                    var textFieldInfo = TextFieldInfo.Empty(1).WithTextAndCursor(description, 0);
 
                     var suggestions = await Provider.Query(textFieldInfo);
 
@@ -200,7 +201,7 @@ namespace Toggl.Foundation.Tests.Autocomplete
                 public async Task SearchesTheClientsName()
                 {
                     const string description = "10";
-                    var textFieldInfo = TextFieldInfo.Empty.WithTextAndCursor(description, 0);
+                    var textFieldInfo = TextFieldInfo.Empty(1).WithTextAndCursor(description, 0);
 
                     var suggestions = await Provider.Query(textFieldInfo);
 
@@ -213,7 +214,7 @@ namespace Toggl.Foundation.Tests.Autocomplete
                 public async Task SearchesTheTaskName()
                 {
                     const string description = "25";
-                    var textFieldInfo = TextFieldInfo.Empty.WithTextAndCursor(description, 0);
+                    var textFieldInfo = TextFieldInfo.Empty(1).WithTextAndCursor(description, 0);
 
                     var suggestions = await Provider.Query(textFieldInfo);
 
@@ -230,7 +231,7 @@ namespace Toggl.Foundation.Tests.Autocomplete
                 public async Task OnlyDisplaysResultsTheHaveHasAtLeastOneMatchOnEveryWordTyped()
                 {
                     const string description = "10 30 4";
-                    var textFieldInfo = TextFieldInfo.Empty.WithTextAndCursor(description, 0);
+                    var textFieldInfo = TextFieldInfo.Empty(1).WithTextAndCursor(description, 0);
 
                     var suggestions = await Provider.Query(textFieldInfo);
 
@@ -248,7 +249,7 @@ namespace Toggl.Foundation.Tests.Autocomplete
                 public async Task WhenTheAtSymbolIsTyped(string description)
                 {
                     var actualDescription = $"{description} @{description}";
-                    var textFieldInfo = TextFieldInfo.Empty.WithTextAndCursor(actualDescription, description.Length + 2);
+                    var textFieldInfo = TextFieldInfo.Empty(1).WithTextAndCursor(actualDescription, description.Length + 2);
 
                     await Provider.Query(textFieldInfo);
 
@@ -259,7 +260,7 @@ namespace Toggl.Foundation.Tests.Autocomplete
                 public async Task SearchesTheName()
                 {
                     const string description = "@30";
-                    var textFieldInfo = TextFieldInfo.Empty.WithTextAndCursor(description, 1);
+                    var textFieldInfo = TextFieldInfo.Empty(1).WithTextAndCursor(description, 1);
 
                     var suggestions = await Provider.Query(textFieldInfo);
 
@@ -272,7 +273,7 @@ namespace Toggl.Foundation.Tests.Autocomplete
                 public async Task SearchesTheClientsName()
                 {
                     const string description = "@10";
-                    var textFieldInfo = TextFieldInfo.Empty.WithTextAndCursor(description, 1);
+                    var textFieldInfo = TextFieldInfo.Empty(1).WithTextAndCursor(description, 1);
 
                     var suggestions = await Provider.Query(textFieldInfo);
 
@@ -285,7 +286,7 @@ namespace Toggl.Foundation.Tests.Autocomplete
                 public async Task SearchesTheTaskName()
                 {
                     const string description = "@20";
-                    var textFieldInfo = TextFieldInfo.Empty.WithTextAndCursor(description, 1);
+                    var textFieldInfo = TextFieldInfo.Empty(1).WithTextAndCursor(description, 1);
 
                     var suggestions = await Provider.Query(textFieldInfo);
 
@@ -298,7 +299,7 @@ namespace Toggl.Foundation.Tests.Autocomplete
                 public async Task OnlyDisplaysResultsTheHaveHasAtLeastOneMatchOnEveryWordTyped()
                 {
                     const string description = "@10 3";
-                    var textFieldInfo = TextFieldInfo.Empty.WithTextAndCursor(description, 1);
+                    var textFieldInfo = TextFieldInfo.Empty(1).WithTextAndCursor(description, 1);
 
                     var suggestions = await Provider.Query(textFieldInfo);
 
@@ -316,7 +317,7 @@ namespace Toggl.Foundation.Tests.Autocomplete
                 public async Task WhenTheHashtagSymbolIsTyped(string description)
                 {
                     var actualDescription = $"{description} #{description}";
-                    var textFieldInfo = TextFieldInfo.Empty.WithTextAndCursor(actualDescription, description.Length + 2);
+                    var textFieldInfo = TextFieldInfo.Empty(1).WithTextAndCursor(actualDescription, description.Length + 2);
 
                     await Provider.Query(textFieldInfo);
 
@@ -327,7 +328,7 @@ namespace Toggl.Foundation.Tests.Autocomplete
                 public async Task SuggestsAllTagsWhenThereIsNoStringToSearch()
                 {
                     const string description = "#";
-                    var textFieldInfo = TextFieldInfo.Empty.WithTextAndCursor(description, 1);
+                    var textFieldInfo = TextFieldInfo.Empty(1).WithTextAndCursor(description, 1);
 
                     var suggestions = await Provider.Query(textFieldInfo);
 
@@ -340,7 +341,7 @@ namespace Toggl.Foundation.Tests.Autocomplete
                 public async Task SearchesTheName()
                 {
                     const string description = "#50";
-                    var textFieldInfo = TextFieldInfo.Empty.WithTextAndCursor(description, 1);
+                    var textFieldInfo = TextFieldInfo.Empty(1).WithTextAndCursor(description, 1);
 
                     var suggestions = await Provider.Query(textFieldInfo);
 
@@ -353,7 +354,7 @@ namespace Toggl.Foundation.Tests.Autocomplete
                 public async Task OnlyDisplaysResultsThatHaveAtLeastOneMatchOnEveryWordTyped()
                 {
                     const string description = "#5 2";
-                    var textFieldInfo = TextFieldInfo.Empty.WithTextAndCursor(description, 1);
+                    var textFieldInfo = TextFieldInfo.Empty(1).WithTextAndCursor(description, 1);
 
                     var suggestions = await Provider.Query(textFieldInfo);
 
@@ -368,7 +369,7 @@ namespace Toggl.Foundation.Tests.Autocomplete
                 [Fact, LogIfTooSlow]
                 public async Task WhenTheSearchStringIsEmpty()
                 {
-                    var textFieldInfo = TextFieldInfo.Empty.WithTextAndCursor("", 0);
+                    var textFieldInfo = TextFieldInfo.Empty(1).WithTextAndCursor("", 0);
 
                     var suggestions = await Provider.Query(textFieldInfo);
 

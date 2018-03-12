@@ -18,7 +18,7 @@ using Toggl.Ultrawave;
 using Toggl.Ultrawave.Network;
 using Xunit;
 using FoundationUser = Toggl.Foundation.Models.User;
-using User = Toggl.Ultrawave.Models.User;
+using User = Toggl.Foundation.Tests.Mocks.MockUser;
 
 namespace Toggl.Foundation.Tests.Login
 {

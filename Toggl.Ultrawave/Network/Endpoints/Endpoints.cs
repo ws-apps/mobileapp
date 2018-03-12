@@ -18,6 +18,7 @@ namespace Toggl.Ultrawave.Network
         public StatusEndpoints Status => new StatusEndpoints(baseUrl);
         public WorkspaceFeaturesEndpoints WorkspaceFeatures => new WorkspaceFeaturesEndpoints(baseUrl);
         public Endpoint LoggedIn => Endpoint.Get(baseUrl, "me/logged");
+        public PreferencesEndpoints Preferences => new PreferencesEndpoints(baseUrl);
 
         public ReportsEndpoints ReportsEndpoints { get; }
 

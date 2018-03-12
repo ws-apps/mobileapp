@@ -3,6 +3,8 @@ using MvvmCross.iOS.Platform;
 using Toggl.Daneel.Binding;
 using UIKit;
 using Toggl.Daneel.Views;
+using System.Collections.Generic;
+using MvvmCross.Binding.iOS.Views;
 
 namespace Toggl.Daneel
 {
@@ -42,6 +44,11 @@ namespace Toggl.Daneel
                 view => new LayoutConstraintAnimatedConstantTargetBinding(view)
             );
 
+            registry.RegisterCustomBindingFactory<NSLayoutConstraint>(
+                LayoutConstraintConstantTargetBinding.BindingName,
+                view => new LayoutConstraintConstantTargetBinding(view)
+            );
+
             registry.RegisterCustomBindingFactory<UINavigationItem>(
                 NavigationItemHidesBackButtonTargetBinding.BindingName,
                 view => new NavigationItemHidesBackButtonTargetBinding(view)
@@ -55,6 +62,11 @@ namespace Toggl.Daneel
             registry.RegisterCustomBindingFactory<UIScrollView>(
                 ScrollViewCurrentPageTargetBinding.BindingName,
                 view => new ScrollViewCurrentPageTargetBinding(view)
+            );
+
+            registry.RegisterCustomBindingFactory<SpiderOnARopeView>(
+                SpiderOnARopeViewIsVisibleTargetBinding.BindingName,
+                view => new SpiderOnARopeViewIsVisibleTargetBinding(view)
             );
 
             registry.RegisterCustomBindingFactory<UISwitch>(

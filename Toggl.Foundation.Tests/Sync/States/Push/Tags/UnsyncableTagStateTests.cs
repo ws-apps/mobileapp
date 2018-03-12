@@ -2,6 +2,7 @@
 using NSubstitute;
 using Toggl.Foundation.Models;
 using Toggl.Foundation.Sync.States;
+using Toggl.Foundation.Tests.Mocks;
 using Toggl.PrimeRadiant;
 using Toggl.PrimeRadiant.Models;
 
@@ -20,7 +21,7 @@ namespace Toggl.Foundation.Tests.Sync.States.Push
                 => new UnsyncableTagState(repository);
 
             protected override IDatabaseTag CreateDirtyEntity()
-                => Tag.Dirty(new Ultrawave.Models.Tag { Name = Guid.NewGuid().ToString() });
+                => Tag.Dirty(new MockTag { Name = Guid.NewGuid().ToString() });
         }
     }
 }

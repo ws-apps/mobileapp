@@ -4,9 +4,11 @@ using MvvmCross.Core.Navigation;
 using MvvmCross.Core.ViewModels;
 using MvvmCross.Droid.Support.V7.AppCompat;
 using MvvmCross.Droid.Views;
+using MvvmCross.Platform;
 using MvvmCross.Platform.Platform;
 using MvvmCross.Platform.Plugins;
 using Toggl.Foundation;
+using Toggl.Foundation.Analytics;
 using Toggl.Foundation.MvvmCross;
 using Toggl.Foundation.Suggestions;
 using Toggl.Giskard.Presenters;
@@ -20,6 +22,7 @@ namespace Toggl.Giskard
     {
         private const int maxNumberOfSuggestions = 5;
 
+        private IAnalyticsService analyticsService;
         private IMvxNavigationService navigationService;
 
 #if USE_PRODUCTION_API
@@ -38,7 +41,17 @@ namespace Toggl.Giskard
         protected override IMvxApplication CreateApp() => new App();
 
         protected override IMvxNavigationService InitializeNavigationService(IMvxViewModelLocatorCollection collection)
-            => navigationService = base.InitializeNavigationService(collection);
+        {
+            analyticsService = new AnalyticsService();
+
+            var loader = CreateViewModelLoader(collection);
+            Mvx.RegisterSingleton<IMvxViewModelLoader>(loader);
+
+            navigationService = new TrackingNavigationService(null, loader, analyticsService);
+
+            Mvx.RegisterSingleton<IMvxNavigationService>(navigationService);
+            return navigationService;
+        }
 
         protected override IMvxAndroidViewPresenter CreateViewPresenter() 
             => new TogglPresenter(AndroidViewAssemblies);
@@ -65,7 +78,7 @@ namespace Toggl.Giskard
                 new MailService(),
                 new GoogleService(),
                 environment,
-                new AnalyticsService(),
+                analyticsService,
                 new PlatformConstants(),
                 new ApplicationShortcutCreator(suggestionProviderContainer),
                 suggestionProviderContainer

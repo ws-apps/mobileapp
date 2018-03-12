@@ -9,6 +9,7 @@ namespace Toggl.PrimeRadiant
         ISingleObjectStorage<IDatabaseUser> User { get; }
         IRepository<IDatabaseClient> Clients { get; }
         IRepository<IDatabaseProject> Projects { get; }
+        ISingleObjectStorage<IDatabasePreferences> Preferences { get; }
         IRepository<IDatabaseTag> Tags { get; }
         IRepository<IDatabaseTask> Tasks { get; }
         IRepository<IDatabaseTimeEntry> TimeEntries { get; }

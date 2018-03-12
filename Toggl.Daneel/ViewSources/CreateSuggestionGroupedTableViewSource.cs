@@ -8,8 +8,8 @@ using UIKit;
 
 namespace Toggl.Daneel.ViewSources
 {
-    public abstract class CreateSuggestionGroupedTableViewSource<T> 
-        : GroupedCollectionTableViewSource<WorkspaceGroupedCollection<T>, T> 
+    public abstract class CreateSuggestionGroupedTableViewSource<T>
+        : GroupedCollectionTableViewSource<WorkspaceGroupedCollection<T>, T>
         where T : class
     {
         protected const string CreateEntityCellIdentifier = nameof(CreateEntityViewCell);
@@ -53,12 +53,12 @@ namespace Toggl.Daneel.ViewSources
 
         public override nint RowsInSection(UITableView tableview, nint section)
         {
-            if (!SuggestCreation) return base.RowsInSection(tableview, section);
+            if (!SuggestCreation) 
+                return base.RowsInSection(tableview, section);
 
-            var offsetSection = section - 1;
-            if (offsetSection < 0) return 1;
+            if (section == 0) return 1;
 
-            return base.RowsInSection(tableview, offsetSection);
+            return base.RowsInSection(tableview, section - 1);
         }
 
         protected override object GetItemAt(NSIndexPath indexPath)

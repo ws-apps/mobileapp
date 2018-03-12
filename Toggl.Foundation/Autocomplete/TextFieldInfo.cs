@@ -7,13 +7,14 @@ namespace Toggl.Foundation.Autocomplete
 {
     public struct TextFieldInfo : IEquatable<TextFieldInfo>
     {
-        public static TextFieldInfo Empty { get; } = new TextFieldInfo("", 0, null, null, "", "", null, "", new TagSuggestion[0]);
+        public static TextFieldInfo Empty(long workspaceId) 
+            => new TextFieldInfo("", 0, workspaceId, null, "", "", null, "", new TagSuggestion[0]);
 
         public string Text { get; }
 
         public int CursorPosition { get; }
 
-        public long? WorkspaceId { get; }
+        public long WorkspaceId { get; }
 
         public long? ProjectId { get; }
 
@@ -33,7 +34,7 @@ namespace Toggl.Foundation.Autocomplete
         private TextFieldInfo(
             string text, 
             int cursorPosition, 
-            long? workspaceId,
+            long workspaceId,
             long? projectId, 
             string projectName, 
             string projectColor,

@@ -6,18 +6,19 @@ using System.Reactive.Linq;
 using Realms;
 using Toggl.Multivac;
 using Toggl.Multivac.Extensions;
-using Toggl.Multivac.Models;
 using Toggl.PrimeRadiant.Exceptions;
 
 namespace Toggl.PrimeRadiant.Realm
 {
     internal sealed class SingleObjectStorage<TModel> : BaseStorage<TModel>, ISingleObjectStorage<TModel>
-        where TModel : IBaseModel, IDatabaseSyncable
+        where TModel : IDatabaseSyncable
     {
+        private const int fakeId = 0;
+
         public SingleObjectStorage(IRealmAdapter<TModel> adapter)
             : base(adapter) { }
 
-        public IObservable<TModel> GetById(long id)
+        public IObservable<TModel> GetById(long _)
             => Single();
 
         public IObservable<TModel> Create(TModel entity)
@@ -51,14 +52,18 @@ namespace Toggl.PrimeRadiant.Realm
         public IObservable<TModel> Single()
             => CreateObservable(() => Adapter.GetAll().Single());
 
-        public static SingleObjectStorage<TModel> For<TRealmEntity>(Func<Realms.Realm> getRealmInstance, Func<TModel, Realms.Realm, TRealmEntity> convertToRealm)
+        public static SingleObjectStorage<TModel> For<TRealmEntity>(
+            Func<Realms.Realm> getRealmInstance, Func<TModel, Realms.Realm, TRealmEntity> convertToRealm)
             where TRealmEntity : RealmObject, TModel, IUpdatesFrom<TModel>
-            => new SingleObjectStorage<TModel>(new RealmAdapter<TRealmEntity, TModel>(getRealmInstance, convertToRealm, id => x => x.Id == id, obj => obj.Id));
+            => new SingleObjectStorage<TModel>(new RealmAdapter<TRealmEntity, TModel>(
+                getRealmInstance,
+                convertToRealm, _ => __ => true,
+                obj => fakeId));
 
         public IObservable<TModel> Update(TModel entity)
-            => Update(entity.Id, entity);
+            => Update(fakeId, entity);
 
         public IObservable<Unit> Delete()
-            => Single().SelectMany(entity => Delete(entity.Id));
+            => Single().SelectMany(entity => Delete(fakeId));
     }
 }

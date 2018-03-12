@@ -10,9 +10,10 @@
         android:id="@+id/LoginToolbar"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         android:elevation="4dp"
+        android:minHeight="?attr/actionBarSize"
         android:background="@color/lightToolbarBackground"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize" />
+        android:layout_height="wrap_content" />
     <EditText
         android:id="@+id/LoginEmailTextField"
         local:MvxBind="Text EmailToString(Email); Visibility Visibility(EmailFieldVisible); Focus IsEmailFocused"
@@ -65,8 +66,9 @@
         android:layout_below="@id/LoginPasswordTextField" />
     <TextView
         android:id="@+id/LoginGoogleSignUp"
-        local:MvxBind="Visibility Visibility(IsSignUp)"
+        local:MvxBind="Click GoogleLoginCommand; Visibility Visibility(IsSignUp)"
         android:textSize="14sp"
+        android:clickable="true"
         android:gravity="bottom"
         android:textStyle="normal"
         android:lineSpacingExtra="6sp"
@@ -80,9 +82,10 @@
         android:layout_alignParentBottom="true" />
     <TextView
         android:id="@+id/LoginGoogleLogin"
-        local:MvxBind="Visibility Visibility(IsLogin)"
+        local:MvxBind="Click GoogleLoginCommand; Visibility Visibility(IsLogin)"
         android:textSize="14sp"
         android:gravity="bottom"
+        android:clickable="true"
         android:textStyle="normal"
         android:lineSpacingExtra="6sp"
         android:text="Login with Google"

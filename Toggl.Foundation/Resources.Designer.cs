@@ -113,36 +113,6 @@ namespace Toggl.Foundation {
             }
         }
         
-        public static string TimeEntriesLogEmptyStateTitle {
-            get {
-                return ResourceManager.GetString("TimeEntriesLogEmptyStateTitle", resourceCulture);
-            }
-        }
-        
-        public static string TimeEntriesLogEmptyStateText {
-            get {
-                return ResourceManager.GetString("TimeEntriesLogEmptyStateText", resourceCulture);
-            }
-        }
-        
-        public static string TimeEntriesLogEmptyStateButton {
-            get {
-                return ResourceManager.GetString("TimeEntriesLogEmptyStateButton", resourceCulture);
-            }
-        }
-        
-        public static string TimeEntriesLogEmptyStateWelcomeTitle {
-            get {
-                return ResourceManager.GetString("TimeEntriesLogEmptyStateWelcomeTitle", resourceCulture);
-            }
-        }
-        
-        public static string TimeEntriesLogEmptyStateWelcomeText {
-            get {
-                return ResourceManager.GetString("TimeEntriesLogEmptyStateWelcomeText", resourceCulture);
-            }
-        }
-        
         public static string Today {
             get {
                 return ResourceManager.GetString("Today", resourceCulture);
@@ -221,6 +191,12 @@ namespace Toggl.Foundation {
             }
         }
         
+        public static string UnitHour {
+            get {
+                return ResourceManager.GetString("UnitHour", resourceCulture);
+            }
+        }
+        
         public static string UnitMin {
             get {
                 return ResourceManager.GetString("UnitMin", resourceCulture);
@@ -287,15 +263,15 @@ namespace Toggl.Foundation {
             }
         }
         
-        public static string SuggestionsEmptyStateTitle {
+        public static string LogEmptyStateTitle {
             get {
-                return ResourceManager.GetString("SuggestionsEmptyStateTitle", resourceCulture);
+                return ResourceManager.GetString("LogEmptyStateTitle", resourceCulture);
             }
         }
         
-        public static string SuggestionsEmptyStateText {
+        public static string LogEmptyStateText {
             get {
-                return ResourceManager.GetString("SuggestionsEmptyStateText", resourceCulture);
+                return ResourceManager.GetString("LogEmptyStateText", resourceCulture);
             }
         }
         
@@ -638,6 +614,42 @@ namespace Toggl.Foundation {
         public static string Continue {
             get {
                 return ResourceManager.GetString("Continue", resourceCulture);
+            }
+        }
+        
+        public static string Loading {
+            get {
+                return ResourceManager.GetString("Loading", resourceCulture);
+            }
+        }
+        
+        public static string DeleteThisTimeEntry {
+            get {
+                return ResourceManager.GetString("DeleteThisTimeEntry", resourceCulture);
+            }
+        }
+        
+        public static string DiscardThisTimeEntry {
+            get {
+                return ResourceManager.GetString("DiscardThisTimeEntry", resourceCulture);
+            }
+        }
+        
+        public static string DurationFormatClassic {
+            get {
+                return ResourceManager.GetString("DurationFormatClassic", resourceCulture);
+            }
+        }
+        
+        public static string DurationFormatImproved {
+            get {
+                return ResourceManager.GetString("DurationFormatImproved", resourceCulture);
+            }
+        }
+        
+        public static string DurationFormatDecimal {
+            get {
+                return ResourceManager.GetString("DurationFormatDecimal", resourceCulture);
             }
         }
     }

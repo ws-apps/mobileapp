@@ -8,7 +8,7 @@ using Toggl.Foundation.Sync.States;
 using Toggl.Multivac.Models;
 using Toggl.PrimeRadiant;
 using Toggl.PrimeRadiant.Models;
-using TimeEntry = Toggl.Ultrawave.Models.TimeEntry;
+using TimeEntry = Toggl.Foundation.Tests.Mocks.MockTimeEntry;
 
 namespace Toggl.Foundation.Tests.Sync.States
 {
@@ -66,7 +66,8 @@ namespace Toggl.Foundation.Tests.Sync.States
                     Observable.Return(new List<IProject>()),
                     Observable.Return(timeEntries),
                     Observable.Return(new List<ITag>()),
-                    Observable.Return(new List<ITask>()));
+                    Observable.Return(new List<ITask>()),
+                    Observable.Return(Substitute.For<IPreferences>()));
 
             protected override List<ITimeEntry> CreateComplexListWhereTheLastUpdateEntityIsDeleted(DateTimeOffset? maybeAt)
             {

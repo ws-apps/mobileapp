@@ -11,6 +11,7 @@ using MvvmCross.Platform.UI;
 using MvvmCross.Plugins.Color;
 using MvvmCross.Plugins.Color.iOS;
 using MvvmCross.Plugins.Visibility;
+using Newtonsoft.Json.Converters;
 using UIKit;
 
 namespace Toggl.Daneel
@@ -184,6 +185,11 @@ namespace Toggl.Daneel
         public void Include(MvxUISliderValueTargetBinding binding)
         {
             binding = new MvxUISliderValueTargetBinding(null, null);
+        }
+
+        public void Include(StringEnumConverter converter)
+        {
+            converter = new StringEnumConverter(true);
         }
 
         public void Include(ConsoleColor color)

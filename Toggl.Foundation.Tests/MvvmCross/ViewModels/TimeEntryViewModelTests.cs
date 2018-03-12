@@ -4,6 +4,7 @@ using System.Reactive.Subjects;
 using FluentAssertions;
 using NSubstitute;
 using Toggl.Foundation.MvvmCross.ViewModels;
+using Toggl.Multivac;
 using Toggl.PrimeRadiant.Models;
 using Xunit;
 
@@ -33,7 +34,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             public void ThrowsIfTheArgumentIsNull()
             {
                 Action tryingToConstructWithEmptyParameters =
-                    () => new TimeEntryViewModel(null);
+                    () => new TimeEntryViewModel(null, DurationFormat.Improved);
 
                 tryingToConstructWithEmptyParameters
                     .ShouldThrow<ArgumentNullException>();
@@ -50,7 +51,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 MockTimeEntry.Duration.Returns((long)TimeSpan.FromHours(1).TotalSeconds);
                 MockTimeEntry.Project.Returns(hasProject ? Project : null);
 
-                var viewModel = new TimeEntryViewModel(MockTimeEntry);
+                var viewModel = new TimeEntryViewModel(MockTimeEntry, DurationFormat.Improved);
 
                 viewModel.HasProject.Should().Be(hasProject);
             }

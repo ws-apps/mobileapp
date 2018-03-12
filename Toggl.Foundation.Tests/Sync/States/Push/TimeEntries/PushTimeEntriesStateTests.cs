@@ -3,6 +3,7 @@ using System.Reactive.Linq;
 using NSubstitute;
 using Toggl.Foundation.Models;
 using Toggl.Foundation.Sync.States;
+using Toggl.Foundation.Tests.Mocks;
 using Toggl.PrimeRadiant;
 using Toggl.PrimeRadiant.Models;
 
@@ -21,7 +22,7 @@ namespace Toggl.Foundation.Tests.Sync.States.Push
                 => new PushTimeEntriesState(repository);
 
             protected override IDatabaseTimeEntry CreateUnsyncedEntity(DateTimeOffset lastUpdate = default(DateTimeOffset))
-                => TimeEntry.Dirty(new Ultrawave.Models.TimeEntry { At = lastUpdate });
+                => TimeEntry.Dirty(new MockTimeEntry { At = lastUpdate });
 
             protected override void SetupRepositoryToReturn(IRepository<IDatabaseTimeEntry> repository, IDatabaseTimeEntry[] entities)
             {

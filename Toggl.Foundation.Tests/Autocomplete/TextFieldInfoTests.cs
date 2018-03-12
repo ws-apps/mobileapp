@@ -6,7 +6,6 @@ using Toggl.Foundation.Autocomplete;
 using Toggl.Foundation.Autocomplete.Suggestions;
 using Toggl.PrimeRadiant.Models;
 using Xunit;
-using static Toggl.Multivac.Extensions.FunctionalExtensions;
 
 namespace Toggl.Foundation.Tests.Autocomplete
 {
@@ -22,19 +21,20 @@ namespace Toggl.Foundation.Tests.Autocomplete
             protected const long TaskId = 13;
             protected const string TaskName = "Test Toggl apps";
 
-            protected TextFieldInfo CreateDefaultTextFieldInfo() => TextFieldInfo.Empty
-                .WithTextAndCursor(Description, Description.Length)
-                .WithProjectAndTaskInfo(WorkspaceId, ProjectId, ProjectName, ProjectColor, TaskId, TaskName);
+            protected TextFieldInfo CreateDefaultTextFieldInfo() => 
+                TextFieldInfo.Empty(WorkspaceId)
+                    .WithTextAndCursor(Description, Description.Length)
+                    .WithProjectAndTaskInfo(WorkspaceId, ProjectId, ProjectName, ProjectColor, TaskId, TaskName);
         }
 
-        public sealed class TheDescriptionCursorPositionProperty
+        public sealed class TheDescriptionCursorPositionProperty : TextFieldInfoTest
         {
             [Property]
             public void AlwaysReturnsACursorPositionThatsLessThanOrEqualTheLengthOfTheText(string text, int cursor)
             {
                 if (text == null) return;
 
-                var textFieldInfo = TextFieldInfo.Empty.WithTextAndCursor(text, cursor);
+                var textFieldInfo = TextFieldInfo.Empty(WorkspaceId).WithTextAndCursor(text, cursor);
 
                 textFieldInfo.DescriptionCursorPosition.Should().BeLessOrEqualTo(text.Length);
             }
@@ -76,15 +76,20 @@ namespace Toggl.Foundation.Tests.Autocomplete
             public void ChangesOnlyTheTextAndCursorPositionWhileMaintainingTheOtherFields()
             {
                 const string newDescription = "Some other text";
-                var expected = TextFieldInfo.Empty
+                var expected = TextFieldInfo.Empty(WorkspaceId)
                     .WithTextAndCursor(newDescription, newDescription.Length)
                     .WithProjectInfo(WorkspaceId, ProjectId, ProjectName, ProjectColor);
 
-                var textFieldInfo =
-                    CreateDefaultTextFieldInfo()
+                var textFieldInfo = TextFieldInfo.Empty(WorkspaceId)
+                        .WithProjectInfo(WorkspaceId, ProjectId, ProjectName, ProjectColor)
                         .WithTextAndCursor(newDescription, newDescription.Length);
 
-                textFieldInfo.Should().Be(expected);
+                textFieldInfo.Text.Should().Be(expected.Text);
+                textFieldInfo.TaskId.Should().Be(expected.TaskId);
+                textFieldInfo.ProjectId.Should().Be(expected.ProjectId);
+                textFieldInfo.ProjectName.Should().Be(expected.ProjectName);
+                textFieldInfo.ProjectColor.Should().Be(expected.ProjectColor);
+                textFieldInfo.CursorPosition.Should().Be(expected.CursorPosition);
             }
         }
 
@@ -96,7 +101,7 @@ namespace Toggl.Foundation.Tests.Autocomplete
                 const long newProjectId = 11;
                 const string newProjectName = "Some other project";
                 const string newProjectColor = "Some other project";
-                var expected = TextFieldInfo.Empty
+                var expected = TextFieldInfo.Empty(WorkspaceId)
                     .WithTextAndCursor(Description, Description.Length)
                     .WithProjectInfo(WorkspaceId, newProjectId, newProjectName, newProjectColor);
 
@@ -104,7 +109,8 @@ namespace Toggl.Foundation.Tests.Autocomplete
                     CreateDefaultTextFieldInfo()
                         .WithProjectInfo(WorkspaceId, newProjectId, newProjectName, newProjectColor);
 
-                textFieldInfo.Should().Be(expected);
+                textFieldInfo.Text.Should().Be(expected.Text);
+                textFieldInfo.CursorPosition.Should().Be(expected.CursorPosition);
             }
 
             [Fact, LogIfTooSlow]
@@ -161,7 +167,7 @@ namespace Toggl.Foundation.Tests.Autocomplete
             {
                 var newDescription = $"{Description}@something";
 
-                var textFieldInfo = TextFieldInfo.Empty
+                var textFieldInfo = TextFieldInfo.Empty(WorkspaceId)
                     .WithTextAndCursor(newDescription, newDescription.Length)
                     .WithProjectInfo(WorkspaceId, ProjectId, ProjectName, ProjectColor)
                     .RemoveProjectQueryFromDescriptionIfNeeded();
@@ -175,7 +181,7 @@ namespace Toggl.Foundation.Tests.Autocomplete
                 var newDescription = $"{Description}@something";
                 var longDescription = $"{newDescription}@else";
 
-                var textFieldInfo = TextFieldInfo.Empty
+                var textFieldInfo = TextFieldInfo.Empty(WorkspaceId)
                     .WithTextAndCursor(longDescription, longDescription.Length)
                     .WithProjectInfo(WorkspaceId, ProjectId, ProjectName, ProjectColor)
                     .RemoveProjectQueryFromDescriptionIfNeeded();
@@ -202,7 +208,7 @@ namespace Toggl.Foundation.Tests.Autocomplete
             {
                 var newDescription = $"{Description}#something";
 
-                var textFieldInfo = TextFieldInfo.Empty
+                var textFieldInfo = TextFieldInfo.Empty(WorkspaceId)
                     .WithTextAndCursor(newDescription, newDescription.Length)
                     .RemoveTagQueryFromDescriptionIfNeeded();
 
@@ -215,7 +221,7 @@ namespace Toggl.Foundation.Tests.Autocomplete
                 var newDescription = $"{Description}#something";
                 var longDescription = $"{newDescription}#else";
 
-                var textFieldInfo = TextFieldInfo.Empty
+                var textFieldInfo = TextFieldInfo.Empty(WorkspaceId)
                     .WithTextAndCursor(longDescription, longDescription.Length)
                     .RemoveTagQueryFromDescriptionIfNeeded();
 
@@ -242,7 +248,7 @@ namespace Toggl.Foundation.Tests.Autocomplete
                 var tag1 = createTagSuggestion(1);
                 var tag2 = createTagSuggestion(2);
 
-                var textFieldInfo = TextFieldInfo.Empty
+                var textFieldInfo = TextFieldInfo.Empty(WorkspaceId)
                                                  .AddTag(tag1)
                                                  .AddTag(tag2);
 
@@ -256,7 +262,7 @@ namespace Toggl.Foundation.Tests.Autocomplete
             {
                 var tag = createTagSuggestion(1);
 
-                var textFieldInfo = TextFieldInfo.Empty
+                var textFieldInfo = TextFieldInfo.Empty(WorkspaceId)
                                                  .AddTag(tag)
                                                  .AddTag(tag);
 
@@ -271,7 +277,7 @@ namespace Toggl.Foundation.Tests.Autocomplete
             {
                 var newDescription = $"{Description}@something";
 
-                var textFieldInfo = TextFieldInfo.Empty
+                var textFieldInfo = TextFieldInfo.Empty(WorkspaceId)
                     .WithTextAndCursor(newDescription, newDescription.Length)
                     .WithProjectInfo(WorkspaceId, ProjectId, ProjectName, ProjectColor)
                     .RemoveProjectInfo();
@@ -282,14 +288,14 @@ namespace Toggl.Foundation.Tests.Autocomplete
             }
         }
 
-        public sealed class TheClearTagsMethod
+        public sealed class TheClearTagsMethod : TextFieldInfoTest
         {
             [Fact, LogIfTooSlow]
             public void RemovesAllTags()
             {
                 var tags = Enumerable.Range(10, 10)
                     .Select(createTagSuggestion);
-                var textFieldInfo = TextFieldInfo.Empty;
+                var textFieldInfo = TextFieldInfo.Empty(WorkspaceId);
                 foreach (var tag in tags)
                     textFieldInfo = textFieldInfo.AddTag(tag);
 

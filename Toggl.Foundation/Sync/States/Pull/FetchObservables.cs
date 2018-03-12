@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Toggl.Multivac.Models;
 using Toggl.PrimeRadiant.Models;
-using Toggl.Ultrawave.ApiClients;
 
 namespace Toggl.Foundation.Sync.States
 {
@@ -16,9 +15,10 @@ namespace Toggl.Foundation.Sync.States
         public IObservable<List<ITag>> Tags { get; }
         public IObservable<List<ITask>> Tasks { get; }
         public IObservable<List<ITimeEntry>> TimeEntries { get; }
+        public IObservable<IPreferences> Preferences { get; }
 
         public FetchObservables(FetchObservables old, ISinceParameters sinceParameters)
-            : this(sinceParameters, old.Workspaces, old.WorkspaceFeatures, old.Clients, old.Projects, old.TimeEntries, old.Tags, old.Tasks)
+            : this(sinceParameters, old.Workspaces, old.WorkspaceFeatures, old.Clients, old.Projects, old.TimeEntries, old.Tags, old.Tasks, old.Preferences)
         {
         }
 
@@ -29,7 +29,8 @@ namespace Toggl.Foundation.Sync.States
             IObservable<List<IProject>> projects,
             IObservable<List<ITimeEntry>> timeEntries,
             IObservable<List<ITag>> tags,
-            IObservable<List<ITask>> tasks
+            IObservable<List<ITask>> tasks,
+            IObservable<IPreferences> preferences
         )
         {
             SinceParameters = sinceParameters;
@@ -40,6 +41,7 @@ namespace Toggl.Foundation.Sync.States
             TimeEntries = timeEntries;
             Tags = tags;
             Tasks = tasks;
+            Preferences = preferences;
         }
     }
 }

@@ -28,29 +28,12 @@ namespace Toggl.Daneel.ViewControllers
 		UIKit.UILabel CurrentTimeEntryProjectTaskClientLabel { get; set; }
 
 		[Outlet]
-		UIKit.UIImageView DismissSyncBarImageView { get; set; }
-
-		[Outlet]
 		[GeneratedCode ("iOS Designer", "1.0")]
 		UIKit.UIButton EditTimeEntryButton { get; set; }
 
 		[Outlet]
 		[GeneratedCode ("iOS Designer", "1.0")]
-		Toggl.Daneel.Views.MainScrollView MainPagedScrollView { get; set; }
-
-		[Outlet]
 		Toggl.Daneel.Views.FadeView RunningEntryDescriptionFadeView { get; set; }
-
-		[Outlet]
-		UIKit.NSLayoutConstraint ScrollViewTopConstraint { get; set; }
-
-		[Outlet]
-		[GeneratedCode ("iOS Designer", "1.0")]
-		UIKit.UIImageView SpiderBroImageView { get; set; }
-
-		[Outlet]
-		[GeneratedCode ("iOS Designer", "1.0")]
-		UIKit.UIView SpiderHinge { get; set; }
 
 		[Outlet]
 		[GeneratedCode ("iOS Designer", "1.0")]
@@ -61,36 +44,16 @@ namespace Toggl.Daneel.ViewControllers
 		UIKit.UIButton StopTimeEntryButton { get; set; }
 
 		[Outlet]
-		[GeneratedCode ("iOS Designer", "1.0")]
-		UIKit.UIView SuggestionsContainer { get; set; }
+		UIKit.UITableView TimeEntriesLogTableView { get; set; }
 
 		[Outlet]
-		[GeneratedCode ("iOS Designer", "1.0")]
-		Toggl.Daneel.Views.ActivityIndicatorView SyncIndicatorView { get; set; }
+		UIKit.UIView TopSeparator { get; set; }
 
 		[Outlet]
-		[GeneratedCode ("iOS Designer", "1.0")]
-		UIKit.UILabel SyncStateLabel { get; set; }
-
-		[Outlet]
-		[GeneratedCode ("iOS Designer", "1.0")]
-		UIKit.UIView SyncStateView { get; set; }
-
-		[Outlet]
-		[GeneratedCode ("iOS Designer", "1.0")]
-		UIKit.UIView TimeEntriesLogContainer { get; set; }
-
-		[Outlet]
-		[GeneratedCode ("iOS Designer", "1.0")]
-		UIKit.UIView TimelineView { get; set; }
+		UIKit.UIView WelcomeBackView { get; set; }
 		
 		void ReleaseDesignerOutlets ()
 		{
-			if (DismissSyncBarImageView != null) {
-				DismissSyncBarImageView.Dispose ();
-				DismissSyncBarImageView = null;
-			}
-
 			if (CurrentTimeEntryCard != null) {
 				CurrentTimeEntryCard.Dispose ();
 				CurrentTimeEntryCard = null;
@@ -116,29 +79,9 @@ namespace Toggl.Daneel.ViewControllers
 				EditTimeEntryButton = null;
 			}
 
-			if (MainPagedScrollView != null) {
-				MainPagedScrollView.Dispose ();
-				MainPagedScrollView = null;
-			}
-
 			if (RunningEntryDescriptionFadeView != null) {
 				RunningEntryDescriptionFadeView.Dispose ();
 				RunningEntryDescriptionFadeView = null;
-			}
-
-			if (ScrollViewTopConstraint != null) {
-				ScrollViewTopConstraint.Dispose ();
-				ScrollViewTopConstraint = null;
-			}
-
-			if (SpiderBroImageView != null) {
-				SpiderBroImageView.Dispose ();
-				SpiderBroImageView = null;
-			}
-
-			if (SpiderHinge != null) {
-				SpiderHinge.Dispose ();
-				SpiderHinge = null;
 			}
 
 			if (StartTimeEntryButton != null) {
@@ -151,34 +94,19 @@ namespace Toggl.Daneel.ViewControllers
 				StopTimeEntryButton = null;
 			}
 
-			if (SuggestionsContainer != null) {
-				SuggestionsContainer.Dispose ();
-				SuggestionsContainer = null;
+			if (TimeEntriesLogTableView != null) {
+				TimeEntriesLogTableView.Dispose ();
+				TimeEntriesLogTableView = null;
 			}
 
-			if (SyncIndicatorView != null) {
-				SyncIndicatorView.Dispose ();
-				SyncIndicatorView = null;
+			if (TopSeparator != null) {
+				TopSeparator.Dispose ();
+				TopSeparator = null;
 			}
 
-			if (SyncStateLabel != null) {
-				SyncStateLabel.Dispose ();
-				SyncStateLabel = null;
-			}
-
-			if (SyncStateView != null) {
-				SyncStateView.Dispose ();
-				SyncStateView = null;
-			}
-
-			if (TimeEntriesLogContainer != null) {
-				TimeEntriesLogContainer.Dispose ();
-				TimeEntriesLogContainer = null;
-			}
-
-			if (TimelineView != null) {
-				TimelineView.Dispose ();
-				TimelineView = null;
+			if (WelcomeBackView != null) {
+				WelcomeBackView.Dispose ();
+				WelcomeBackView = null;
 			}
 		}
 	}

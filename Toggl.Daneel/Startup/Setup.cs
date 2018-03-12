@@ -4,11 +4,13 @@ using MvvmCross.Core.Navigation;
 using MvvmCross.Core.ViewModels;
 using MvvmCross.iOS.Platform;
 using MvvmCross.iOS.Views.Presenters;
+using MvvmCross.Platform;
 using MvvmCross.Platform.Platform;
 using MvvmCross.Platform.Plugins;
 using Toggl.Daneel.Presentation;
 using Toggl.Daneel.Services;
 using Toggl.Foundation;
+using Toggl.Foundation.Analytics;
 using Toggl.Foundation.MvvmCross;
 using Toggl.Foundation.Suggestions;
 using Toggl.PrimeRadiant.Realm;
@@ -19,8 +21,9 @@ namespace Toggl.Daneel
 {
     public partial class Setup : MvxIosSetup
     {
-        private const int maxNumberOfSuggestions = 7;
+        private const int maxNumberOfSuggestions = 3;
 
+        private IAnalyticsService analyticsService;
         private IMvxNavigationService navigationService;
 
 #if USE_PRODUCTION_API
@@ -44,7 +47,17 @@ namespace Toggl.Daneel
         protected override IMvxApplication CreateApp() => new App();
 
         protected override IMvxNavigationService InitializeNavigationService(IMvxViewModelLocatorCollection collection)
-            => navigationService = base.InitializeNavigationService(collection);
+        {
+            analyticsService = new AnalyticsService();
+
+            var loader = CreateViewModelLoader(collection);
+            Mvx.RegisterSingleton<IMvxViewModelLoader>(loader);
+
+            navigationService = new TrackingNavigationService(null, loader, analyticsService);
+
+            Mvx.RegisterSingleton<IMvxNavigationService>(navigationService);
+            return navigationService;
+        }
 
         protected override void InitializeApp(IMvxPluginManager pluginManager, IMvxApplication app)
         {
@@ -71,7 +84,7 @@ namespace Toggl.Daneel
                 new MailService((ITopViewControllerProvider)Presenter),
                 new GoogleService(),
                 environment,
-                new AnalyticsService(),
+                analyticsService,
                 new PlatformConstants(),
                 new ApplicationShortcutCreator(suggestionProviderContainer),
                 suggestionProviderContainer

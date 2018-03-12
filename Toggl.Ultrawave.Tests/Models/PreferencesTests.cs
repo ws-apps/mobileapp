@@ -12,8 +12,8 @@ namespace Toggl.Ultrawave.Tests.Models
 
         private Preferences validPreferences => new Preferences
         {
-            TimeOfDayFormat = "h:mm A",
-            DateFormat = "YYYY-MM-DD",
+            TimeOfDayFormat = TimeFormat.FromLocalizedTimeFormat("h:mm A"),
+            DateFormat = DateFormat.FromLocalizedDateFormat("YYYY-MM-DD"),
             DurationFormat = DurationFormat.Improved,
             CollapseTimeEntries = true
         };

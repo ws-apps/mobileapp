@@ -4,6 +4,8 @@ using System.Linq;
 using Firebase.Analytics;
 using Foundation;
 using Toggl.Foundation.Analytics;
+using FirebaseAnalytics = Firebase.Analytics.Analytics;
+using AppCenterAnalytics = Microsoft.AppCenter.Analytics.Analytics;
 
 namespace Toggl.Daneel.Services
 {
@@ -17,9 +19,9 @@ namespace Toggl.Daneel.Services
 
         protected override void NativeTrackEvent(string eventName, Dictionary<string, string> parameters)
         {
-            Microsoft.AppCenter.Analytics.Analytics.TrackEvent(eventName, trimLongParameters(parameters));
+            AppCenterAnalytics.TrackEvent(eventName, trimLongParameters(parameters));
 
-            Analytics.LogEvent(new NSString(eventName), NSDictionary<NSString, NSObject>.FromObjectsAndKeys(
+            FirebaseAnalytics.LogEvent(new NSString(eventName), NSDictionary<NSString, NSObject>.FromObjectsAndKeys(
                 parameters.Values.ToArray(),
                 parameters.Keys.ToArray()
             ));

@@ -8,8 +8,9 @@
     <LinearLayout
         android:elevation="2dp"
         android:orientation="horizontal"
+        android:minHeight="?attr/actionBarSize"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize">
+        android:layout_height="wrap_content">
         <ImageView
             local:MvxBind="Click CloseCommand"
             android:clickable="true"

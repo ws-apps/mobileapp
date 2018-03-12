@@ -25,12 +25,12 @@ namespace Toggl.Giskard.Bindings
 
         protected override void SetValue(IEnumerable<string> value)
         {
-            if (value == null || !value.Any())
+            var tags = value?.ToList();
+
+            if (tags == null || !tags.Any())
                 return;
 
             var builder = new SpannableStringBuilder();
-
-            var tags = value.ToList();
 
             for (var i = 0; i < tags.Count; i++)
             {
@@ -45,6 +45,7 @@ namespace Toggl.Giskard.Bindings
             }
 
             Target.TextFormatted = builder;
+            Target.Invalidate();
         }
     }
 }

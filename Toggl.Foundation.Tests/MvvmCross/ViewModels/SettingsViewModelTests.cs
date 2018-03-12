@@ -7,11 +7,14 @@ using FluentAssertions;
 using FsCheck;
 using FsCheck.Xunit;
 using NSubstitute;
+using Toggl.Foundation.DTOs;
 using Toggl.Foundation.MvvmCross.Parameters;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using Toggl.Foundation.Services;
 using Toggl.Foundation.Sync;
 using Toggl.Foundation.Tests.Generators;
+using Toggl.Multivac;
+using Toggl.PrimeRadiant.Exceptions;
 using Toggl.PrimeRadiant.Models;
 using Toggl.PrimeRadiant.Settings;
 using Xunit;
@@ -331,7 +334,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [Fact, LogIfTooSlow]
             public async Task CallsTheSelectWorkspaceViewModel()
             {
-                await ViewModel.EditWorkspaceCommand.ExecuteAsync();
+                await ViewModel.PickWorkspaceCommand.ExecuteAsync();
 
                 await NavigationService.Received()
                     .Navigate<SelectWorkspaceViewModel, WorkspaceParameters, long>(Arg.Any<WorkspaceParameters>());
@@ -344,7 +347,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     .Navigate<SelectWorkspaceViewModel, WorkspaceParameters, long>(Arg.Any<WorkspaceParameters>())
                     .Returns(Task.FromResult(workspaceId));
 
-                await ViewModel.EditWorkspaceCommand.ExecuteAsync();
+                await ViewModel.PickWorkspaceCommand.ExecuteAsync();
 
                 ViewModel.WorkspaceName.Should().Be(workspaceName);
             }
@@ -356,7 +359,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     .Navigate<SelectWorkspaceViewModel, WorkspaceParameters, long>(Arg.Any<WorkspaceParameters>())
                     .Returns(Task.FromResult(workspaceId));
 
-                await ViewModel.EditWorkspaceCommand.ExecuteAsync();
+                await ViewModel.PickWorkspaceCommand.ExecuteAsync();
 
                 await DataSource.User.Received().UpdateWorkspace(Arg.Is(workspaceId));
             }
@@ -368,7 +371,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     .Navigate<SelectWorkspaceViewModel, WorkspaceParameters, long>(Arg.Any<WorkspaceParameters>())
                     .Returns(Task.FromResult(workspaceId));
 
-                await ViewModel.EditWorkspaceCommand.ExecuteAsync();
+                await ViewModel.PickWorkspaceCommand.ExecuteAsync();
 
                 await DataSource.SyncManager.Received().PushSync();
             }
@@ -556,6 +559,330 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 await DialogService
                     .DidNotReceive()
                     .Alert(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>());
+            }
+        }
+
+        public sealed class TheInitializeMethod : SettingsViewModelTest
+        {
+            [Fact]
+            public async Task InitializesFormatsFromPreferencesDataSource()
+            {
+                var preferences = createPreferences();
+                DataSource.Preferences.Current.Returns(Observable.Return(preferences));
+
+                await ViewModel.Initialize();
+
+                ViewModel.DateFormat.Should().Be(preferences.DateFormat);
+                ViewModel.UseTwentyFourHourClock.Should().Be(preferences.TimeOfDayFormat.IsTwentyFourHoursFormat);
+                ViewModel.DurationFormat.Should().Be(preferences.DurationFormat);
+            }
+
+            private IDatabasePreferences createPreferences()
+            {
+                var preferences = Substitute.For<IDatabasePreferences>();
+                preferences.DateFormat.Returns(DateFormat.FromLocalizedDateFormat("MM.DD.YYYY"));
+                preferences.DurationFormat.Returns(DurationFormat.Classic);
+                preferences.TimeOfDayFormat.Returns(TimeFormat.TwelveHoursFormat);
+                return preferences;
+            }
+        }
+
+        public sealed class TheSelectDateFormatCommand : SettingsViewModelTest
+        {
+            [Fact, LogIfTooSlow]
+            public async Task NavigatesToSelectDateFormatViewModelPassingCurrentDateFormat()
+            {
+                var dateFormat = DateFormat.FromLocalizedDateFormat("MM-DD-YYYY");
+                var preferences = Substitute.For<IDatabasePreferences>();
+                preferences.DateFormat.Returns(dateFormat);
+                DataSource.Preferences.Current.Returns(Observable.Return(preferences));
+                await ViewModel.Initialize();
+
+                await ViewModel.SelectDateFormatCommand.ExecuteAsync();
+
+                await NavigationService
+                    .Received()
+                    .Navigate<SelectDateFormatViewModel, DateFormat, DateFormat>(dateFormat);
+            }
+
+            [Fact, LogIfTooSlow]
+            public async Task UpdatesTheStoredPreferences()
+            {
+                var oldDateFormat = DateFormat.FromLocalizedDateFormat("MM-DD-YYYY");
+                var newDateFormat = DateFormat.FromLocalizedDateFormat("DD.MM.YYYY");
+                var preferences = Substitute.For<IDatabasePreferences>();
+                preferences.DateFormat.Returns(oldDateFormat);
+                DataSource.Preferences.Current.Returns(Observable.Return(preferences));
+                NavigationService
+                    .Navigate<SelectDateFormatViewModel, DateFormat, DateFormat>(Arg.Any<DateFormat>())
+                    .Returns(Task.FromResult(newDateFormat));
+                await ViewModel.Initialize();
+
+                await ViewModel.SelectDateFormatCommand.ExecuteAsync();
+
+                await DataSource
+                    .Preferences
+                    .Received()
+                    .Update(Arg.Is<EditPreferencesDTO>(dto => dto.DateFormat == newDateFormat));
+            }
+
+            [Fact, LogIfTooSlow]
+            public async Task UpdatesTheDateFormatProperty()
+            {
+                var oldDateFormat = DateFormat.FromLocalizedDateFormat("MM-DD-YYYY");
+                var newDateFormat = DateFormat.FromLocalizedDateFormat("DD.MM.YYYY");
+                var oldPreferences = Substitute.For<IDatabasePreferences>();
+                oldPreferences.DateFormat.Returns(oldDateFormat);
+                var newPreferences = Substitute.For<IDatabasePreferences>();
+                newPreferences.DateFormat.Returns(newDateFormat);
+                DataSource.Preferences.Current.Returns(Observable.Return(oldPreferences));
+                NavigationService
+                    .Navigate<SelectDateFormatViewModel, DateFormat, DateFormat>(Arg.Any<DateFormat>())
+                    .Returns(Task.FromResult(newDateFormat));
+                DataSource
+                    .Preferences
+                    .Update(Arg.Any<EditPreferencesDTO>())
+                    .Returns(Observable.Return(newPreferences));
+                await ViewModel.Initialize();
+
+                await ViewModel.SelectDateFormatCommand.ExecuteAsync();
+
+                ViewModel.DateFormat.Should().Be(newDateFormat);
+            }
+
+            [Fact, LogIfTooSlow]
+            public async Task InitiatesPushSync()
+            {
+                var oldDateFormat = DateFormat.FromLocalizedDateFormat("MM-DD-YYYY");
+                var newDateFormat = DateFormat.FromLocalizedDateFormat("DD.MM.YYYY");
+                var preferences = Substitute.For<IDatabasePreferences>();
+                preferences.DateFormat.Returns(oldDateFormat);
+                DataSource.Preferences.Get().Returns(Observable.Return(preferences));
+                NavigationService
+                    .Navigate<SelectDateFormatViewModel, DateFormat, DateFormat>(Arg.Any<DateFormat>())
+                    .Returns(Task.FromResult(newDateFormat));
+                await ViewModel.Initialize();
+
+                await ViewModel.SelectDateFormatCommand.ExecuteAsync();
+
+                await DataSource.SyncManager.Received().PushSync();
+            }
+        }
+
+        public sealed class TheToggleUseTwentyFourHourClock : SettingsViewModelTest
+        {
+            [Theory, LogIfTooSlow]
+            [InlineData(true)]
+            [InlineData(false)]
+            public async Task ChangesTheValueOfTheUseTwentyFourHourHourClock(bool originalValue)
+            {
+                await ViewModel.Initialize();
+                ViewModel.UseTwentyFourHourClock = originalValue;
+
+                await ViewModel.ToggleUseTwentyFourHourClockCommand.ExecuteAsync();
+
+                ViewModel.UseTwentyFourHourClock.Should().Be(!originalValue);
+            }
+
+            [Theory, LogIfTooSlow]
+            [InlineData(true)]
+            [InlineData(false)]
+            public async Task UpdatesTheValueInTheDataSource(bool originalValue)
+            {
+                await ViewModel.Initialize();
+                ViewModel.UseTwentyFourHourClock = originalValue;
+
+                await ViewModel.ToggleUseTwentyFourHourClockCommand.ExecuteAsync();
+
+                await DataSource.Preferences.Received().Update(Arg.Is<EditPreferencesDTO>(
+                    dto => dto.TimeOfDayFormat.HasValue
+                        && dto.TimeOfDayFormat.Value.IsTwentyFourHoursFormat != originalValue));
+            }
+
+            [Theory, LogIfTooSlow]
+            [InlineData(true)]
+            [InlineData(false)]
+            public async Task InitiatesPushSync(bool originalValue)
+            {
+                var preferences = Substitute.For<IDatabasePreferences>();
+                var observable = Observable.Return(preferences);
+                DataSource.Preferences.Update(Arg.Any<EditPreferencesDTO>()).Returns(observable);
+                await ViewModel.Initialize();
+                ViewModel.UseTwentyFourHourClock = originalValue;
+
+                await ViewModel.ToggleUseTwentyFourHourClockCommand.ExecuteAsync();
+
+                await DataSource.SyncManager.Received().PushSync();
+            }
+        }
+
+        public sealed class TheSelectDurationFormatCommand : SettingsViewModelTest
+        {
+            [Fact, LogIfTooSlow]
+            public async Task NavigatesToSelectDurationFormatViewModelPassingCurrentDurationFormat()
+            {
+                var durationFormat = DurationFormat.Improved;
+                var preferences = Substitute.For<IDatabasePreferences>();
+                preferences.DurationFormat.Returns(durationFormat);
+                DataSource.Preferences.Current.Returns(Observable.Return(preferences));
+                await ViewModel.Initialize();
+
+                await ViewModel.SelectDurationFormatCommand.ExecuteAsync();
+
+                await NavigationService
+                    .Received()
+                    .Navigate<SelectDurationFormatViewModel, DurationFormat, DurationFormat>(durationFormat);
+            }
+
+            [Fact, LogIfTooSlow]
+            public async Task UpdatesTheStoredPreferences()
+            {
+                var oldDurationFormat = DurationFormat.Decimal;
+                var newDurationFormat = DurationFormat.Improved;
+                var preferences = Substitute.For<IDatabasePreferences>();
+                preferences.DurationFormat.Returns(oldDurationFormat);
+                DataSource.Preferences.Current.Returns(Observable.Return(preferences));
+                NavigationService
+                    .Navigate<SelectDurationFormatViewModel, DurationFormat, DurationFormat>(Arg.Any<DurationFormat>())
+                    .Returns(Task.FromResult(newDurationFormat));
+                await ViewModel.Initialize();
+
+                await ViewModel.SelectDurationFormatCommand.ExecuteAsync();
+
+                await DataSource
+                    .Preferences
+                    .Received()
+                    .Update(Arg.Is<EditPreferencesDTO>(dto => dto.DurationFormat == newDurationFormat));
+            }
+
+            [Fact, LogIfTooSlow]
+            public async Task SelectDurationFormatCommandCallsPushSync()
+            {
+                var oldDurationFormat = DurationFormat.Decimal;
+                var newDurationFormat = DurationFormat.Improved;
+                var preferences = Substitute.For<IDatabasePreferences>();
+                preferences.DurationFormat.Returns(oldDurationFormat);
+                DataSource.Preferences.Current.Returns(Observable.Return(preferences));
+                NavigationService
+                    .Navigate<SelectDurationFormatViewModel, DurationFormat, DurationFormat>(Arg.Any<DurationFormat>())
+                    .Returns(Task.FromResult(newDurationFormat));
+                var syncManager = Substitute.For<ISyncManager>();
+                DataSource.SyncManager.Returns(syncManager);
+                await ViewModel.Initialize();
+
+                await ViewModel.SelectDurationFormatCommand.ExecuteAsync();
+
+                await syncManager.Received().PushSync();
+            }
+
+            [Fact, LogIfTooSlow]
+            public async Task UpdatesTheDurationFormatProperty()
+            {
+                var oldDurationFormat = DurationFormat.Decimal;
+                var newDurationFormat = DurationFormat.Improved;
+                var oldPreferences = Substitute.For<IDatabasePreferences>();
+                oldPreferences.DurationFormat.Returns(oldDurationFormat);
+                var newPreferences = Substitute.For<IDatabasePreferences>();
+                newPreferences.DurationFormat.Returns(newDurationFormat);
+                DataSource.Preferences.Current.Returns(Observable.Return(oldPreferences));
+                NavigationService
+                    .Navigate<SelectDurationFormatViewModel, DurationFormat, DurationFormat>(Arg.Any<DurationFormat>())
+                    .Returns(Task.FromResult(newDurationFormat));
+                DataSource
+                    .Preferences
+                    .Update(Arg.Any<EditPreferencesDTO>())
+                    .Returns(Observable.Return(newPreferences));
+                await ViewModel.Initialize();
+
+                await ViewModel.SelectDurationFormatCommand.ExecuteAsync();
+
+                ViewModel.DurationFormat.Should().Be(newDurationFormat);
+            }
+        }
+
+        public sealed class TheSelectBeginningOfWeekCommand : SettingsViewModelTest
+        {
+            [Fact, LogIfTooSlow]
+            public async Task NavigatesToSelectBeginningOfWeekViewModelPassingCurrentBeginningOfWeek()
+            {
+                var beginningOfWeek = BeginningOfWeek.Friday;
+                var user = Substitute.For<IDatabaseUser>();
+                user.BeginningOfWeek.Returns(beginningOfWeek);
+                DataSource.User.Current.Returns(Observable.Return(user));
+                await ViewModel.Initialize();
+
+                await ViewModel.SelectBeginningOfWeekCommand.ExecuteAsync();
+
+                await NavigationService
+                    .Received()
+                    .Navigate<SelectBeginningOfWeekViewModel, BeginningOfWeek, BeginningOfWeek>(beginningOfWeek);
+            }
+
+            [Fact, LogIfTooSlow]
+            public async Task UpdatesTheStoredPreferences()
+            {
+                var oldBeginningOfWeek = BeginningOfWeek.Tuesday;
+                var newBeginningOfWeek = BeginningOfWeek.Sunday;
+
+                var user = Substitute.For<IDatabaseUser>();
+                user.BeginningOfWeek.Returns(oldBeginningOfWeek);
+                DataSource.User.Current.Returns(Observable.Return(user));
+                NavigationService
+                    .Navigate<SelectBeginningOfWeekViewModel, BeginningOfWeek, BeginningOfWeek>(Arg.Any<BeginningOfWeek>())
+                    .Returns(Task.FromResult(newBeginningOfWeek));
+                await ViewModel.Initialize();
+
+                await ViewModel.SelectBeginningOfWeekCommand.ExecuteAsync();
+
+                await DataSource
+                    .User
+                    .Received()
+                    .Update(Arg.Is<EditUserDTO>(dto => dto.BeginningOfWeek == newBeginningOfWeek));
+            }
+
+            [Fact, LogIfTooSlow]
+            public async Task SelectBeginningOfWeekCommandCallsPushSync()
+            {
+                var oldBeginningOfWeek = BeginningOfWeek.Tuesday;
+                var newBeginningOfWeek = BeginningOfWeek.Sunday;
+                var user = Substitute.For<IDatabaseUser>();
+                user.BeginningOfWeek.Returns(oldBeginningOfWeek);
+                DataSource.User.Current.Returns(Observable.Return(user));
+                NavigationService
+                    .Navigate<SelectBeginningOfWeekViewModel, BeginningOfWeek, BeginningOfWeek>(Arg.Any<BeginningOfWeek>())
+                    .Returns(Task.FromResult(newBeginningOfWeek));
+                var syncManager = Substitute.For<ISyncManager>();
+                DataSource.SyncManager.Returns(syncManager);
+                await ViewModel.Initialize();
+
+                await ViewModel.SelectBeginningOfWeekCommand.ExecuteAsync();
+
+                await syncManager.Received().PushSync();
+            }
+
+            [Fact, LogIfTooSlow]
+            public async Task UpdatesTheBeginningOfWeekProperty()
+            {
+                var oldBeginningOfWeek = BeginningOfWeek.Tuesday;
+                var newBeginningOfWeek = BeginningOfWeek.Sunday;
+
+                var oldUser = Substitute.For<IDatabaseUser>();
+                oldUser.BeginningOfWeek.Returns(oldBeginningOfWeek);
+                var newUser = Substitute.For<IDatabaseUser>();
+                newUser.BeginningOfWeek.Returns(newBeginningOfWeek);
+                DataSource.User.Current.Returns(Observable.Return(oldUser));
+                NavigationService
+                    .Navigate<SelectBeginningOfWeekViewModel, BeginningOfWeek, BeginningOfWeek>(Arg.Any<BeginningOfWeek>())
+                    .Returns(Task.FromResult(newBeginningOfWeek));
+                DataSource
+                    .User
+                    .Update(Arg.Any<EditUserDTO>())
+                    .Returns(Observable.Return(newUser));
+                await ViewModel.Initialize();
+
+                await ViewModel.SelectBeginningOfWeekCommand.ExecuteAsync();
+
+                ViewModel.BeginningOfWeek.Should().Be(newBeginningOfWeek);
             }
         }
     }

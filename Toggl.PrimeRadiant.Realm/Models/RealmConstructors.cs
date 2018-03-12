@@ -45,6 +45,45 @@ namespace Toggl.PrimeRadiant.Realm
         }
     }
 
+    internal partial class RealmPreferences : IUpdatesFrom<IDatabasePreferences>, IModifiableId
+    {
+        public long Id { get; set; }
+
+        public long? OriginalId { get; set; }
+
+        public bool IsDeleted { get; set; }
+
+        public int SyncStatusInt { get; set; }
+
+        [Ignored]
+        public SyncStatus SyncStatus
+        {
+            get { return (SyncStatus)SyncStatusInt; }
+            set { SyncStatusInt = (int)value; }
+        }
+
+        public string LastSyncErrorMessage { get; set; }
+
+        public RealmPreferences() { }
+
+        public RealmPreferences(IDatabasePreferences entity, Realms.Realm realm)
+        {
+            SetPropertiesFrom(entity, realm);
+        }
+
+        public void SetPropertiesFrom(IDatabasePreferences entity, Realms.Realm realm)
+        {
+            IsDeleted = entity.IsDeleted;
+            SyncStatus = entity.SyncStatus;
+            LastSyncErrorMessage = entity.LastSyncErrorMessage;
+            Id = entity.Id;
+            TimeOfDayFormat = entity.TimeOfDayFormat;
+            DateFormat = entity.DateFormat;
+            DurationFormat = entity.DurationFormat;
+            CollapseTimeEntries = entity.CollapseTimeEntries;
+        }
+    }
+
     internal partial class RealmProject : IUpdatesFrom<IDatabaseProject>, IModifiableId
     {
         public long Id { get; set; }

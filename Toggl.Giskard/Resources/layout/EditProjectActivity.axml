@@ -19,11 +19,12 @@
                 android:src="@drawable/project"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:layout_marginTop="12dp"
                 android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp" />
+                android:layout_marginRight="16dp"
+                android:layout_centerVertical="true" />
             <EditText
-                local:MvxBind="Text Name"
+                android:id="@+id/EditProjectProjectName"
+                local:MvxBind="Text Name; TopMargin EditProjectErrorOffset(IsNameAlreadyTaken)"
                 android:lines="1"
                 android:textSize="15sp"
                 android:singleLine="true"
@@ -31,23 +32,33 @@
                 android:textColor="@android:color/black"
                 android:background="@android:color/white"
                 tools:text="Some client with a ridiculously big name to help us test fading"
-                android:layout_marginTop="4dp"
+                android:layout_marginLeft="56dp"
+                android:layout_marginTop="8dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignEnd="@+id/EditProjectFadeView"
-                android:layout_alignTop="@id/EditProjectProjectImage"
-                android:layout_toRightOf="@id/EditProjectProjectImage" />
-            <View
-                android:id="@+id/EditProjectFadeView"
-                android:background="@drawable/TransparentToWhiteGradient"
-                android:layout_width="68dp"
-                android:layout_marginRight="16dp"
-                android:layout_height="match_parent"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentBottom="true" />
+                android:layout_alignEnd="@+id/EditProjectColorCircle" />
+            <TextView
+                local:MvxBind="Visibility Visibility(IsNameAlreadyTaken)"
+                android:textSize="12sp"
+                android:lineSpacingExtra="4sp"
+                android:textColor="@color/errorText"
+                android:text="@string/NameTakenError"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/EditProjectProjectName"
+                android:layout_alignStart="@+id/EditProjectProjectName" />
+            <toggl.giskard.views.CircleView
+                android:id="@+id/EditProjectColorCircle"
+                local:MvxBind="CircleColor NativeColor(Color); Click PickColorCommand"
+                android:clickable="true"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginRight="4dp"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/EditProjectColorArrow" />
             <ImageView
                 local:MvxBind="Click PickColorCommand"
+                android:id="@+id/EditProjectColorArrow"
                 android:src="@drawable/dropdown"
                 android:clickable="true"
                 android:layout_marginRight="16dp"
@@ -73,10 +84,9 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_gravity="end"
-                android:layout_marginTop="12dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:layout_marginBottom="12dp"
+                android:layout_centerVertical="true"
                 android:layout_below="@+id/EditProjectProjectImage" />
             <TextView
                 local:MvxBind="Text WorkspaceName"
@@ -103,7 +113,6 @@
                 android:layout_alignParentBottom="true" />
             <ImageView
                 android:src="@drawable/dropdown"
-                android:clickable="true"
                 android:layout_marginRight="16dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -127,10 +136,9 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_gravity="end"
-                android:layout_marginTop="12dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:layout_marginBottom="12dp"
+                android:layout_centerVertical="true"
                 android:layout_below="@id/EditProjectWorkspaceImage" />
             <TextView
                 local:MvxBind="Text If(ClientName, ClientName, 'No Client'); TextColor ARGB(If(ClientName, '#000000', '#CECECE'))"
@@ -173,6 +181,7 @@
             local:MvxBind="Click TogglePrivateProjectCommand"
             android:clickable="true"
             android:background="?attr/selectableItemBackground"
+            android:paddingTop="12dp"
             android:paddingBottom="12dp"
             android:layout_height="wrap_content"
             android:layout_width="match_parent">
@@ -182,10 +191,8 @@
                 android:layout_gravity="end"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:layout_marginTop="12dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:layout_marginBottom="12dp"
                 android:layout_below="@+id/EditProjectClientImage" />
             <TextView
                 android:id="@+id/EditProjectPrivateProjectLabel"
@@ -226,6 +233,11 @@
             android:layout_marginLeft="55dp"
             android:layout_width="match_parent" />
     </LinearLayout>
+    <FrameLayout
+        android:id="@+id/SelectWorkspaceContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize" />
     <android.support.v7.widget.Toolbar
         android:id="@+id/Toolbar"
         android:minHeight="?attr/actionBarSize"
@@ -233,5 +245,19 @@
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         local:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content">
+        <TextView
+            local:MvxBind="Click DoneCommand; TextColor CreateProjectButtonColor(SaveEnabled)"
+            android:text="@string/Create"
+            android:textSize="14sp"
+            android:textStyle="normal"
+            android:textAllCaps="true"
+            android:letterSpacing="0.04"
+            android:layout_gravity="end"
+            android:fontFamily="sans-serif-medium"
+            android:background="?attr/selectableItemBackground"
+            android:layout_marginRight="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </android.support.v7.widget.Toolbar>
 </android.support.design.widget.CoordinatorLayout>

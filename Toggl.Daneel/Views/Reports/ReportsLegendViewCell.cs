@@ -3,7 +3,7 @@ using Foundation;
 using MvvmCross.Binding.BindingContext;
 using MvvmCross.Binding.iOS.Views;
 using MvvmCross.Plugins.Color;
-using Toggl.Foundation.MvvmCross.Converters;
+using Toggl.Foundation.MvvmCross.Combiners;
 using Toggl.Foundation.Reports;
 using UIKit;
 
@@ -31,6 +31,7 @@ namespace Toggl.Daneel.Views.Reports
             this.DelayBind(() =>
             {
                 var colorConverter = new MvxRGBValueConverter();
+                var durationCombiner = new DurationValueCombiner();
                 var bindingSet = this.CreateBindingSet<ReportsLegendViewCell, ChartSegment>();
 
                 //Text
@@ -40,8 +41,9 @@ namespace Toggl.Daneel.Views.Reports
                           .ByCombining("Format", "'{0:0.00}%'", nameof(ChartSegment.Percentage));
 
                 bindingSet.Bind(TotalTimeLabel)
-                          .To(vm => vm.TrackedTime)
-                          .WithConversion(new TimeSpanToDurationValueConverter());
+                          .ByCombining(durationCombiner,
+                              vm => vm.TrackedTime,
+                              vm => vm.DurationFormat);
 
                 // Color
                 bindingSet.Bind(ProjectLabel)

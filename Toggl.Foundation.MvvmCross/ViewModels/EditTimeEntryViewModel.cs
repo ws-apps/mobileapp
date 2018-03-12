@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -13,7 +12,6 @@ using Toggl.Foundation.MvvmCross.Parameters;
 using Toggl.Foundation.MvvmCross.Services;
 using Toggl.Multivac;
 using Toggl.Multivac.Extensions;
-using Toggl.Multivac.Models;
 using Toggl.PrimeRadiant.Models;
 using static Toggl.Foundation.Helper.Constants;
 
@@ -34,10 +32,12 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private IDisposable deleteDisposable;
         private IDisposable tickingDisposable;
         private IDisposable confirmDisposable;
+        private IDisposable preferencesDisposable;
 
         private long? projectId;
         private long? taskId;
         private long workspaceId;
+        private DurationFormat durationFormat;
 
         public long Id { get; set; }
 
@@ -78,6 +78,13 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 }
             }
         }
+
+        [DependsOn(nameof(IsTimeEntryRunning))]
+        public DurationFormat DurationFormat => IsTimeEntryRunning ? DurationFormat.Improved : durationFormat;
+
+        public DateFormat DateFormat { get; private set; }
+
+        public TimeFormat TimeFormat { get; private set; }
 
         public DateTimeOffset StartTime { get; set; }
 
@@ -204,6 +211,9 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
             if (StopTime == null)
                 subscribeToTimeServiceTicks();
+
+            preferencesDisposable = dataSource.Preferences.Current
+                .Subscribe(onPreferencesChanged);
         }
 
         private void subscribeToTimeServiceTicks()
@@ -215,12 +225,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         private async Task delete()
         {
-            var result = await dialogService.ShowMultipleChoiceDialog(
-                Resources.Cancel,
-                new MultipleChoiceDialogAction(Resources.Delete, true)
-            );
-
-            if (result != Resources.Delete)
+            var shouldDelete = await dialogService.ConfirmDestructiveAction(ActionType.DeleteExistingTimeEntry);
+            if (!shouldDelete)
                 return;
 
             deleteDisposable = dataSource.TimeEntries
@@ -423,6 +429,15 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 return tag;
 
             return $"{tag.UnicodeSafeSubstring(0, maxTagLength)}...";
+        }
+
+        private void onPreferencesChanged(IDatabasePreferences preferences)
+        {
+            durationFormat = preferences.DurationFormat;
+            DateFormat = preferences.DateFormat;
+            TimeFormat = preferences.TimeOfDayFormat;
+
+            RaisePropertyChanged(nameof(DurationFormat));
         }
     }
 }

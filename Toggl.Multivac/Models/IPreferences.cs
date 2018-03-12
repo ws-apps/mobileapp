@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Toggl.Multivac.Models
+﻿namespace Toggl.Multivac.Models
 {
-    public interface IPreferences
+    public interface IPreferences : IBaseModel
     {
-        string TimeOfDayFormat { get; }
+        TimeFormat TimeOfDayFormat { get; }
 
-        string DateFormat { get; }
+        DateFormat DateFormat { get; }
 
         DurationFormat DurationFormat { get; }
 

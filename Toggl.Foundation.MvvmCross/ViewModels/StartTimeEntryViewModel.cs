@@ -6,31 +6,29 @@ using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using MvvmCross.Core.Navigation;
 using MvvmCross.Core.ViewModels;
-using Toggl.Foundation.Analytics;
 using Toggl.Foundation.Autocomplete;
 using Toggl.Foundation.Autocomplete.Suggestions;
 using Toggl.Foundation.DataSources;
-using Toggl.Foundation.DTOs;
+using Toggl.Foundation.Models;
 using Toggl.Foundation.MvvmCross.Collections;
 using Toggl.Foundation.MvvmCross.Helper;
+using Toggl.Foundation.Interactors;
 using Toggl.Foundation.MvvmCross.Parameters;
 using Toggl.Foundation.MvvmCross.Services;
 using Toggl.Multivac;
 using Toggl.Multivac.Extensions;
-using Toggl.PrimeRadiant.Settings;
 using static Toggl.Foundation.Helper.Constants;
 
 namespace Toggl.Foundation.MvvmCross.ViewModels
 {
     [Preserve(AllMembers = true)]
-    public sealed class StartTimeEntryViewModel : MvxViewModel<StartTimeEntryParameters>
+    public sealed class StartTimeEntryViewModel : MvxViewModel<StartTimeEntryParameters>, ITimeEntryPrototype
     {
         //Fields
         private readonly ITimeService timeService;
         private readonly ITogglDataSource dataSource;
         private readonly IDialogService dialogService;
-        private readonly IUserPreferences userPreferences;
-        private readonly IAnalyticsService analyticsService;
+        private readonly IInteractorFactory interactorFactory;
         private readonly IMvxNavigationService navigationService;
         private readonly Subject<TextFieldInfo> infoSubject = new Subject<TextFieldInfo>();
         private readonly Subject<AutocompleteSuggestionType> queryByTypeSubject = new Subject<AutocompleteSuggestionType>();
@@ -77,6 +75,16 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             }
         }
 
+        public long[] TagIds => TextFieldInfo.Tags.Select(t => t.TagId).Distinct().ToArray();
+
+        public long? ProjectId => TextFieldInfo.ProjectId;
+
+        public long? TaskId => TextFieldInfo.TaskId;
+
+        public string Description => TextFieldInfo.Text?.Trim() ?? "";
+
+        public long WorkspaceId => TextFieldInfo.WorkspaceId;
+
         public bool IsDirty
             => TextFieldInfo.Text.Length > 0
                 || TextFieldInfo.ProjectId.HasValue
@@ -95,7 +103,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public bool IsSuggestingProjects { get; private set; }
 
-        public TextFieldInfo TextFieldInfo { get; set; } = TextFieldInfo.Empty;
+        public TextFieldInfo TextFieldInfo { get; set; }
 
         public TimeSpan DisplayedTime
         {
@@ -162,23 +170,20 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             ITimeService timeService,
             ITogglDataSource dataSource,
             IDialogService dialogService,
-            IUserPreferences userPreferences,
-            IAnalyticsService analyticsService,
+            IInteractorFactory interactorFactory,
             IMvxNavigationService navigationService)
         {
             Ensure.Argument.IsNotNull(dataSource, nameof(dataSource));
             Ensure.Argument.IsNotNull(timeService, nameof(timeService));
             Ensure.Argument.IsNotNull(dialogService, nameof(dialogService));
-            Ensure.Argument.IsNotNull(userPreferences, nameof(userPreferences));
-            Ensure.Argument.IsNotNull(analyticsService, nameof(analyticsService));
+            Ensure.Argument.IsNotNull(interactorFactory, nameof(interactorFactory));
             Ensure.Argument.IsNotNull(navigationService, nameof(navigationService));
 
             this.dataSource = dataSource;
             this.timeService = timeService;
             this.dialogService = dialogService;
-            this.userPreferences = userPreferences;
-            this.analyticsService = analyticsService;
             this.navigationService = navigationService;
+            this.interactorFactory = interactorFactory;
 
             BackCommand = new MvxAsyncCommand(back);
             DoneCommand = new MvxAsyncCommand(done);
@@ -190,6 +195,59 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             ToggleProjectSuggestionsCommand = new MvxCommand(toggleProjectSuggestions);
             SelectSuggestionCommand = new MvxAsyncCommand<AutocompleteSuggestion>(selectSuggestion);
             ToggleTaskSuggestionsCommand = new MvxCommand<ProjectSuggestion>(toggleTaskSuggestions);
+        }
+
+        public override void Prepare(StartTimeEntryParameters parameter)
+        {
+            this.parameter = parameter;
+            StartTime = parameter.StartTime;
+            Duration = parameter.Duration;
+
+            if (Duration.HasValue)
+            {
+                displayedTime = Duration.Value;
+                RaisePropertyChanged(nameof(DisplayedTime));
+            }
+            else
+            {
+                elapsedTimeDisposable = timeService.CurrentDateTimeObservable.Subscribe(onCurrentTime);
+            }
+
+            var queryByTypeObservable =
+                queryByTypeSubject
+                    .AsObservable()
+                    .SelectMany(type => dataSource.AutocompleteProvider.Query(new QueryInfo("", type)));
+
+            queryDisposable =
+                infoSubject.AsObservable()
+                    .StartWith(TextFieldInfo)
+                    .Where(shouldUpdateSuggestions)
+                    .Select(QueryInfo.ParseFieldInfo)
+                    .Do(onParsedQuery)
+                    .SelectMany(dataSource.AutocompleteProvider.Query)
+                    .Merge(queryByTypeObservable)
+                    .Subscribe(onSuggestions);
+
+            PlaceholderText = parameter.PlaceholderText;
+        }
+
+        public async override Task Initialize()
+        {
+            await base.Initialize();
+
+            await setBillableValues(0);
+
+            TextFieldInfo =
+                await dataSource.User.Current.Select(user => TextFieldInfo.Empty(user.DefaultWorkspaceId));
+            
+            hasAnyTags = (await dataSource.Tags.GetAll()).Any();
+            hasAnyProjects = (await dataSource.Projects.GetAll()).Any();
+        }
+
+        private void onCurrentTime(DateTimeOffset currentTime)
+        {
+            displayedTime = currentTime - StartTime;
+            RaisePropertyChanged(nameof(DisplayedTime));
         }
 
         private async Task selectSuggestion(AutocompleteSuggestion suggestion)
@@ -303,7 +361,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private async Task createTag()
         {
             var createdTag = await dataSource.Tags
-                .Create(CurrentQuery, TextFieldInfo.WorkspaceId.Value);
+                .Create(CurrentQuery, TextFieldInfo.WorkspaceId);
             var tagSuggestion = new TagSuggestion(createdTag);
             await SelectSuggestionCommand.ExecuteAsync(tagSuggestion);
             hasAnyTags = true;
@@ -311,8 +369,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         private void setProject(ProjectSuggestion projectSuggestion)
         {
-            if (TextFieldInfo.WorkspaceId.HasValue)
-                clearTagsIfNeeded(TextFieldInfo.WorkspaceId.Value, projectSuggestion.WorkspaceId);
+            clearTagsIfNeeded(TextFieldInfo.WorkspaceId, projectSuggestion.WorkspaceId);
 
             TextFieldInfo = TextFieldInfo
                 .RemoveProjectQueryFromDescriptionIfNeeded()
@@ -325,8 +382,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         private void setTask(TaskSuggestion taskSuggestion)
         {
-            if (TextFieldInfo.WorkspaceId.HasValue)
-                clearTagsIfNeeded(TextFieldInfo.WorkspaceId.Value, taskSuggestion.WorkspaceId);
+            clearTagsIfNeeded(TextFieldInfo.WorkspaceId, taskSuggestion.WorkspaceId);
 
             TextFieldInfo = TextFieldInfo
                 .RemoveProjectQueryFromDescriptionIfNeeded()
@@ -345,60 +401,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             if (currentWorkspaceId == newWorkspaceId) return;
 
             TextFieldInfo = TextFieldInfo.ClearTags();
-        }
-
-        public override void Prepare(StartTimeEntryParameters parameter)
-        {
-            this.parameter = parameter;
-            StartTime = parameter.StartTime;
-            Duration = parameter.Duration;
-
-            if (Duration.HasValue)
-            {
-                displayedTime = Duration.Value;
-                RaisePropertyChanged(nameof(DisplayedTime));
-            }
-            else
-            {
-                elapsedTimeDisposable = timeService.CurrentDateTimeObservable.Subscribe(onCurrentTime);
-            }
-
-            var queryByTypeObservable =
-                queryByTypeSubject
-                    .AsObservable()
-                    .SelectMany(type => dataSource.AutocompleteProvider.Query(new QueryInfo("", type)));
-
-            queryDisposable =
-                infoSubject.AsObservable()
-                    .StartWith(TextFieldInfo)
-                    .Where(shouldUpdateSuggestions)
-                    .Select(QueryInfo.ParseFieldInfo)
-                    .Do(onParsedQuery)
-                    .SelectMany(dataSource.AutocompleteProvider.Query)
-                    .Merge(queryByTypeObservable)
-                    .Subscribe(onSuggestions);
-
-            PlaceholderText = parameter.PlaceholderText;
-        }
-
-        public async override Task Initialize()
-        {
-            await base.Initialize();
-
-            await setBillableValues(0);
-
-            var workspaceId = (await dataSource.User.Current).DefaultWorkspaceId;
-            if (!TextFieldInfo.WorkspaceId.HasValue)
-                TextFieldInfo = TextFieldInfo.WithWorkspace(workspaceId);
-            
-            hasAnyTags = (await dataSource.Tags.GetAll()).Any();
-            hasAnyProjects = (await dataSource.Projects.GetAll()).Any();
-        }
-
-        private void onCurrentTime(DateTimeOffset currentTime)
-        {
-            displayedTime = currentTime - StartTime;
-            RaisePropertyChanged(nameof(DisplayedTime));
         }
 
         private async void OnTextFieldInfoChanged()
@@ -452,7 +454,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         private void toggleTaskSuggestions(ProjectSuggestion projectSuggestion)
         {
-            var grouping = Suggestions.FirstOrDefault(s => s.WorkspaceName == projectSuggestion.WorkspaceName);
+            var grouping = Suggestions.FirstOrDefault(s => s.WorkspaceId == projectSuggestion.WorkspaceId);
             if (grouping == null) return;
 
             var suggestionIndex = grouping.IndexOf(projectSuggestion);
@@ -464,7 +466,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             Suggestions.Remove(grouping);
             Suggestions.Insert(groupingIndex,
                 new WorkspaceGroupedCollection<AutocompleteSuggestion>(
-                    grouping.WorkspaceName, getSuggestionsWithTasks(grouping)
+                    grouping.WorkspaceName, grouping.WorkspaceId, getSuggestionsWithTasks(grouping)
                 )
             );
         }
@@ -519,12 +521,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         {
             if (IsDirty)
             {
-                var result = await dialogService.ShowMultipleChoiceDialog(
-                    Resources.ContinueEditing,
-                    new MultipleChoiceDialogAction(Resources.Discard, true)
-                );
-
-                if (result != Resources.Discard)
+                var shouldDiscard = await dialogService.ConfirmDestructiveAction(ActionType.DiscardNewTimeEntry);
+                if (!shouldDiscard)
                     return;
             }
 
@@ -533,24 +531,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         private async Task done()
         {
-            await dataSource.User.Current
-                .Select(user => new StartTimeEntryDTO
-                {
-                    TaskId = TextFieldInfo.TaskId,
-                    StartTime = StartTime,
-                    Duration = Duration,
-                    Billable = IsBillable,
-                    UserId = user.Id,
-                    WorkspaceId = TextFieldInfo.WorkspaceId ?? user.DefaultWorkspaceId,
-                    Description = TextFieldInfo.Text?.Trim() ?? "",
-                    ProjectId = TextFieldInfo.ProjectId,
-                    TagIds = TextFieldInfo.Tags.Select(t => t.TagId).Distinct().ToArray()
-                })
-                .SelectMany(dataSource.TimeEntries.Start)
-                .Do(_ => dataSource.SyncManager.PushSync());
-
-            var origin = userPreferences.IsManualModeEnabled() ? TimeEntryStartOrigin.Manual : TimeEntryStartOrigin.Timer;
-            analyticsService.TrackStartedTimeEntry(origin);
+            await interactorFactory.CreateTimeEntry(this).Execute();
             await navigationService.Close(this);
         }
 
@@ -607,9 +588,9 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 suggestions = suggestions.Where(suggestion => suggestion.WorkspaceId == TextFieldInfo.WorkspaceId);
 
             return suggestions
-                .GroupBy(suggestion => suggestion.WorkspaceName)
+                .GroupBy(suggestion => new { suggestion.WorkspaceName, suggestion.WorkspaceId })
                 .Select(grouping => new WorkspaceGroupedCollection<AutocompleteSuggestion>(
-                    grouping.Key, grouping.Distinct(AutocompleteSuggestionComparer.Instance)));
+                    grouping.Key.WorkspaceName, grouping.Key.WorkspaceId, grouping.Distinct(AutocompleteSuggestionComparer.Instance)));
         }
 
         private async Task setBillableValues(long projectId)

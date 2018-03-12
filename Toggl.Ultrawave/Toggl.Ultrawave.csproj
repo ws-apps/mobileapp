@@ -17,4 +17,14 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>..\bin\Release\</OutputPath>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Condition=" '$(EnableDefaultCompileItems)' == 'true' " Update="Models\ModelConstructors.cs">
+      <DependentUpon>ModelConstructors.tt</DependentUpon>
+    </Compile>
+    <None Remove="Models\ModelConstructors.tt" />
+    <None Include="Models\ModelConstructors.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ModelConstructors.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
 </Project>

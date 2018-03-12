@@ -23,17 +23,21 @@ namespace Toggl.Giskard.Bindings
         protected override void SetValueImpl(View target, int? value)
         {
             if (value == null) return;
-            var marginParams = Target.LayoutParameters as ViewGroup.MarginLayoutParams;
-            if (marginParams == null) return;
 
-            var pixels = (int)value.Value.DpToPixels(AndroidGlobals.ApplicationContext);
+            Target.Post(() =>
+            {
+                var marginParams = Target.LayoutParameters as ViewGroup.MarginLayoutParams;
+                if (marginParams == null) return;
 
-            var top = boundMargin.HasFlag(BoundMargin.Top) ? (int?)pixels : null;
-            var left = boundMargin.HasFlag(BoundMargin.Left) ? (int?)pixels : null;
-            var right = boundMargin.HasFlag(BoundMargin.Right) ? (int?)pixels : null;
-            var bottom = boundMargin.HasFlag(BoundMargin.Bottom) ? (int?)pixels : null;
+                var pixels = (int)value.Value.DpToPixels(AndroidGlobals.ApplicationContext);
 
-            Target.LayoutParameters = marginParams.WithMargins(left, top, right, bottom);
+                var top = boundMargin.HasFlag(BoundMargin.Top) ? (int?)pixels : null;
+                var left = boundMargin.HasFlag(BoundMargin.Left) ? (int?)pixels : null;
+                var right = boundMargin.HasFlag(BoundMargin.Right) ? (int?)pixels : null;
+                var bottom = boundMargin.HasFlag(BoundMargin.Bottom) ? (int?)pixels : null;
+
+                Target.LayoutParameters = marginParams.WithMargins(left, top, right, bottom);
+            });
         }
 
         [Flags]

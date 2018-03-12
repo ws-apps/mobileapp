@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Globalization;
 using Foundation;
-using MvvmCross.Platform.Converters;
 using MvvmCross.Platform.Core;
 using Toggl.Daneel.Extensions;
 using Toggl.Foundation;
@@ -17,9 +15,9 @@ namespace Toggl.Daneel.Views.EditDuration
     {
         private TimeSpan originalDuration;
 
-        private TimeSpan duration;
-
         private bool isEditing;
+
+        private string formattedDuration;
 
         private DurationInputDelegate durationInputDelegate;
 
@@ -27,18 +25,20 @@ namespace Toggl.Daneel.Views.EditDuration
 
         private CTStringAttributes noAttributes;
 
-        public MvxValueConverter<TimeSpan, string> Converter { get; set; }
-
         public event EventHandler DurationChanged;
 
-        public TimeSpan Duration
+        public TimeSpan Duration { get; set; }
+
+        public string FormattedDuration
         {
-            get => duration;
+            get => formattedDuration;
             set
             {
-                duration = value;
-                if (isEditing == false)
-                    showCurrentDuration();
+                formattedDuration = value;
+
+                if (isEditing) return;
+
+                setText(formattedDuration);
             }
         }
 
@@ -95,7 +95,7 @@ namespace Toggl.Daneel.Views.EditDuration
         private void startEditing(object sender, EventArgs e)
         {
             isEditing = true;
-            originalDuration = duration;
+            originalDuration = Duration;
             input = DurationFieldInfo.Empty;
             setText(input.ToString());
         }
@@ -103,7 +103,6 @@ namespace Toggl.Daneel.Views.EditDuration
         private void finishEditing(object sender, EventArgs e)
         {
             isEditing = false;
-            showCurrentDuration();
         }
 
         private void tryUpdate(DurationFieldInfo nextInput)
@@ -119,12 +118,6 @@ namespace Toggl.Daneel.Views.EditDuration
                 DurationChanged.Raise(this);
                 setText(input.ToString());
             }
-        }
-
-        private void showCurrentDuration()
-        {
-            var text = (string)Converter?.Convert(duration, typeof(TimeSpan), null, CultureInfo.CurrentCulture) ?? String.Empty;
-            setText(text);
         }
 
         private void setText(string text)

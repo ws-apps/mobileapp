@@ -1,5 +1,4 @@
 ﻿using MvvmCross.Core.ViewModels;
-using MvvmCross.Platform.UI;
 using Toggl.Multivac;
 using Toggl.PrimeRadiant.Models;
 

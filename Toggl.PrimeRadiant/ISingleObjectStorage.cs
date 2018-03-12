@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Reactive;
-using Toggl.Multivac.Models;
 
 namespace Toggl.PrimeRadiant
 {
     public interface ISingleObjectStorage<TModel> : IRepository<TModel>
-        where TModel : IBaseModel, IDatabaseSyncable
+        where TModel : IDatabaseSyncable
     {
         IObservable<TModel> Single();
         IObservable<Unit> Delete();

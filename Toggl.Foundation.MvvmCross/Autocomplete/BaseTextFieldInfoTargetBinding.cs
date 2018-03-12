@@ -10,7 +10,7 @@ namespace Toggl.Foundation.MvvmCross.Autocomplete
     {
         private bool isSelectingText;
 
-        protected TextFieldInfo TextFieldInfo { get; set; } = TextFieldInfo.Empty;
+        protected TextFieldInfo TextFieldInfo { get; set; }
 
         protected abstract IAutocompleteEventProvider EventProvider { get; }
 

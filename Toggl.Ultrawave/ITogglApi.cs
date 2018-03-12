@@ -14,5 +14,6 @@ namespace Toggl.Ultrawave
         ITimeEntriesApi TimeEntries { get; }
         IWorkspaceFeaturesApi WorkspaceFeatures { get; }
         IProjectsSummaryApi ProjectsSummary { get; }
+        IPreferencesApi Preferences { get; }
     }
 }

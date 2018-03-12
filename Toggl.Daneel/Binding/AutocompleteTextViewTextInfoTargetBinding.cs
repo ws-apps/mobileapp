@@ -4,7 +4,6 @@ using Toggl.Daneel.Autocomplete;
 using Toggl.Daneel.Views;
 using Toggl.Foundation.Autocomplete;
 using Toggl.Foundation.MvvmCross.Autocomplete;
-using UIKit;
 
 namespace Toggl.Daneel.Binding
 {
@@ -14,8 +13,6 @@ namespace Toggl.Daneel.Binding
         private const string selectedTextRangeChangedKey = "selectedTextRange";
 
         private readonly IDisposable selectedTextRangeDisposable;
-
-        private TextFieldInfo textFieldInfo = TextFieldInfo.Empty;
 
         protected override IAutocompleteEventProvider EventProvider { get; }
 

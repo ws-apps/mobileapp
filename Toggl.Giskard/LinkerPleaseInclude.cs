@@ -9,6 +9,8 @@ using MvvmCross.Binding.BindingContext;
 using MvvmCross.Binding.Droid.Target;
 using MvvmCross.Core.Navigation;
 using MvvmCross.Core.ViewModels;
+using V4Space = Android.Support.V4.Widget.Space;
+using Newtonsoft.Json.Converters;
 
 namespace Toggl.Giskard
 {
@@ -72,8 +74,8 @@ namespace Toggl.Giskard
         {
             radioButton.CheckedChange += (sender, args) => radioButton.Checked = args.IsChecked;
         }
-		
-		public void Include(RatingBar ratingBar)
+        
+        public void Include(RatingBar ratingBar)
         {
             ratingBar.RatingBarChange += (sender, args) => ratingBar.Rating = 0 + ratingBar.Rating;
         }
@@ -133,6 +135,45 @@ namespace Toggl.Giskard
         public void Include(MvxCompoundButtonCheckedTargetBinding binding)
         {
             binding = new MvxCompoundButtonCheckedTargetBinding(null, null);
+        }
+
+        public void Include(MvxSeekBarProgressTargetBinding binding)
+        {
+            binding = new MvxSeekBarProgressTargetBinding(null, null);
+        }
+
+        public void Include(FitWindowsFrameLayout layout)
+        {
+            layout = new FitWindowsFrameLayout(null);
+            layout = new FitWindowsFrameLayout(null, null);
+        }
+
+        public void Include(AlertDialogLayout layout)
+        {
+            layout = new AlertDialogLayout(null);
+            layout = new AlertDialogLayout(null, null);
+        }
+
+        public void Include(DialogTitle title)
+        {
+            title = new DialogTitle(null);
+            title = new DialogTitle(null, null);
+            title = new DialogTitle(null, null, 0);
+        }
+        public void Include(V4Space space)
+        {
+            space = new V4Space(null);
+            space = new V4Space(null, null);
+            space = new V4Space(null, null, 0);
+        }
+        public void Include(ButtonBarLayout layout)
+        {
+            layout = new ButtonBarLayout(null, null);
+        }
+      
+        public void Include(StringEnumConverter converter)
+        {
+            converter = new StringEnumConverter(true);
         }
 
         public void Include(ConsoleColor color)

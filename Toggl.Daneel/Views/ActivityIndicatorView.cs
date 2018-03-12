@@ -1,9 +1,8 @@
 ﻿using System;
 using CoreAnimation;
-using CoreGraphics;
 using Foundation;
-using UIKit;
 using Toggl.Daneel.Extensions;
+using UIKit;
 using static Toggl.Foundation.MvvmCross.Helper.Animation;
 using static Toggl.Multivac.Math;
 
@@ -19,6 +18,11 @@ namespace Toggl.Daneel.Views
         {
             get => imageResource;
             set => Image = UIImage.FromBundle(imageResource = value);
+        }
+
+        public ActivityIndicatorView()
+        {
+            init();
         }
 
         public ActivityIndicatorView(IntPtr handle)
@@ -47,7 +51,7 @@ namespace Toggl.Daneel.Views
         private void init()
         {
             Image = UIImage.FromBundle(ImageResource);
-            ContentMode = UIViewContentMode.Center;
+            ContentMode = UIViewContentMode.ScaleAspectFit;
         }
 
         private CAAnimation createAnimation()

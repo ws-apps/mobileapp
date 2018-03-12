@@ -35,7 +35,8 @@ namespace Toggl.Foundation.Sync.States
                 getSinceOrAll(sinceDates.Projects, api.Projects.GetAllSince, api.Projects.GetAll).ConnectedReplay(),
                 getSinceOrAll(sinceDates.TimeEntries, api.TimeEntries.GetAllSince, api.TimeEntries.GetAll).ConnectedReplay(),
                 getSinceOrAll(sinceDates.Tags, api.Tags.GetAllSince, api.Tags.GetAll).ConnectedReplay(),
-                getSinceOrAll(sinceDates.Tasks, api.Tasks.GetAllSince, api.Tasks.GetAll).ConnectedReplay()
+                getSinceOrAll(sinceDates.Tasks, api.Tasks.GetAllSince, api.Tasks.GetAll).ConnectedReplay(),
+                api.Preferences.Get().ConnectedReplay()
             );
 
             observer.OnNext(FetchStarted.Transition(observables));

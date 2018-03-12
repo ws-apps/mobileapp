@@ -58,7 +58,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public IMvxAsyncCommand SaveCommand { get; }
 
-        public IMvxAsyncCommand<string> CreateTagCommand { get; }
+        public IMvxAsyncCommand CreateTagCommand { get; }
 
         public IMvxCommand<SelectableTagViewModel> SelectTagCommand { get; }
 
@@ -72,7 +72,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
             CloseCommand = new MvxAsyncCommand(close);
             SaveCommand = new MvxAsyncCommand(save);
-            CreateTagCommand = new MvxAsyncCommand<string>(createTag);
+            CreateTagCommand = new MvxAsyncCommand(createTag);
             SelectTagCommand = new MvxCommand<SelectableTagViewModel>(selectTag);
         }
 
@@ -138,9 +138,9 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 selectedTagIds.Remove(tag.Id);
         }
 
-        private async Task createTag(string name)
+        private async Task createTag()
         {
-            var createdTag = await dataSource.Tags.Create(name.Trim(), workspaceId);
+            var createdTag = await dataSource.Tags.Create(Text.Trim(), workspaceId);
             selectedTagIds.Add(createdTag.Id);
             Text = "";
 

@@ -73,6 +73,7 @@ namespace Toggl.Foundation
             var persistWorkspaceFeatures = new PersistWorkspacesFeaturesState(database.WorkspaceFeatures, database.SinceParameters);
             var persistTags = new PersistTagsState(database.Tags, database.SinceParameters);
             var persistClients = new PersistClientsState(database.Clients, database.SinceParameters);
+            var persistPreferences = new PersistPreferencesState(dataSource.Preferences, database.SinceParameters);
             var persistProjects = new PersistProjectsState(database.Projects, database.SinceParameters);
             var persistTimeEntries = new PersistTimeEntriesState(dataSource.TimeEntries, database.SinceParameters, timeService);
             var persistTasks = new PersistTasksState(database.Tasks, database.SinceParameters);
@@ -82,7 +83,8 @@ namespace Toggl.Foundation
             transitions.ConfigureTransition(entryPoint, fetchAllSince.Start);
             transitions.ConfigureTransition(fetchAllSince.FetchStarted, persistWorkspaces.Start);
             transitions.ConfigureTransition(persistWorkspaces.FinishedPersisting, persistWorkspaceFeatures.Start);
-            transitions.ConfigureTransition(persistWorkspaceFeatures.FinishedPersisting, persistTags.Start);
+            transitions.ConfigureTransition(persistWorkspaceFeatures.FinishedPersisting, persistPreferences.Start);
+            transitions.ConfigureTransition(persistPreferences.FinishedPersisting, persistTags.Start);
             transitions.ConfigureTransition(persistTags.FinishedPersisting, persistClients.Start);
             transitions.ConfigureTransition(persistClients.FinishedPersisting, persistProjects.Start);
             transitions.ConfigureTransition(persistProjects.FinishedPersisting, persistTasks.Start);
@@ -90,6 +92,7 @@ namespace Toggl.Foundation
 
             transitions.ConfigureTransition(persistWorkspaces.Failed, checkServerStatus.Start);
             transitions.ConfigureTransition(persistWorkspaceFeatures.Failed, checkServerStatus.Start);
+            transitions.ConfigureTransition(persistPreferences.Failed, checkServerStatus.Start);
             transitions.ConfigureTransition(persistTags.Failed, checkServerStatus.Start);
             transitions.ConfigureTransition(persistClients.Failed, checkServerStatus.Start);
             transitions.ConfigureTransition(persistProjects.Failed, checkServerStatus.Start);
@@ -112,7 +115,8 @@ namespace Toggl.Foundation
             IObservable<Unit> delayCancellation)
         {
             var pushingUsersFinished = configurePushTransitionsForUsers(transitions, database, api, scheduler, entryPoint, delayCancellation);
-            var pushingTagsFinished = configurePushTransitionsForTags(transitions, database, api, scheduler, pushingUsersFinished, delayCancellation);
+            var pushingPreferencesFinished = configurePushTransitionsForPreferences(transitions, database, api, scheduler, pushingUsersFinished, delayCancellation);
+            var pushingTagsFinished = configurePushTransitionsForTags(transitions, database, api, scheduler, pushingPreferencesFinished, delayCancellation);
             var pushingClientsFinished = configurePushTransitionsForClients(transitions, database, api, scheduler, pushingTagsFinished, delayCancellation);
             var pushingProjectsFinished = configurePushTransitionsForProjects(transitions, database, api, scheduler, pushingClientsFinished, delayCancellation);
             configurePushTransitionsForTimeEntries(transitions, database, api, dataSource, apiDelay, scheduler, pushingProjectsFinished, delayCancellation);
@@ -231,6 +235,29 @@ namespace Toggl.Foundation
             var update = new UpdateUserState(api, database.User);
             var tryResolveClientError = new TryResolveClientErrorState<IDatabaseUser>();
             var unsyncable = new UnsyncableUserState(database.User);
+            var checkServerStatus = new CheckServerStatusState(api, scheduler, apiDelay, statusDelay, delayCancellation);
+            var finished = new ResetAPIDelayState(apiDelay);
+
+            return configureUpdateOnlyPush(transitions, entryPoint, push, pushOne, update, tryResolveClientError, unsyncable, checkServerStatus, finished);
+        }
+
+        private static IStateResult configurePushTransitionsForPreferences(
+            TransitionHandlerProvider transitions,
+            ITogglDatabase database,
+            ITogglApi api,
+            IScheduler scheduler,
+            IStateResult entryPoint,
+            IObservable<Unit> delayCancellation)
+        {
+            var rnd = new Random();
+            var apiDelay = new RetryDelayService(rnd);
+            var statusDelay = new RetryDelayService(rnd);
+
+            var push = new PushPreferencesState(database.Preferences);
+            var pushOne = new PushOneEntityState<IDatabasePreferences>();
+            var update = new UpdatePreferencesState(api, database.Preferences);
+            var tryResolveClientError = new TryResolveClientErrorState<IDatabasePreferences>();
+            var unsyncable = new UnsyncablePreferencesState(database.Preferences);
             var checkServerStatus = new CheckServerStatusState(api, scheduler, apiDelay, statusDelay, delayCancellation);
             var finished = new ResetAPIDelayState(apiDelay);
 

@@ -24,7 +24,7 @@ namespace Toggl.Giskard
             base.OnCreate(bundle);
 
             Microsoft.AppCenter.AppCenter.Start(
-                {TOGGL_APP_CENTER_ID_DROID},
+                "{TOGGL_APP_CENTER_ID_DROID}",
                 typeof(Microsoft.AppCenter.Crashes.Crashes));
         }
         #endif

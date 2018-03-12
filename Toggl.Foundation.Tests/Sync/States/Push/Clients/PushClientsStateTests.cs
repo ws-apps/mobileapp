@@ -3,6 +3,7 @@ using System.Reactive.Linq;
 using NSubstitute;
 using Toggl.Foundation.Models;
 using Toggl.Foundation.Sync.States;
+using Toggl.Foundation.Tests.Mocks;
 using Toggl.PrimeRadiant;
 using Toggl.PrimeRadiant.Models;
 
@@ -21,7 +22,7 @@ namespace Toggl.Foundation.Tests.Sync.States.Push
                 => new PushClientsState(repository);
 
             protected override IDatabaseClient CreateUnsyncedEntity(DateTimeOffset lastUpdate = default(DateTimeOffset))
-                => Client.Dirty(new Ultrawave.Models.Client { At = lastUpdate });
+                => Client.Dirty(new MockClient { At = lastUpdate });
 
             protected override void SetupRepositoryToReturn(IRepository<IDatabaseClient> repository, IDatabaseClient[] entities)
             {

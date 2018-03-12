@@ -66,13 +66,24 @@ private Action GenerateApk(string configuration)
     return () => MSBuild(droidProject, buildSettings);
 }
 
-//Temporary variable replacement
 private string GetCommitHash()
 {   
     IEnumerable<string> redirectedOutput;
     StartProcess("git", new ProcessSettings
     {
         Arguments = "rev-parse HEAD",
+        RedirectStandardOutput = true
+    }, out redirectedOutput);
+
+    return redirectedOutput.Last();
+}
+
+private string GetCommitCount()
+{   
+    IEnumerable<string> redirectedOutput;
+    StartProcess("git", new ProcessSettings
+    {
+        Arguments = "rev-list --count HEAD",
         RedirectStandardOutput = true
     }, out redirectedOutput);
 
@@ -147,6 +158,46 @@ private TemporaryFileTransformation GetIosCrashConfigurationTransformation()
     };
 }
 
+private TemporaryFileTransformation GetAndroidGoogleServicesTransformation()
+{
+    const string path = "Toggl.Giskard/google-services.json";
+    var apiKey = EnvironmentVariable("TOGGL_DROID_GOOGLE_SERVICES_API_KEY");
+    var clientId = EnvironmentVariable("TOGGL_DROID_GOOGLE_SERVICES_CLIENT_ID");
+    var mobileSdkAppId = EnvironmentVariable("TOGGL_DROID_GOOGLE_SERVICES_MOBILE_SDK_APP_ID");
+    var projectNumber = EnvironmentVariable("TOGGL_DROID_GOOGLE_SERVICES_PROJECT_NUMBER");
+    var projectId = EnvironmentVariable("TOGGL_DROID_GOOGLE_SERVICES_PROJECT_ID");
+
+    var filePath = GetFiles(path).Single();
+    var file = TransformTextFile(filePath).ToString();
+
+    return new TemporaryFileTransformation
+    { 
+        Path = path, 
+        Original = file,
+        Temporary = file.Replace("{TOGGL_DROID_GOOGLE_SERVICES_API_KEY}", apiKey)
+                        .Replace("{TOGGL_DROID_GOOGLE_SERVICES_CLIENT_ID}", clientId)
+                        .Replace("{TOGGL_DROID_GOOGLE_SERVICES_MOBILE_SDK_APP_ID}", mobileSdkAppId)
+                        .Replace("{TOGGL_DROID_GOOGLE_SERVICES_PROJECT_NUMBER}", projectNumber)
+                        .Replace("{TOGGL_DROID_GOOGLE_SERVICES_PROJECT_ID}", projectId)
+    };
+}
+
+private TemporaryFileTransformation GetAndroidGoogleLoginTransformation()
+{
+    const string path = "Toggl.Giskard/Services/GoogleService.cs";
+    var clientId = EnvironmentVariable("TOGGL_DROID_GOOGLE_SERVICES_CLIENT_ID");
+
+    var filePath = GetFiles(path).Single();
+    var file = TransformTextFile(filePath).ToString();
+
+    return new TemporaryFileTransformation
+    { 
+        Path = path, 
+        Original = file,
+        Temporary = file.Replace("{TOGGL_DROID_GOOGLE_SERVICES_CLIENT_ID}", clientId)
+    };
+}
+
 private TemporaryFileTransformation GetDroidCrashConfigurationTransformation()
 {
     const string path = "Toggl.Giskard/Startup/SplashScreen.cs";
@@ -167,6 +218,7 @@ private TemporaryFileTransformation GetIosInfoConfigurationTransformation()
 {
     const string path = "Toggl.Daneel/Info.plist";
 
+    var commitCount = GetCommitCount();
     var reversedClientId = EnvironmentVariable("TOGGL_REVERSED_CLIENT_ID");
     var filePath = GetFiles(path).Single();
     var file = TransformTextFile(filePath).ToString();
@@ -176,6 +228,7 @@ private TemporaryFileTransformation GetIosInfoConfigurationTransformation()
         Path = path, 
         Original = file,
         Temporary = file.Replace("{TOGGL_REVERSED_CLIENT_ID}", reversedClientId)
+                        .Replace("IOS_BUNDLE_VERSION", commitCount)
     };
 }
 
@@ -201,7 +254,16 @@ var transformations = new List<TemporaryFileTransformation>
     GetDroidCrashConfigurationTransformation(),
     GetIntegrationTestsConfigurationTransformation(),
     GetIosAnalyticsServicesConfigurationTransformation(),
-    GetAndroidProjectConfigurationTransformation()
+    GetAndroidProjectConfigurationTransformation(),
+    GetAndroidGoogleServicesTransformation(),
+    GetAndroidGoogleLoginTransformation()
+};
+
+private HashSet<string> targetsThatSkipTearDown = new HashSet<string>
+{
+    "Build.Release.iOS.AdHoc",
+    "Build.Release.iOS.AppStore",
+    "Build.Release.Android.AdHoc"
 };
 
 private string[] GetUnitTestProjects() => new []
@@ -224,9 +286,9 @@ private string[] GetIntegrationTestProjects()
 Setup(context => transformations.ForEach(transformation => System.IO.File.WriteAllText(transformation.Path, transformation.Temporary)));
 Teardown(context =>
 {
-    if (target == "Build.Release.iOS.AppStore" ||
-        target == "Build.Release.Android.AdHoc")
+    if (targetsThatSkipTearDown.Contains(target))
         return;
+
     transformations.ForEach(transformation => System.IO.File.WriteAllText(transformation.Path, transformation.Original));
 });
 

@@ -48,24 +48,6 @@ your time usage</value>
     <data name="LoginForgotPassword">
         <value>Forgot your password?</value>
     </data>
-    <data name="TimeEntriesLogEmptyStateTitle">
-        <value>Nothing here...</value>
-    </data>
-    <data name="TimeEntriesLogEmptyStateText">
-        <value>You haven’t tracked time for a while.
-Start the timer and your time entry log
-will appear here.</value>
-    </data>
-    <data name="TimeEntriesLogEmptyStateButton">
-        <value> See older entries </value>
-    </data>
-    <data name="TimeEntriesLogEmptyStateWelcomeTitle">
-        <value>Nothing here yet</value>
-    </data>
-    <data name="TimeEntriesLogEmptyStateWelcomeText">
-        <value>Start the timer and your time entry log
-will appear here.</value>
-    </data>
     <data name="Today">
         <value>Today</value>
     </data>
@@ -106,6 +88,9 @@ Please try again.</value>
     <data name="SettingsDialogButtonSignOut">
         <value>Sign out</value>
     </data>
+    <data name="UnitHour">
+        <value>h</value>
+    </data>
     <data name="UnitMin">
         <value>min</value>
     </data>
@@ -113,7 +98,7 @@ Please try again.</value>
         <value>sec</value>
     </data>
     <data name="SuggestionsHeader">
-        <value>Working on these tasks?</value>
+        <value>WORKING ON THESE?</value>
     </data>
     <data name="AddDescription">
         <value>Add description</value>
@@ -139,10 +124,10 @@ Please try again.</value>
     <data name="ReleaseToRefresh">
         <value>Release to Refresh</value>
     </data>
-    <data name="SuggestionsEmptyStateTitle">
+    <data name="LogEmptyStateTitle">
         <value>Welcome back!</value>
     </data>
-    <data name="SuggestionsEmptyStateText">
+    <data name="LogEmptyStateText">
         <value>You haven’t tracked time for a while.
 Start the timer and your most used
 time entries will appear here.</value>
@@ -320,5 +305,23 @@ account is not set up</value>
     </data>
     <data name="Continue">
         <value>Continue</value>
+    </data>
+    <data name="Loading">
+        <value>Loading...</value>
+    </data>
+    <data name="DeleteThisTimeEntry">
+        <value>Delete this time entry?</value>
+    </data>
+    <data name="DiscardThisTimeEntry">
+        <value>Discard this time entry?</value>
+    </data>
+     <data name="DurationFormatClassic">
+        <value>Classic (47:06 min)</value>
+    </data>
+     <data name="DurationFormatImproved">
+        <value>Improved (0:47:06)</value>
+    </data>
+     <data name="DurationFormatDecimal">
+        <value>Decimal (0.79 h)</value>
     </data>
 </root>

@@ -4,24 +4,13 @@
     android:background="@color/lightGray"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <android.support.v4.widget.NestedScrollView
+    <toggl.giskard.views.MainRecyclerView
+        local:MvxBind="ItemsSource TimeEntriesLogViewModel.TimeEntries; SuggestionsViewModel SuggestionsViewModel; TimeEntriesLogViewModel TimeEntriesLogViewModel"
+        local:MvxTemplateSelector="@string/MainTemplateSelector"
+        android:scrollbars="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="?attr/actionBarSize">
-        <RelativeLayout
-            android:layout_height="match_parent"
-            android:layout_width="match_parent">
-            <FrameLayout
-                android:id="@+id/MainSuggestionsContainer"
-                android:layout_height="130dp"
-                android:layout_width="match_parent" />
-            <FrameLayout
-                android:id="@+id/MainTimeEntriesLogContainer"
-                android:layout_below="@id/MainSuggestionsContainer"
-                android:layout_height="match_parent"
-                android:layout_width="match_parent" />
-        </RelativeLayout>
-    </android.support.v4.widget.NestedScrollView>
+        android:layout_marginTop="?attr/actionBarSize" />
     <include
         layout="@layout/MainRunningTimeEntry" />
     <android.support.design.widget.FloatingActionButton

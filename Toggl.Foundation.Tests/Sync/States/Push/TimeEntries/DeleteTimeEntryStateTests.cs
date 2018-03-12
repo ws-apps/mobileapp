@@ -3,6 +3,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using Toggl.Foundation.Models;
 using Toggl.Foundation.Sync.States;
+using Toggl.Foundation.Tests.Mocks;
 using Toggl.Multivac.Models;
 using Toggl.PrimeRadiant;
 using Toggl.PrimeRadiant.Models;
@@ -20,10 +21,10 @@ namespace Toggl.Foundation.Tests.Sync.States
         private class TheStartMethod : TheStartMethod<IDatabaseTimeEntry, ITimeEntry>
         {
             protected override IDatabaseTimeEntry CreateDirtyEntityWithNegativeId()
-                => TimeEntry.Dirty(new Ultrawave.Models.TimeEntry { Id = -123, Description = Guid.NewGuid().ToString() });
+                => TimeEntry.Dirty(new MockTimeEntry { Id = -123, Description = Guid.NewGuid().ToString() });
 
             protected override IDatabaseTimeEntry CreateCleanWithPositiveIdFrom(IDatabaseTimeEntry entity)
-                => TimeEntry.Clean(new Ultrawave.Models.TimeEntry { Id = 456, Description = entity.Description });
+                => TimeEntry.Clean(new MockTimeEntry { Id = 456, Description = entity.Description });
 
             protected override IDatabaseTimeEntry CreateCleanEntityFrom(IDatabaseTimeEntry entity)
                 => TimeEntry.Clean(entity);

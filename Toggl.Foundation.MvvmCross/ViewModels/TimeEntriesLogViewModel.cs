@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 using MvvmCross.Core.Navigation;
 using MvvmCross.Core.ViewModels;
 using PropertyChanged;
-using Toggl.Foundation.Analytics;
 using Toggl.Foundation.DataSources;
 using Toggl.Foundation.DTOs;
+using Toggl.Foundation.Interactors;
 using Toggl.Foundation.MvvmCross.Collections;
+using Toggl.Foundation.MvvmCross.ViewModels.Hints;
 using Toggl.Multivac;
 using Toggl.Multivac.Extensions;
 using Toggl.PrimeRadiant.Models;
@@ -24,33 +25,23 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         private readonly ITimeService timeService;
         private readonly ITogglDataSource dataSource;
-        private readonly IAnalyticsService analyticsService;
+        private readonly IInteractorFactory interactorFactory;
         private readonly IOnboardingStorage onboardingStorage;
         private readonly IMvxNavigationService navigationService;
 
         private bool areContineButtonsEnabled = true;
 
-        public bool IsWelcome { get; private set; }
+        private DurationFormat durationFormat;
 
         public NestableObservableCollection<TimeEntryViewModelCollection, TimeEntryViewModel> TimeEntries { get; }
             = new NestableObservableCollection<TimeEntryViewModelCollection, TimeEntryViewModel>(
-                newTimeEntry => vm => vm.Start < newTimeEntry.Start
+                newTimeEntry => vm => vm.StartTime < newTimeEntry.StartTime
             );
 
         [DependsOn(nameof(TimeEntries))]
         public bool IsEmpty => !TimeEntries.Any();
 
-        [DependsOn(nameof(IsWelcome))]
-        public string EmptyStateTitle
-            => IsWelcome
-            ? Resources.TimeEntriesLogEmptyStateWelcomeTitle
-            : Resources.TimeEntriesLogEmptyStateTitle;
-
-        [DependsOn(nameof(IsWelcome))]
-        public string EmptyStateText
-            => IsWelcome
-            ? Resources.TimeEntriesLogEmptyStateWelcomeText
-            : Resources.TimeEntriesLogEmptyStateText;
+        public bool IsWelcome { get; private set; }
 
         public IMvxAsyncCommand<TimeEntryViewModel> EditCommand { get; }
 
@@ -58,22 +49,22 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public MvxAsyncCommand<TimeEntryViewModel> ContinueTimeEntryCommand { get; }
 
-        public TimeEntriesLogViewModel(ITogglDataSource dataSource,
-                                       ITimeService timeService,
-                                       IAnalyticsService analyticsService,
+        public TimeEntriesLogViewModel(ITimeService timeService,
+                                       ITogglDataSource dataSource,
+                                       IInteractorFactory interactorFactory,
                                        IOnboardingStorage onboardingStorage,
                                        IMvxNavigationService navigationService)
         {
             Ensure.Argument.IsNotNull(dataSource, nameof(dataSource));
             Ensure.Argument.IsNotNull(timeService, nameof(timeService));
-            Ensure.Argument.IsNotNull(analyticsService, nameof(analyticsService));
+            Ensure.Argument.IsNotNull(interactorFactory, nameof(interactorFactory));
             Ensure.Argument.IsNotNull(onboardingStorage, nameof(onboardingStorage));
             Ensure.Argument.IsNotNull(navigationService, nameof(navigationService));
 
             this.dataSource = dataSource;
             this.timeService = timeService;
-            this.analyticsService = analyticsService;
             this.onboardingStorage = onboardingStorage;
+            this.interactorFactory = interactorFactory;
             this.navigationService = navigationService;
 
             EditCommand = new MvxAsyncCommand<TimeEntryViewModel>(edit);
@@ -84,6 +75,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         public override async Task Initialize()
         {
             await base.Initialize();
+
+            IsWelcome = onboardingStorage.IsNewUser();
 
             await reset();
 
@@ -104,12 +97,15 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 timeService.MidnightObservable
                     .Subscribe(onMidnight);
 
-            IsWelcome = onboardingStorage.IsNewUser();
+            var preferencesDisposable =
+                dataSource.Preferences.Current
+                    .Subscribe(onPreferencesChanged);
 
             disposeBag.Add(createDisposable);
             disposeBag.Add(updateDisposable);
             disposeBag.Add(deleteDisposable);
             disposeBag.Add(midnightDisposable);
+            disposeBag.Add(preferencesDisposable);
         }
 
         private async Task reset()
@@ -123,9 +119,9 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             timeEntries
                 .Where(isNotRunning)
                 .OrderByDescending(te => te.Start)
-                .Select(te => new TimeEntryViewModel(te))
-                .GroupBy(te => te.Start.LocalDateTime.Date)
-                .Select(grouping => new TimeEntryViewModelCollection(grouping.Key, grouping))
+                .Select(te => new TimeEntryViewModel(te, durationFormat))
+                .GroupBy(te => te.StartTime.LocalDateTime.Date)
+                .Select(grouping => new TimeEntryViewModelCollection(grouping.Key, grouping, durationFormat))
                 .ForEach(addTimeEntries);
         }
 
@@ -159,7 +155,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 var timeEntryExistsInTheCollection = timeEntryIndex >= 0;
                 if (timeEntryExistsInTheCollection)
                 {
-                    var timeEntryViewModel = new TimeEntryViewModel(timeEntry);
+                    var timeEntryViewModel = new TimeEntryViewModel(timeEntry, durationFormat);
                     TimeEntries.ReplaceInChildCollection(collectionIndex, timeEntryIndex, timeEntryViewModel);
                     return;
                 }
@@ -173,7 +169,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             IsWelcome = false;
 
             var indexDate = timeEntry.Start.LocalDateTime.Date;
-            var timeEntryViewModel = new TimeEntryViewModel(timeEntry);
+            var timeEntryViewModel = new TimeEntryViewModel(timeEntry, durationFormat);
 
             var collectionIndex = TimeEntries.IndexOf(x => x.Date == indexDate);
             if (collectionIndex >= 0)
@@ -182,7 +178,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 return;
             }
 
-            var newCollection = new TimeEntryViewModelCollection(indexDate, new[] { timeEntryViewModel });
+            var newCollection = new TimeEntryViewModelCollection(indexDate, new[] { timeEntryViewModel }, durationFormat);
             var foundIndex = TimeEntries.IndexOf(TimeEntries.FirstOrDefault(x => x.Date < indexDate));
             var indexToInsert = foundIndex == -1 ? TimeEntries.Count : foundIndex;
             TimeEntries.Insert(indexToInsert, newCollection);
@@ -200,15 +196,25 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             RaisePropertyChanged(nameof(IsEmpty));
         }
 
-        private void OnIsWelcomeChanged()
+        private void onMidnight(DateTimeOffset midnight)
         {
-            if (IsWelcome) return;
-
-            onboardingStorage.SetIsNewUser(false);
+            ChangePresentation(new ReloadLogHint());
         }
 
-        private async void onMidnight(DateTimeOffset midnight)
-            => await reset();
+        private void onPreferencesChanged(IDatabasePreferences preferences)
+        {
+            durationFormat = preferences.DurationFormat;
+
+            foreach (var collection in TimeEntries)
+            {
+                collection.DurationFormat = durationFormat;
+
+                foreach (var timeEntry in collection)
+                {
+                    timeEntry.DurationFormat = durationFormat;
+                }
+            }
+        }
 
         private bool isNotRunning(IDatabaseTimeEntry timeEntry) => !timeEntry.IsRunning();
 
@@ -217,7 +223,10 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         private async Task delete(TimeEntryViewModel timeEntryViewModel)
         {
-            await dataSource.TimeEntries.Delete(timeEntryViewModel.Id);
+            await dataSource
+                .TimeEntries
+                .Delete(timeEntryViewModel.Id)
+                .Do(_ => dataSource.SyncManager.PushSync());
         }
 
         private async Task continueTimeEntry(TimeEntryViewModel timeEntryViewModel)
@@ -225,28 +234,21 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             areContineButtonsEnabled = false;
             ContinueTimeEntryCommand.RaiseCanExecuteChanged();
 
-            await dataSource.User
-                .Current
-                .Select(user => new StartTimeEntryDTO
-                {
-                    UserId = user.Id,
-                    TaskId = timeEntryViewModel.TaskId,
-                    WorkspaceId = timeEntryViewModel.WorkspaceId,
-                    Billable = timeEntryViewModel.Billable,
-                    StartTime = timeService.CurrentDateTime,
-                    ProjectId = timeEntryViewModel.ProjectId,
-                    Description = timeEntryViewModel.Description,
-                    TagIds = timeEntryViewModel.TagIds
-                })
-                .SelectMany(dataSource.TimeEntries.Start)
-                .Do(_ => dataSource.SyncManager.PushSync())
+            await interactorFactory
+                .ContinueTimeEntry(timeEntryViewModel)
+                .Execute()
                 .Do(_ =>
                 {
                     areContineButtonsEnabled = true;
                     ContinueTimeEntryCommand.RaiseCanExecuteChanged();
                 });
+        }
 
-            analyticsService.TrackStartedTimeEntry(TimeEntryStartOrigin.Continue);
+        private void OnIsWelcomeChanged()
+        {
+            if (IsWelcome) return;
+
+            onboardingStorage.SetIsNewUser(false);
         }
     }
 }

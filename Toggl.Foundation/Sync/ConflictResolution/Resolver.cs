@@ -15,6 +15,9 @@ namespace Toggl.Foundation.Sync.ConflictResolution
         public static IConflictResolver<IDatabaseWorkspace> ForWorkspaces()
             => new PreferNewer<IDatabaseWorkspace>(new WorkspaceSyncSelector());
 
+        internal static IConflictResolver<IDatabasePreferences> ForPreferences()
+            => new OverwriteUnlessNeedsSync<IDatabasePreferences>();
+
         public static IConflictResolver<IDatabaseWorkspaceFeatureCollection> ForWorkspaceFeatures()
             => new AlwaysOverwrite<IDatabaseWorkspaceFeatureCollection>();
 

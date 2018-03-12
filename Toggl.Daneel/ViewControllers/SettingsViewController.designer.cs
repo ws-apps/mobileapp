@@ -19,6 +19,27 @@ namespace Toggl.Daneel.ViewControllers
 		UIKit.UIView AddMobileTagView { get; set; }
 
 		[Outlet]
+		UIKit.UILabel BeginningOfWeekLabel { get; set; }
+
+		[Outlet]
+		UIKit.UIView BeginningOfWeekView { get; set; }
+
+		[Outlet]
+		UIKit.UIView ControlsContainerView { get; set; }
+
+		[Outlet]
+		UIKit.UILabel DateFormatLabel { get; set; }
+
+		[Outlet]
+		UIKit.UIView DateFormatView { get; set; }
+
+		[Outlet]
+		UIKit.UILabel DurationFormatLabel { get; set; }
+
+		[Outlet]
+		UIKit.UIView DurationFormatView { get; set; }
+
+		[Outlet]
 		UIKit.UILabel EmailLabel { get; set; }
 
 		[Outlet]
@@ -26,6 +47,12 @@ namespace Toggl.Daneel.ViewControllers
 
 		[Outlet]
 		UIKit.UIView FeedbackView { get; set; }
+
+		[Outlet]
+		UIKit.UIView FormatSettingsSection { get; set; }
+
+		[Outlet]
+		UIKit.UILabel FormatSettingsTitle { get; set; }
 
 		[Outlet]
 		UIKit.UIView HelpView { get; set; }
@@ -45,6 +72,12 @@ namespace Toggl.Daneel.ViewControllers
 		[Outlet]
 		[GeneratedCode ("iOS Designer", "1.0")]
 		UIKit.UIButton LogoutButton { get; set; }
+
+		[Outlet]
+		UIKit.UIView LogoutContainerView { get; set; }
+
+		[Outlet]
+		UIKit.NSLayoutConstraint LogoutTopConstraint { get; set; }
 
 		[Outlet]
 		UIKit.UISwitch ManualModeSwitch { get; set; }
@@ -105,16 +138,6 @@ namespace Toggl.Daneel.ViewControllers
 		
 		void ReleaseDesignerOutlets ()
 		{
-			if (LoggingOutActivityIndicatorView != null) {
-				LoggingOutActivityIndicatorView.Dispose ();
-				LoggingOutActivityIndicatorView = null;
-			}
-
-			if (SyncingActivityIndicatorView != null) {
-				SyncingActivityIndicatorView.Dispose ();
-				SyncingActivityIndicatorView = null;
-			}
-
 			if (AddMobileTagSwitch != null) {
 				AddMobileTagSwitch.Dispose ();
 				AddMobileTagSwitch = null;
@@ -123,6 +146,41 @@ namespace Toggl.Daneel.ViewControllers
 			if (AddMobileTagView != null) {
 				AddMobileTagView.Dispose ();
 				AddMobileTagView = null;
+			}
+
+			if (BeginningOfWeekLabel != null) {
+				BeginningOfWeekLabel.Dispose ();
+				BeginningOfWeekLabel = null;
+			}
+
+			if (BeginningOfWeekView != null) {
+				BeginningOfWeekView.Dispose ();
+				BeginningOfWeekView = null;
+			}
+
+			if (ControlsContainerView != null) {
+				ControlsContainerView.Dispose ();
+				ControlsContainerView = null;
+			}
+
+			if (DateFormatLabel != null) {
+				DateFormatLabel.Dispose ();
+				DateFormatLabel = null;
+			}
+
+			if (DateFormatView != null) {
+				DateFormatView.Dispose ();
+				DateFormatView = null;
+			}
+
+			if (DurationFormatLabel != null) {
+				DurationFormatLabel.Dispose ();
+				DurationFormatLabel = null;
+			}
+
+			if (DurationFormatView != null) {
+				DurationFormatView.Dispose ();
+				DurationFormatView = null;
 			}
 
 			if (EmailLabel != null) {
@@ -140,9 +198,24 @@ namespace Toggl.Daneel.ViewControllers
 				FeedbackView = null;
 			}
 
+			if (FormatSettingsSection != null) {
+				FormatSettingsSection.Dispose ();
+				FormatSettingsSection = null;
+			}
+
+			if (FormatSettingsTitle != null) {
+				FormatSettingsTitle.Dispose ();
+				FormatSettingsTitle = null;
+			}
+
 			if (HelpView != null) {
 				HelpView.Dispose ();
 				HelpView = null;
+			}
+
+			if (LoggingOutActivityIndicatorView != null) {
+				LoggingOutActivityIndicatorView.Dispose ();
+				LoggingOutActivityIndicatorView = null;
 			}
 
 			if (LoggingOutIndicator != null) {
@@ -163,6 +236,26 @@ namespace Toggl.Daneel.ViewControllers
 			if (LogoutButton != null) {
 				LogoutButton.Dispose ();
 				LogoutButton = null;
+			}
+
+			if (LogoutContainerView != null) {
+				LogoutContainerView.Dispose ();
+				LogoutContainerView = null;
+			}
+
+			if (LogoutTopConstraint != null) {
+				LogoutTopConstraint.Dispose ();
+				LogoutTopConstraint = null;
+			}
+
+			if (ManualModeSwitch != null) {
+				ManualModeSwitch.Dispose ();
+				ManualModeSwitch = null;
+			}
+
+			if (ManualModeView != null) {
+				ManualModeView.Dispose ();
+				ManualModeView = null;
 			}
 
 			if (PlanLabel != null) {
@@ -193,6 +286,11 @@ namespace Toggl.Daneel.ViewControllers
 			if (SyncedView != null) {
 				SyncedView.Dispose ();
 				SyncedView = null;
+			}
+
+			if (SyncingActivityIndicatorView != null) {
+				SyncingActivityIndicatorView.Dispose ();
+				SyncingActivityIndicatorView = null;
 			}
 
 			if (SyncingIndicator != null) {
@@ -243,16 +341,6 @@ namespace Toggl.Daneel.ViewControllers
 			if (WorkspaceView != null) {
 				WorkspaceView.Dispose ();
 				WorkspaceView = null;
-			}
-
-			if (ManualModeView != null) {
-				ManualModeView.Dispose ();
-				ManualModeView = null;
-			}
-
-			if (ManualModeSwitch != null) {
-				ManualModeSwitch.Dispose ();
-				ManualModeSwitch = null;
 			}
 		}
 	}

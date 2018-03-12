@@ -1,38 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13527"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <tableViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" selectionStyle="blue" indentationWidth="10" id="cZE-iV-UFb" customClass="TimeEntriesLogHeaderViewCell">
-            <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+            <rect key="frame" x="0.0" y="0.0" width="320" height="48"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="cZE-iV-UFb" id="bXr-n9-RqK">
-                <rect key="frame" x="0.0" y="0.0" width="320" height="42.5"/>
+                <rect key="frame" x="0.0" y="0.0" width="320" height="47.5"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="saT-uc-ZAb">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="1"/>
-                        <color key="backgroundColor" red="0.90980392160000001" green="0.90980392160000001" blue="0.90980392160000001" alpha="1" colorSpace="calibratedRGB"/>
-                        <constraints>
-                            <constraint firstAttribute="height" constant="1" id="3qv-ds-lEq"/>
-                        </constraints>
-                    </view>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tue, 14 Mar" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tyu-W1-TKI">
-                        <rect key="frame" x="17" y="15" width="87" height="20"/>
-                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Today" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tyu-W1-TKI">
+                        <rect key="frame" x="16" y="22" width="42.5" height="18"/>
+                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="15"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="5:25:00" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="owW-pl-RR0">
-                        <rect key="frame" x="252.5" y="17" width="52.5" height="17"/>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0:00:00" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="owW-pl-RR0">
+                        <rect key="frame" x="250" y="23" width="54" height="17"/>
                         <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
@@ -41,12 +34,9 @@
             </tableViewCellContentView>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
             <constraints>
-                <constraint firstItem="saT-uc-ZAb" firstAttribute="leading" secondItem="cZE-iV-UFb" secondAttribute="leading" id="EFs-gm-Qz8"/>
-                <constraint firstAttribute="bottom" secondItem="owW-pl-RR0" secondAttribute="bottom" constant="9" id="aC1-uP-wqt"/>
-                <constraint firstItem="tyu-W1-TKI" firstAttribute="leading" secondItem="cZE-iV-UFb" secondAttribute="leading" constant="17" id="ffF-mt-pUB"/>
-                <constraint firstAttribute="trailing" secondItem="saT-uc-ZAb" secondAttribute="trailing" id="kaY-FS-SOh"/>
-                <constraint firstAttribute="trailing" secondItem="owW-pl-RR0" secondAttribute="trailing" constant="15" id="mBf-HK-IaP"/>
-                <constraint firstItem="saT-uc-ZAb" firstAttribute="top" secondItem="cZE-iV-UFb" secondAttribute="top" id="nip-Or-AoK"/>
+                <constraint firstAttribute="bottom" secondItem="owW-pl-RR0" secondAttribute="bottom" constant="8" id="aC1-uP-wqt"/>
+                <constraint firstItem="tyu-W1-TKI" firstAttribute="leading" secondItem="cZE-iV-UFb" secondAttribute="leading" constant="16" id="ffF-mt-pUB"/>
+                <constraint firstAttribute="trailing" secondItem="owW-pl-RR0" secondAttribute="trailing" constant="16" id="mBf-HK-IaP"/>
                 <constraint firstAttribute="bottom" secondItem="tyu-W1-TKI" secondAttribute="bottom" constant="8" id="xO5-Cw-oTq"/>
             </constraints>
             <connections>

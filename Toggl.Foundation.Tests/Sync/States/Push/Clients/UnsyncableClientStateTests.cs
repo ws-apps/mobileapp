@@ -1,6 +1,7 @@
 ﻿using System;
 using Toggl.Foundation.Models;
 using Toggl.Foundation.Sync.States;
+using Toggl.Foundation.Tests.Mocks;
 using Toggl.PrimeRadiant;
 using Toggl.PrimeRadiant.Models;
 
@@ -19,7 +20,7 @@ namespace Toggl.Foundation.Tests.Sync.States.Push
                 => new UnsyncableClientState(repository);
 
             protected override IDatabaseClient CreateDirtyEntity()
-                => Client.Dirty(new Ultrawave.Models.Client { Name = Guid.NewGuid().ToString() });
+                => Client.Dirty(new MockClient { Name = Guid.NewGuid().ToString() });
         }
     }
 }

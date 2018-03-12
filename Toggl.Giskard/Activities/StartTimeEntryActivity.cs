@@ -43,6 +43,17 @@ namespace Toggl.Giskard.Activities
             durationCard.Click += onDurationCardClick;
         }
 
+        public override bool OnKeyDown(Keycode keyCode, KeyEvent e)
+        {
+            if (keyCode == Keycode.Back)
+            {
+                ViewModel.BackCommand.ExecuteAsync();
+                return true;
+            }
+
+            return base.OnKeyDown(keyCode, e);
+        }
+
         protected override void OnResume()
         {
             base.OnResume();

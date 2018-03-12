@@ -1,6 +1,7 @@
 ﻿﻿using Android.Views;
 using MvvmCross.Binding.Bindings.Target.Construction;
 using Toggl.Giskard.Bindings;
+using Toggl.Giskard.Views;
 using Android.Widget;
 using Android.Support.Design.Widget;
 
@@ -38,6 +39,21 @@ namespace Toggl.Giskard
                 view => new EditTextFocusTargetBinding(view)
             );
 
+            registry.RegisterCustomBindingFactory<ImageView>(
+                ImageViewVerticalFlipTargetBinding.BindingName,
+                view => new ImageViewVerticalFlipTargetBinding(view)
+            );
+
+            registry.RegisterCustomBindingFactory<EditText>(
+                EditTextTextFieldInfoTargetBinding.BindingName,
+                view => new EditTextTextFieldInfoTargetBinding(view)
+            );
+
+            registry.RegisterCustomBindingFactory<FloatingActionButton>(
+                FabVisibilityTargetBinding.BindingName,
+                view => new FabVisibilityTargetBinding(view)
+            );
+
             registry.RegisterCustomBindingFactory<TextView>(
                 TextViewTagListTargetBinding.BindingName,
                 view => new TextViewTagListTargetBinding(view)
@@ -51,6 +67,11 @@ namespace Toggl.Giskard
             registry.RegisterCustomBindingFactory<FloatingActionButton>(
                 FabVisibilityTargetBinding.BindingName,
                 view => new FabVisibilityTargetBinding(view)
+            );
+
+            registry.RegisterCustomBindingFactory<TextView>(
+                TextViewFontWeightTargetBinding.BindingName,
+                view => new TextViewFontWeightTargetBinding(view)
             );
         }
     }

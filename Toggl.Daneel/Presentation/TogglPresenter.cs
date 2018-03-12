@@ -46,24 +46,24 @@ namespace Toggl.Daneel.Presentation
 
             AttributeTypesToActionsDictionary.Add(
                 typeof(NestedPresentationAttribute),
-                new MvxPresentationAttributeAction 
-                { 
+                new MvxPresentationAttributeAction
+                {
                     ShowAction = showNestedViewController,
                     CloseAction = (viewModel, attribute) => false
                 });
 
             AttributeTypesToActionsDictionary.Add(
-                typeof(ModalCardPresentationAttribute), 
-                new MvxPresentationAttributeAction 
-                { 
+                typeof(ModalCardPresentationAttribute),
+                new MvxPresentationAttributeAction
+                {
                     ShowAction = showModalCardViewController,
                     CloseAction = (viewModel, attribute) => CloseModalViewController(viewModel, (MvxModalPresentationAttribute)attribute)
                 });
 
             AttributeTypesToActionsDictionary.Add(
-                typeof(ModalDialogPresentationAttribute), 
-                new MvxPresentationAttributeAction 
-                { 
+                typeof(ModalDialogPresentationAttribute),
+                new MvxPresentationAttributeAction
+                {
                     ShowAction = showModalDialogViewController,
                     CloseAction = (viewModel, attribute) => CloseModalViewController(viewModel, (MvxModalPresentationAttribute)attribute)
                 });
@@ -162,10 +162,23 @@ namespace Toggl.Daneel.Presentation
         {
             switch (hint)
             {
+                case ReloadLogHint _:
+                {
+                    var mainViewController =
+                        MasterNavigationController
+                            ?.ChildViewControllers
+                            .FirstOrDefault(vc => vc is MainViewController) as MainViewController;
+
+                    mainViewController?.Reload();
+
+                    return;
+                }
                 case CardVisibilityHint cardHint:
+                {
                     if (MasterNavigationController?.TopViewController is MainViewController mainViewController)
                         mainViewController.OnTimeEntryCardVisibilityChanged(cardHint.Visible);
                     return;
+                }
 
                 case ToggleCalendarVisibilityHint calendarHint:
                     if (MasterNavigationController?.TopViewController is ReportsViewController reportsViewController)
@@ -205,20 +218,6 @@ namespace Toggl.Daneel.Presentation
                     new NestedPresentationInfo<ReportsViewController>(
                         () => findViewController<ReportsViewController>(),
                         reportsController => reportsController.CalendarContainerView)
-                },
-                {
-                    typeof(SuggestionsViewController),
-                    new NestedPresentationInfo<MainViewController>(
-                        () => findViewController<MainViewController>(),
-                        mainController => mainController
-                            .GetContainerFor(typeof(SuggestionsViewController)))
-                },
-                {
-                    typeof(TimeEntriesLogViewController),
-                    new NestedPresentationInfo<MainViewController>(
-                        () => findViewController<MainViewController>(),
-                        mainController => mainController
-                            .GetContainerFor(typeof(TimeEntriesLogViewController)))
                 }
             };
     }

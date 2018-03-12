@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Toggl.Foundation;
 using Toggl.Foundation.MvvmCross.Services;
 using Toggl.Multivac;
 using UIKit;
@@ -9,7 +10,7 @@ namespace Toggl.Daneel.Services
 {
     public sealed class DialogService : IDialogService
     {
-        private ITopViewControllerProvider topViewControllerProvider;
+        private readonly ITopViewControllerProvider topViewControllerProvider;
 
         public DialogService(ITopViewControllerProvider topViewControllerProvider)
         {
@@ -41,27 +42,26 @@ namespace Toggl.Daneel.Services
             return tcs.Task;
         }
 
-        public Task<string> ShowMultipleChoiceDialog(
-            string cancelText,
-            params MultipleChoiceDialogAction[] actions)
+        public Task<bool> ConfirmDestructiveAction(ActionType type)
         {
-            var tcs = new TaskCompletionSource<string>();
+            var tcs = new TaskCompletionSource<bool>();
             var actionSheet = UIAlertController.Create(
                 title: null,
                 message: null,
                 preferredStyle: UIAlertControllerStyle.ActionSheet
             );
 
-            var cancelAction = UIAlertAction.Create(cancelText, UIAlertActionStyle.Cancel, _ => tcs.SetResult(cancelText));
+            var confirmText = type == ActionType.DiscardNewTimeEntry ? Resources.Discard : Resources.Delete;
+            var cancelText = type == ActionType.DiscardNewTimeEntry ? Resources.ContinueEditing : Resources.Cancel; 
+
+            var cancelAction = UIAlertAction.Create(cancelText, UIAlertActionStyle.Cancel, _ => tcs.SetResult(false));
             actionSheet.AddAction(cancelAction);
 
-            actions
-                .Select(
-                    action => UIAlertAction.Create(
-                        action.Text,
-                        action.Destructive ? UIAlertActionStyle.Destructive : UIAlertActionStyle.Default,
-                        _ => tcs.SetResult(action.Text)))
-                .ForEach(actionSheet.AddAction);
+            actionSheet.AddAction(
+                UIAlertAction.Create(
+                    confirmText,
+                    UIAlertActionStyle.Destructive,
+                    _ => tcs.SetResult(true)));
 
             topViewControllerProvider
                 .TopViewController
@@ -70,7 +70,7 @@ namespace Toggl.Daneel.Services
             return tcs.Task;
         }
 
-        public Task<object> Alert(string title, string message, string buttonTitle)
+        public Task Alert(string title, string message, string buttonTitle)
         {
             var tcs = new TaskCompletionSource<object>();
 

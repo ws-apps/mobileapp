@@ -6,8 +6,8 @@ using FsCheck.Xunit;
 using NSubstitute;
 using Toggl.Foundation.Models;
 using Toggl.Foundation.Sync.ConflictResolution;
+using Toggl.Foundation.Tests.Mocks;
 using Toggl.PrimeRadiant;
-using Toggl.PrimeRadiant.Models;
 using Xunit;
 
 namespace Toggl.Foundation.Tests.Sync.ConflictResolution
@@ -22,10 +22,10 @@ namespace Toggl.Foundation.Tests.Sync.ConflictResolution
 
         private readonly IQueryable<TimeEntry> timeEntries = new EnumerableQuery<TimeEntry>(new[]
         {
-            TimeEntry.Clean(new Ultrawave.Models.TimeEntry { Id = 10, Start = arbitraryTime, Duration = (long)TimeSpan.FromHours(2).TotalSeconds }),
-            TimeEntry.Clean(new Ultrawave.Models.TimeEntry { Id = 11, Start = arbitraryTime.AddDays(5), Duration = (long)TimeSpan.FromDays(1).TotalSeconds }),
-            TimeEntry.Clean(new Ultrawave.Models.TimeEntry { Id = 12, Start = arbitraryTime.AddDays(10), Duration = (long)TimeSpan.FromHours(1).TotalSeconds }),
-            TimeEntry.Clean(new Ultrawave.Models.TimeEntry { Id = 13, Start = arbitraryTime.AddDays(15), Duration = (long)TimeSpan.FromSeconds(13).TotalSeconds })
+            TimeEntry.Clean(new MockTimeEntry { Id = 10, Start = arbitraryTime, Duration = (long)TimeSpan.FromHours(2).TotalSeconds }),
+            TimeEntry.Clean(new MockTimeEntry { Id = 11, Start = arbitraryTime.AddDays(5), Duration = (long)TimeSpan.FromDays(1).TotalSeconds }),
+            TimeEntry.Clean(new MockTimeEntry { Id = 12, Start = arbitraryTime.AddDays(10), Duration = (long)TimeSpan.FromHours(1).TotalSeconds }),
+            TimeEntry.Clean(new MockTimeEntry { Id = 13, Start = arbitraryTime.AddDays(15), Duration = (long)TimeSpan.FromSeconds(13).TotalSeconds })
         });
 
         public TimeEntryRivalsResolverTests()
@@ -37,7 +37,7 @@ namespace Toggl.Foundation.Tests.Sync.ConflictResolution
         [Fact, LogIfTooSlow]
         public void TimeEntryWhichHasDurationSetToNullCanHaveRivals()
         {
-            var a = TimeEntry.Clean(new Ultrawave.Models.TimeEntry { Id = 1, Duration = null });
+            var a = TimeEntry.Clean(new MockTimeEntry { Id = 1, Duration = null });
 
             var canHaveRival = resolver.CanHaveRival(a);
 
@@ -47,7 +47,7 @@ namespace Toggl.Foundation.Tests.Sync.ConflictResolution
         [Property]
         public void TimeEntryWhichHasDurationSetToAnythingElseThanNullCannotHaveRivals(long duration)
         {
-            var a = TimeEntry.Clean(new Ultrawave.Models.TimeEntry { Id = 1, Duration = duration });
+            var a = TimeEntry.Clean(new MockTimeEntry { Id = 1, Duration = duration });
 
             var canHaveRival = resolver.CanHaveRival(a);
 
@@ -57,8 +57,8 @@ namespace Toggl.Foundation.Tests.Sync.ConflictResolution
         [Fact, LogIfTooSlow]
         public void TwoTimeEntriesAreRivalsIfBothOfThemHaveTheDurationSetToNull()
         {
-            var a = TimeEntry.Clean(new Ultrawave.Models.TimeEntry { Id = 1, Duration = null });
-            var b = TimeEntry.Clean(new Ultrawave.Models.TimeEntry { Id = 2, Duration = null });
+            var a = TimeEntry.Clean(new MockTimeEntry { Id = 1, Duration = null });
+            var b = TimeEntry.Clean(new MockTimeEntry { Id = 2, Duration = null });
 
             var areRivals = resolver.AreRivals(a).Compile()(b);
 
@@ -68,8 +68,8 @@ namespace Toggl.Foundation.Tests.Sync.ConflictResolution
         [Property]
         public void TwoTimeEntriesAreNotRivalsIfTheLatterOneHasTheDurationNotSetToNull(NonNegativeInt b)
         {
-            var x = TimeEntry.Clean(new Ultrawave.Models.TimeEntry { Id = 1, Duration = null });
-            var y = TimeEntry.Clean(new Ultrawave.Models.TimeEntry { Id = 2, Duration = b.Get });
+            var x = TimeEntry.Clean(new MockTimeEntry { Id = 1, Duration = null });
+            var y = TimeEntry.Clean(new MockTimeEntry { Id = 2, Duration = b.Get });
             var areRivals = resolver.AreRivals(x).Compile()(y);
 
             areRivals.Should().BeFalse();
@@ -80,8 +80,8 @@ namespace Toggl.Foundation.Tests.Sync.ConflictResolution
         {
             (DateTimeOffset earlier, DateTimeOffset later) =
                 firstAt < secondAt ? (firstAt, secondAt) : (secondAt, firstAt);
-            var a = TimeEntry.Clean(new Ultrawave.Models.TimeEntry { Id = 1, Start = startA, Duration = null, At = earlier });
-            var b = TimeEntry.Clean(new Ultrawave.Models.TimeEntry { Id = 2, Start = startB, Duration = null, At = later });
+            var a = TimeEntry.Clean(new MockTimeEntry { Id = 1, Start = startA, Duration = null, At = earlier });
+            var b = TimeEntry.Clean(new MockTimeEntry { Id = 2, Start = startB, Duration = null, At = later });
             DateTimeOffset now = (startA > startB ? startA : startB).AddHours(5);
             timeService.CurrentDateTime.Returns(now);
 
@@ -97,8 +97,8 @@ namespace Toggl.Foundation.Tests.Sync.ConflictResolution
         [Fact, LogIfTooSlow]
         public void TheStoppedTimeEntryMustBeMarkedAsSyncNeededAndTheStatusOfTheOtherOneShouldNotChange()
         {
-            var a = TimeEntry.Clean(new Ultrawave.Models.TimeEntry { Id = 1, Duration = null, At = arbitraryTime.AddDays(10) });
-            var b = TimeEntry.Clean(new Ultrawave.Models.TimeEntry { Id = 2, Duration = null, At = arbitraryTime.AddDays(11) });
+            var a = TimeEntry.Clean(new MockTimeEntry { Id = 1, Duration = null, At = arbitraryTime.AddDays(10) });
+            var b = TimeEntry.Clean(new MockTimeEntry { Id = 2, Duration = null, At = arbitraryTime.AddDays(11) });
 
             var (fixedA, fixedB) = resolver.FixRivals(a, b, timeEntries);
 
@@ -109,8 +109,8 @@ namespace Toggl.Foundation.Tests.Sync.ConflictResolution
         [Fact, LogIfTooSlow]
         public void TheStoppedEntityMustHaveTheStopTimeEqualToTheStartTimeOfTheNextEntryInTheDatabase()
         {
-            var a = TimeEntry.Clean(new Ultrawave.Models.TimeEntry { Id = 1, Duration = null, At = arbitraryTime.AddDays(10), Start = arbitraryTime.AddDays(12) });
-            var b = TimeEntry.Clean(new Ultrawave.Models.TimeEntry { Id = 2, Duration = null, At = arbitraryTime.AddDays(11), Start = arbitraryTime.AddDays(13) });
+            var a = TimeEntry.Clean(new MockTimeEntry { Id = 1, Duration = null, At = arbitraryTime.AddDays(10), Start = arbitraryTime.AddDays(12) });
+            var b = TimeEntry.Clean(new MockTimeEntry { Id = 2, Duration = null, At = arbitraryTime.AddDays(11), Start = arbitraryTime.AddDays(13) });
 
             var (fixedA, _) = resolver.FixRivals(a, b, timeEntries);
 
@@ -122,8 +122,8 @@ namespace Toggl.Foundation.Tests.Sync.ConflictResolution
         {
             var now = arbitraryTime.AddDays(25);
             timeService.CurrentDateTime.Returns(now);
-            var a = TimeEntry.Clean(new Ultrawave.Models.TimeEntry { Id = 1, Duration = null, At = arbitraryTime.AddDays(21), Start = arbitraryTime.AddDays(20) });
-            var b = TimeEntry.Clean(new Ultrawave.Models.TimeEntry { Id = 2, Duration = null, At = arbitraryTime.AddDays(22), Start = arbitraryTime.AddDays(21) });
+            var a = TimeEntry.Clean(new MockTimeEntry { Id = 1, Duration = null, At = arbitraryTime.AddDays(21), Start = arbitraryTime.AddDays(20) });
+            var b = TimeEntry.Clean(new MockTimeEntry { Id = 2, Duration = null, At = arbitraryTime.AddDays(22), Start = arbitraryTime.AddDays(21) });
 
             var (fixedA, _) = resolver.FixRivals(a, b, timeEntries);
 

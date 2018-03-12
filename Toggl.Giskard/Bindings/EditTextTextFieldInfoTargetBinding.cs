@@ -15,8 +15,6 @@ namespace Toggl.Giskard.Bindings
 
         private readonly AutocompleteTextWatcher spanWatcher = new AutocompleteTextWatcher();
 
-        private TextFieldInfo textFieldInfo = TextFieldInfo.Empty;
-
         public override MvxBindingMode DefaultMode => MvxBindingMode.TwoWay;
 
         protected override IAutocompleteEventProvider EventProvider => spanWatcher;

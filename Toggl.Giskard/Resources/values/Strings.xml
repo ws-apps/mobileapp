@@ -2,7 +2,7 @@
 <resources>
     <string name="SignUp">New to Toggl</string>
     <string name="Login">Log in</string>
-    <string name="Logout">Log out</string>
+    <string name="Logout">Sign out of Toggl</string>
     <string name="AppName">Toggl</string>
     <string name="EmailAddress">Email address</string>
     <string name="AddDescription">Add description</string>
@@ -12,15 +12,40 @@
     <string name="StartTimeEntryHint">What are you working on?</string>
     <string name="PrivateProject">Private project</string>
     <string name="PrivateProjectHint">Private projects are only accessible\nto project members</string>
+    <string name="SelectColorTitle">Project color</string>
+    <string name="Done">Done</string>
+    <string name="Cancel">Cancel</string>
     <string name="AddTags">Add tags</string>
     <string name="AddClientHint">Add/filter clients</string>
+    <string name="AddProjectHint">Add/filter projects</string>
     <string name="Billable">Billable</string>
+    <string name="AddTagsHint">Add/filter tags</string>
     <string name="StartTime">Start time</string>
     <string name="EndTime">End time</string>
     <string name="Save">Save</string>
+    <string name="NameTakenError">Sorry, this name is already taken.</string>
+    <string name="General">General</string>
+    <string name="SubmitFeedback">Submit feedback</string>
+    <string name="Help">Help</string>
+    <string name="About">About</string>
+    <string name="DateAndTime">Date and Time</string>
+    <string name="Use24HourClock">Use 24-hour clock</string>
+    <string name="Create">Create</string>
+    <string name="DateFormat">Date format</string>
+    <string name="BeginningOfWeek">First day of the week</string>
+    <string name="DurationFormat">Duration display format</string>
+    <string name="DefaultWorkspace">Default Workspace</string>
 
+    <string name="MainTemplateSelector" translatable="false">Toggl.Giskard.TemplateSelectors.MainTemplateSelector, Toggl.Giskard</string>
+    <string name="SettingsTemplateSelector" translatable="false">Toggl.Giskard.TemplateSelectors.SettingsTemplateSelector, Toggl.Giskard</string>
+    <string name="SelectTagsTemplateSelector" translatable="false">Toggl.Giskard.TemplateSelectors.SelectTagsTemplateSelector, Toggl.Giskard</string>
     <string name="SuggestionsTemplateSelector" translatable="false">Toggl.Giskard.TemplateSelectors.SuggestionsTemplateSelector, Toggl.Giskard</string>
+    <string name="SelectColorTemplateSelector" translatable="false">Toggl.Giskard.TemplateSelectors.SelectColorTemplateSelector, Toggl.Giskard</string>
     <string name="SelectClientTemplateSelector" translatable="false">Toggl.Giskard.TemplateSelectors.SelectClientTemplateSelector, Toggl.Giskard</string>
-    <string name="TimeEntriesLogTemplateSelector" translatable="false">Toggl.Giskard.TemplateSelectors.TimeEntriesLogTemplateSelector, Toggl.Giskard</string>
+    <string name="SelectProjectTemplateSelector" translatable="false">Toggl.Giskard.TemplateSelectors.SelectProjectTemplateSelector, Toggl.Giskard</string>
+    <string name="SelectWorkspaceTemplateSelector" translatable="false">Toggl.Giskard.TemplateSelectors.SelectWorkspaceTemplateSelector, Toggl.Giskard</string>
+    <string name="SelectDateFormatTemplateSelector" translatable="false">Toggl.Giskard.TemplateSelectors.SelectDateFormatTemplateSelector, Toggl.Giskard</string>
+    <string name="SelectBeginningOfWeekTemplateSelector" translatable="false">Toggl.Giskard.TemplateSelectors.SelectBeginningOfWeekTemplateSelector, Toggl.Giskard</string>
+    <string name="SelectDurationFormatTemplateSelector" translatable="false">Toggl.Giskard.TemplateSelectors.SelectDurationFormatTemplateSelector, Toggl.Giskard</string>
     <string name="StartTimeEntrySuggestionsTemplateSelector" translatable="false">Toggl.Giskard.TemplateSelectors.StartTimeEntrySuggestionsTemplateSelector, Toggl.Giskard</string>
 </resources>

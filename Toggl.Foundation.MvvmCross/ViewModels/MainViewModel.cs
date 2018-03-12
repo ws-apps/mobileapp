@@ -1,27 +1,25 @@
 ﻿using System;
+using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using MvvmCross.Core.Navigation;
 using MvvmCross.Core.ViewModels;
+using MvvmCross.Platform;
 using PropertyChanged;
 using Toggl.Foundation.DataSources;
+using Toggl.Foundation.MvvmCross.Parameters;
 using Toggl.Foundation.MvvmCross.ViewModels.Hints;
-using Toggl.Foundation.MvvmCross.Services;
-using Toggl.Foundation.Services;
 using Toggl.Foundation.Sync;
 using Toggl.Multivac;
 using Toggl.PrimeRadiant.Models;
 using Toggl.PrimeRadiant.Settings;
-using Toggl.Foundation.MvvmCross.Parameters;
 
 namespace Toggl.Foundation.MvvmCross.ViewModels
 {
     [Preserve(AllMembers = true)]
     public sealed class MainViewModel : MvxViewModel
     {
-        private bool isWelcome = false;
-
         private bool isStopButtonEnabled = false;
 
         private CompositeDisposable disposeBag = new CompositeDisposable();
@@ -57,9 +55,23 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             string.IsNullOrEmpty(CurrentTimeEntryDescription)
             && string.IsNullOrEmpty(CurrentTimeEntryProject);
 
-        public bool SpiderIsVisible { get; set; } = true;
+        public bool ShouldShowEmptyState
+            => SuggestionsViewModel.IsEmpty
+            && TimeEntriesLogViewModel.IsEmpty
+            && IsWelcome;
+
+        public bool ShouldShowWelcomeBack
+            => SuggestionsViewModel.IsEmpty
+            && TimeEntriesLogViewModel.IsEmpty
+            && !IsWelcome;
+
+        public bool IsWelcome => TimeEntriesLogViewModel.IsWelcome;
 
         public bool IsInManualMode { get; set; } = false;
+
+        public TimeEntriesLogViewModel TimeEntriesLogViewModel { get; } = Mvx.IocConstruct<TimeEntriesLogViewModel>();
+
+        public SuggestionsViewModel SuggestionsViewModel { get; } = Mvx.IocConstruct<SuggestionsViewModel>();
 
         public IMvxAsyncCommand StartTimeEntryCommand { get; }
 
@@ -106,28 +118,38 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         {
             await base.Initialize();
 
-            isWelcome = onboardingStorage.IsNewUser();
+            await TimeEntriesLogViewModel.Initialize();
+            await SuggestionsViewModel.Initialize();
 
             var tickDisposable = timeService
                 .CurrentDateTimeObservable
                 .Where(_ => currentTimeEntryStart != null)
                 .Subscribe(currentTime => CurrentTimeEntryElapsedTime = currentTime - currentTimeEntryStart.Value);
 
-            var currentlyRunningTimeEntryDisposable = dataSource.TimeEntries
+            var currentlyRunningTimeEntryDisposable = dataSource
+                .TimeEntries
                 .CurrentlyRunningTimeEntry
                 .Subscribe(setRunningEntry);
+            
+            var syncManagerDisposable = dataSource
+                .SyncManager
+                .ProgressObservable
+                .Subscribe(progress => SyncingProgress = progress);
 
-            var syncManagerDisposable =
-                dataSource.SyncManager.ProgressObservable
-                    .Subscribe(progress => SyncingProgress = progress);
-
-            var spiderDisposable =
-                dataSource.TimeEntries.IsEmpty
-                    .Subscribe(isEmpty => SpiderIsVisible = !isWelcome && isEmpty);
+            var isEmptyChangedDisposable = dataSource
+                .TimeEntries
+                .TimeEntryUpdated
+                .Select(te => te.Id)
+                .Merge(dataSource.TimeEntries.TimeEntryDeleted)
+                .Subscribe(_ =>
+                {
+                    RaisePropertyChanged(nameof(ShouldShowWelcomeBack));
+                    RaisePropertyChanged(nameof(ShouldShowEmptyState));
+                });
 
             disposeBag.Add(tickDisposable);
-            disposeBag.Add(spiderDisposable);
             disposeBag.Add(syncManagerDisposable);
+            disposeBag.Add(isEmptyChangedDisposable);
             disposeBag.Add(currentlyRunningTimeEntryDisposable);
         }
 

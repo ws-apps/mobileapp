@@ -1,6 +1,5 @@
 ﻿using System;
 using Toggl.Multivac.Models;
-using Toggl.Multivac.Extensions;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;

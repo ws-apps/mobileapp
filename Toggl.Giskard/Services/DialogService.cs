@@ -1,8 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Android.Support.V7.App;
 using MvvmCross.Platform;
 using MvvmCross.Platform.Core;
 using MvvmCross.Platform.Droid.Platform;
+using Toggl.Foundation;
 using Toggl.Foundation.MvvmCross.Services;
 
 namespace Toggl.Giskard.Services
@@ -16,25 +18,40 @@ namespace Toggl.Giskard.Services
 
             MvxSingleton<IMvxMainThreadDispatcher>.Instance.RequestMainThreadAction(() =>
             {
-                new AlertDialog.Builder(activity)
+                var builder = new AlertDialog.Builder(activity, Resource.Style.TogglDialog)
                     .SetMessage(message)
-                    .SetTitle(title)
-                    .SetPositiveButton(confirmButtonText, (s, e) => tcs.SetResult(true))
-                    .SetNegativeButton(dismissButtonText, (s, e) => tcs.SetResult(false))
-                    .Show();
+                    .SetPositiveButton(confirmButtonText, (s, e) => tcs.SetResult(true));
+
+                if (!string.IsNullOrWhiteSpace(title))
+                {
+                    builder = builder.SetTitle(title);
+                }
+
+                if (!string.IsNullOrEmpty(dismissButtonText))
+                {
+                    builder = builder.SetNegativeButton(dismissButtonText, (s, e) => tcs.SetResult(false));
+                }
+
+                builder.Show();
             });
 
             return tcs.Task;
         }
 
-        public Task<string> ShowMultipleChoiceDialog(string cancelText, params MultipleChoiceDialogAction[] actions)
-        {
-            throw new System.NotImplementedException();
-        }
+        public Task Alert(string title, string message, string buttonTitle)
+            => Confirm(title, message, buttonTitle, null);
 
-        Task<object> IDialogService.Alert(string title, string message, string buttonTitle)
+        public Task<bool> ConfirmDestructiveAction(ActionType type)
         {
-            throw new System.NotImplementedException();
+            switch (type)
+            {
+                case ActionType.DiscardNewTimeEntry:
+                    return Confirm(null, Resources.DiscardThisTimeEntry, Resources.Delete, Resources.Cancel);
+                case ActionType.DeleteExistingTimeEntry:
+                    return Confirm(null, Resources.DeleteThisTimeEntry, Resources.Discard, Resources.Cancel);
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(type));
         }
     }
 }

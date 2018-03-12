@@ -19,7 +19,7 @@ namespace Toggl.Daneel.ViewSources
 
         public bool SuggestCreation { get; set; }
 
-        public IMvxCommand<string> CreateTagCommand { get; set; }
+        public IMvxCommand CreateTagCommand { get; set; }
 
         public SelectTagsTableViewSource(UITableView tableView) 
             : base(tableView)
@@ -39,7 +39,7 @@ namespace Toggl.Daneel.ViewSources
 
             if (SuggestCreation && indexPath.Item == 0)
             {
-                CreateTagCommand.Execute(CurrentQuery);
+                CreateTagCommand.Execute();
                 return;
             }
 

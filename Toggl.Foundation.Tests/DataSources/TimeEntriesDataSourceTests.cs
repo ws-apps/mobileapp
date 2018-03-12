@@ -9,9 +9,10 @@ using NSubstitute;
 using Toggl.Foundation.DataSources;
 using Toggl.Foundation.DTOs;
 using Toggl.Foundation.Exceptions;
+using Toggl.Foundation.Interactors;
 using Toggl.Foundation.Models;
-using Toggl.Foundation.Shortcuts;
 using Toggl.Foundation.Tests.Generators;
+using Toggl.Foundation.Tests.Mocks;
 using Toggl.Multivac.Models;
 using Toggl.PrimeRadiant;
 using Toggl.PrimeRadiant.Exceptions;
@@ -23,7 +24,7 @@ namespace Toggl.Foundation.Tests.DataSources
 {
     public sealed class TimeEntriesDataSourceTests
     {
-        public abstract class TimeEntryDataSourceTest
+        public abstract class TimeEntryDataSourceTest : InteractorAwareTests
         {
             protected const long ProjectId = 10;
 
@@ -39,11 +40,7 @@ namespace Toggl.Foundation.Tests.DataSources
 
             protected TestScheduler TestScheduler { get; } = new TestScheduler();
 
-            protected string ValidDescription { get; } = "Testing software";
-
             protected DateTimeOffset ValidTime { get; } = DateTimeOffset.UtcNow;
-
-            protected IIdProvider IdProvider { get; } = Substitute.For<IIdProvider>();
 
             protected IDatabaseTimeEntry DatabaseTimeEntry { get; } =
                 TimeEntry.Builder
@@ -58,13 +55,9 @@ namespace Toggl.Foundation.Tests.DataSources
 
             protected IRepository<IDatabaseTimeEntry> Repository { get; } = Substitute.For<IRepository<IDatabaseTimeEntry>>();
 
-            protected ITimeService TimeService { get; } = Substitute.For<ITimeService>();
-
-            protected IApplicationShortcutCreator ApplicationShortcutCreator { get; } = Substitute.For<IApplicationShortcutCreator>();
-
-            public TimeEntryDataSourceTest()
+            protected TimeEntryDataSourceTest()
             {
-                TimeEntriesSource = new TimeEntriesDataSource(IdProvider, ApplicationShortcutCreator, Repository, TimeService);
+                TimeEntriesSource = new TimeEntriesDataSource(IdProvider, Repository, TimeService);
 
                 IdProvider.GetNextIdentifier().Returns(-1);
                 Repository.GetById(Arg.Is(DatabaseTimeEntry.Id)).Returns(Observable.Return(DatabaseTimeEntry));
@@ -75,196 +68,26 @@ namespace Toggl.Foundation.Tests.DataSources
                 Repository.Update(Arg.Any<long>(), Arg.Any<IDatabaseTimeEntry>())
                           .Returns(info => Observable.Return(info.Arg<IDatabaseTimeEntry>()));
             }
-
-            protected StartTimeEntryDTO CreateDto(DateTimeOffset startTime, string description, bool billable,
-                long? projectId, long? taskId = null, TimeSpan? duration = null) => new StartTimeEntryDTO
-                {
-                    UserId = UserId,
-                    TaskId = taskId,
-                    WorkspaceId = WorkspaceId,
-                    StartTime = startTime,
-                    Description = description,
-                    Billable = billable,
-                    ProjectId = projectId,
-                    Duration = duration
-                };
         }
 
         public sealed class TheConstructor : TimeEntryDataSourceTest
         {
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(FourParameterConstructorTestData))]
+            [ClassData(typeof(ThreeParameterConstructorTestData))]
             public void ThrowsIfAnyOfTheArgumentsIsNull(
                 bool useIdProvider,
                 bool useRepository,
-                bool useTimeService,
-                bool useShortcutCreator)
+                bool useTimeService)
             {
                 var idProvider = useIdProvider ? IdProvider : null;
                 var repository = useRepository ? Repository : null;
                 var timeService = useTimeService ? TimeService : null;
-                var shortcutCreator = useShortcutCreator ? ApplicationShortcutCreator : null;
 
                 Action tryingToConstructWithEmptyParameters =
-                    () => new TimeEntriesDataSource(idProvider, shortcutCreator, repository, timeService);
+                    () => new TimeEntriesDataSource(idProvider, repository, timeService);
 
                 tryingToConstructWithEmptyParameters
                     .ShouldThrow<ArgumentNullException>();
-            }
-        }
-
-        public sealed class TheStartMethod : TimeEntryDataSourceTest
-        {
-            public TheStartMethod()
-            {
-                Repository.BatchUpdate(
-                    Arg.Any<IEnumerable<(long, IDatabaseTimeEntry)>>(),
-                    Arg.Any<Func<IDatabaseTimeEntry, IDatabaseTimeEntry, ConflictResolutionMode>>(),
-                    Arg.Any<IRivalsResolver<IDatabaseTimeEntry>>())
-                    .Returns(info => Observable.Return(new[] { new CreateResult<IDatabaseTimeEntry>(info.Arg<IEnumerable<(long, IDatabaseTimeEntry Entity)>>().First().Entity) }));
-            }
-
-            [Fact, LogIfTooSlow]
-            public async ThreadingTask CreatesANewTimeEntryInTheDatabase()
-            {
-                await TimeEntriesSource.Start(CreateDto(ValidTime, ValidDescription, true, ProjectId));
-
-                await Repository.ReceivedWithAnyArgs().BatchUpdate(null, null, null);
-            }
-
-            [Fact, LogIfTooSlow]
-            public async ThreadingTask CreatesASyncNeededTimeEntry()
-            {
-                await TimeEntriesSource.Start(CreateDto(ValidTime, ValidDescription, true, ProjectId));
-
-                await Repository.Received().BatchUpdate(
-                    Arg.Is<IEnumerable<(long, IDatabaseTimeEntry Entity)>>(enumerable => enumerable.First().Entity.SyncStatus == SyncStatus.SyncNeeded),
-                    Arg.Any<Func<IDatabaseTimeEntry, IDatabaseTimeEntry, ConflictResolutionMode>>(),
-                    Arg.Any<IRivalsResolver<IDatabaseTimeEntry>>());
-            }
-
-            [Theory, LogIfTooSlow]
-            [InlineData(true)]
-            [InlineData(false)]
-            public async ThreadingTask CreatesATimeEntryWithTheProvidedValueForBillable(bool billable)
-            {
-                await TimeEntriesSource.Start(CreateDto(ValidTime, ValidDescription, billable, ProjectId));
-
-                await batchUpdateCalledWith(te => te.Billable == billable);
-            }
-
-            [Fact, LogIfTooSlow]
-            public async ThreadingTask CreatesATimeEntryWithTheProvidedValueForDescription()
-            {
-                await TimeEntriesSource.Start(CreateDto(ValidTime, ValidDescription, true, ProjectId));
-
-                await batchUpdateCalledWith(te => te.Description == ValidDescription);
-            }
-
-            [Fact, LogIfTooSlow]
-            public async ThreadingTask CreatesATimeEntryWithTheProvidedValueForStartTime()
-            {
-                await TimeEntriesSource.Start(CreateDto(ValidTime, ValidDescription, true, ProjectId));
-
-                await batchUpdateCalledWith(te => te.Start == ValidTime);
-            }
-
-            [Fact, LogIfTooSlow]
-            public async ThreadingTask CreatesATimeEntryWithTheProvidedValueForProjectId()
-            {
-                await TimeEntriesSource.Start(CreateDto(ValidTime, ValidDescription, true, ProjectId));
-
-                await batchUpdateCalledWith(te => te.ProjectId == ProjectId);
-            }
-
-            [Fact, LogIfTooSlow]
-            public async ThreadingTask CreatesATimeEntryWithTheProvidedValueForUserId()
-            {
-                await TimeEntriesSource.Start(CreateDto(ValidTime, ValidDescription, true, ProjectId));
-
-                await batchUpdateCalledWith(te => te.UserId == UserId);
-            }
-
-            [Fact, LogIfTooSlow]
-            public async ThreadingTask CreatesATimeEntryWithTheProvidedValueForTaskId()
-            {
-                await TimeEntriesSource.Start(CreateDto(ValidTime, ValidDescription, true, ProjectId, TaskId));
-
-                await batchUpdateCalledWith(te => te.TaskId == TaskId);
-            }
-
-            [Fact, LogIfTooSlow]
-            public async ThreadingTask CreatesATimeEntryWithTheProvidedValueForWorkspaceId()
-            {
-                await TimeEntriesSource.Start(CreateDto(ValidTime, ValidDescription, true, ProjectId));
-
-                await batchUpdateCalledWith(te => te.WorkspaceId == WorkspaceId);
-            }
-
-            [Fact, LogIfTooSlow]
-            public async ThreadingTask CreatesATimeEntryWithAnIdProvidedByTheIdProvider()
-            {
-                await TimeEntriesSource.Start(CreateDto(ValidTime, ValidDescription, true, ProjectId));
-
-                await batchUpdateCalledWith(te => te.Id == -1);
-            }
-
-            [Fact, LogIfTooSlow]
-            public async ThreadingTask SetstheCreatedTimeEntryAsTheCurrentlyRunningTimeEntry()
-            {
-                var observer = TestScheduler.CreateObserver<ITimeEntry>();
-                TimeEntriesSource.CurrentlyRunningTimeEntry.Where(te => te != null).Subscribe(observer);
-
-                await TimeEntriesSource.Start(CreateDto(ValidTime, ValidDescription, true, ProjectId));
-
-                var currentlyRunningTimeEntry = observer.Messages.Single().Value.Value;
-                await batchUpdateCalledWith(te => te.Start == currentlyRunningTimeEntry.Start);
-
-            }
-
-            [Fact, LogIfTooSlow]
-            public async ThreadingTask CreatesAStoppedTimeEntry()
-            {
-                await TimeEntriesSource.Start(CreateDto(ValidTime, ValidDescription, true, ProjectId, duration: TimeSpan.FromSeconds(5)));
-
-                await batchUpdateCalledWith(te => te.Duration.HasValue);
-            }
-
-            [Fact, LogIfTooSlow]
-            public async ThreadingTask EmitsANewEventOnTheTimeEntryCreatedObservable()
-            {
-                var observer = TestScheduler.CreateObserver<ITimeEntry>();
-                TimeEntriesSource.TimeEntryCreated.Subscribe(observer);
-
-                await TimeEntriesSource.Start(CreateDto(ValidTime, ValidDescription, true, ProjectId));
-
-                observer.Messages.Single().Value.Value.Id.Should().Be(-1);
-                observer.Messages.Single().Value.Value.Start.Should().Be(ValidTime);
-            }
-
-            private async ThreadingTask batchUpdateCalledWith(Predicate<IDatabaseTimeEntry> predicate)
-            {
-                await Repository.Received().BatchUpdate(
-                    Arg.Is<IEnumerable<(long, IDatabaseTimeEntry Entity)>>(enumerable => predicate(enumerable.First().Entity)),
-                    Arg.Any<Func<IDatabaseTimeEntry, IDatabaseTimeEntry, ConflictResolutionMode>>(),
-                    Arg.Any<IRivalsResolver<IDatabaseTimeEntry>>());
-            }
-
-            [Fact, LogIfTooSlow]
-            public async ThreadingTask NotifiesShortcutCreatorAboutNewEntry()
-            {
-                var dto = CreateDto(ValidTime, ValidDescription, true, ProjectId, TaskId);
-                var timeEntry = await TimeEntriesSource.Start(dto);
-
-                ApplicationShortcutCreator
-                    .Received()
-                    .OnTimeEntryStarted(
-                        Arg.Is<ITimeEntry>(te =>
-                            te.Description == dto.Description
-                            && te.Start == dto.StartTime
-                            && te.Billable == dto.Billable
-                            && te.ProjectId == dto.ProjectId
-                            && te.TaskId == dto.TaskId));
             }
         }
 
@@ -458,12 +281,23 @@ namespace Toggl.Foundation.Tests.DataSources
             [Fact, LogIfTooSlow]
             public async ThreadingTask RemovesCurrentlyRunningTimeEntryWhenItIsDeleted()
             {
+                DataSource.TimeEntries.Returns(TimeEntriesSource);
                 var runningTimeEntriesHistory = new List<IDatabaseTimeEntry>();
+                var user = Substitute.For<IDatabaseUser>();
+                user.Id.Returns(10);
+                DataSource.User.Current.Returns(Observable.Return(user));
                 TimeEntriesSource.CurrentlyRunningTimeEntry
                     .Subscribe(te => runningTimeEntriesHistory.Add(te));
-                var timeEntryDto = CreateDto(ValidTime, ValidDescription, true, ProjectId);
+                var prototype = new MockTimeEntryPrototype
+                {
+                    WorkspaceId = WorkspaceId,
+                    StartTime = ValidTime,
+                    Description = "Some description",
+                    IsBillable = true,
+                    ProjectId = ProjectId
+                };
                 prepareBatchUpdate();
-                var timeEntry = await TimeEntriesSource.Start(timeEntryDto);
+                var timeEntry = await InteractorFactory.CreateTimeEntry(prototype).Execute();
                 Repository.GetById(Arg.Is(timeEntry.Id)).Returns(Observable.Return(timeEntry));
 
                 TimeEntriesSource.Delete(timeEntry.Id).Wait();

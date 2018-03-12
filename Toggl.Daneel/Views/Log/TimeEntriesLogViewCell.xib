@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13174"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -22,24 +23,24 @@
                         <rect key="frame" x="0.0" y="0.0" width="218" height="63.5"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Exporting assets" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fIi-Jg-bLZ">
-                                <rect key="frame" x="17" y="14" width="108" height="17"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <rect key="frame" x="17" y="11" width="114.5" height="18"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Design" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pqJ-Ao-2Sj">
-                                <rect key="frame" x="17" y="34" width="45" height="17"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <rect key="frame" x="17" y="33" width="47.5" height="18"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                 <color key="textColor" red="0.29411764705882354" green="0.78431372549019607" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="pqJ-Ao-2Sj" firstAttribute="top" secondItem="ohm-7o-dpZ" secondAttribute="top" constant="34" id="4Tq-eI-weD"/>
+                            <constraint firstItem="pqJ-Ao-2Sj" firstAttribute="top" secondItem="ohm-7o-dpZ" secondAttribute="top" constant="33" id="4Tq-eI-weD"/>
                             <constraint firstItem="fIi-Jg-bLZ" firstAttribute="leading" secondItem="ohm-7o-dpZ" secondAttribute="leading" constant="17" id="NaQ-kk-JyG"/>
                             <constraint firstItem="pqJ-Ao-2Sj" firstAttribute="leading" secondItem="ohm-7o-dpZ" secondAttribute="leading" constant="17" id="Pzs-j0-xPb"/>
-                            <constraint firstItem="fIi-Jg-bLZ" firstAttribute="top" secondItem="ohm-7o-dpZ" secondAttribute="top" constant="14" id="dxs-Fc-E0o"/>
+                            <constraint firstItem="fIi-Jg-bLZ" firstAttribute="top" secondItem="ohm-7o-dpZ" secondAttribute="top" constant="11" id="dxs-Fc-E0o"/>
                         </constraints>
                     </view>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0:23:10" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Y3e-98-yuY">

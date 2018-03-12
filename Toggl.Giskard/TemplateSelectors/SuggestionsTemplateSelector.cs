@@ -4,6 +4,6 @@ namespace Toggl.Giskard.TemplateSelectors
 {
     public sealed class SuggestionsTemplateSelector : MvxDefaultTemplateSelector
     {
-        public SuggestionsTemplateSelector() : base(Resource.Layout.SuggestionsFragmentCard) { }
+        public SuggestionsTemplateSelector() : base(Resource.Layout.MainSuggestionsCard) { }
     }
 }

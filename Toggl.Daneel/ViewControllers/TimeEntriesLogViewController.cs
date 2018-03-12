@@ -1,4 +1,6 @@
-﻿using MvvmCross.Binding.BindingContext;
+﻿using System;
+using Foundation;
+using MvvmCross.Binding.BindingContext;
 using MvvmCross.Binding.iOS;
 using MvvmCross.iOS.Views;
 using MvvmCross.Plugins.Visibility;
@@ -85,6 +87,13 @@ namespace Toggl.Daneel.ViewControllers
                       .To(vm => vm.DeleteCommand);
 
             bindingSet.Apply();
+        }
+
+        internal void Reload()
+        {
+            var range = new NSRange(0, TimeEntriesTableView.NumberOfSections());
+            var indexSet = NSIndexSet.FromNSRange(range);
+            TimeEntriesTableView.ReloadSections(indexSet, UITableViewRowAnimation.None);
         }
     }
 }

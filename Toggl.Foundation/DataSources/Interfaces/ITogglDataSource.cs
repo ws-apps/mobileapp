@@ -10,6 +10,7 @@ namespace Toggl.Foundation.DataSources
     {
         ITagsSource Tags { get; }
         IUserSource User { get; }
+        IPreferencesSource Preferences { get; }
         ITasksSource Tasks { get; }
         IClientsSource Clients { get; }
         IProjectsSource Projects { get; }

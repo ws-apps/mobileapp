@@ -73,14 +73,14 @@ namespace Toggl.Giskard.Adapters
             MvxSingleton<IMvxMainThreadDispatcher>.Instance.RequestMainThreadAction(() =>
             {
                 var groupHeaderIndex = headerIndexes[args.CollectionIndex];
-                NotifyItemChanged(groupHeaderIndex);
+                NotifyItemChanged(groupHeaderIndex + HeaderOffsetForAnimation);
 
                 switch (args.Action)
                 {
                     case NotifyCollectionChangedAction.Add:
                         foreach (var index in args.Indexes)
                         {
-                            var itemIndex = groupHeaderIndex + index + 1;
+                            var itemIndex = groupHeaderIndex + index + 1 + HeaderOffsetForAnimation;
                             NotifyItemInserted(itemIndex);
                         }
                         break;
@@ -88,7 +88,7 @@ namespace Toggl.Giskard.Adapters
                     case NotifyCollectionChangedAction.Remove:
                         foreach (var index in args.Indexes)
                         {
-                            var itemIndex = groupHeaderIndex + index + 1;
+                            var itemIndex = groupHeaderIndex + index + 1 + HeaderOffsetForAnimation;
                             NotifyItemRemoved(itemIndex);
                         }
                         break;
@@ -96,13 +96,15 @@ namespace Toggl.Giskard.Adapters
                     case NotifyCollectionChangedAction.Replace:
                         foreach (var index in args.Indexes)
                         {
-                            var itemIndex = groupHeaderIndex + index + 1;
+                            var itemIndex = groupHeaderIndex + index + 1 + HeaderOffsetForAnimation;
                             NotifyItemChanged(itemIndex);
                         }
                         break;
                 }
             });
         }
+
+        protected virtual int HeaderOffsetForAnimation => 0;
 
         public override object GetItem(int viewPosition)
         {

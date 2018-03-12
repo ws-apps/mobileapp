@@ -48,6 +48,10 @@ namespace Toggl.Daneel.ViewControllers
                       .To(vm => vm.SuggestCreation);
 
             bindingSet.Bind(source)
+                      .For(v => v.UseGrouping)
+                      .To(vm => vm.UseGrouping);
+
+            bindingSet.Bind(source)
                       .For(v => v.Text)
                       .To(vm => vm.Text);
             

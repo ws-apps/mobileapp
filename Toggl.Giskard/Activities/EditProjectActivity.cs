@@ -1,4 +1,5 @@
-﻿using Android.App;
+﻿using System.Linq;
+using Android.App;
 using Android.Content.PM;
 using Android.Graphics;
 using Android.OS;
@@ -8,6 +9,7 @@ using Android.Views;
 using MvvmCross.Droid.Support.V7.AppCompat;
 using MvvmCross.Droid.Views.Attributes;
 using Toggl.Foundation.MvvmCross.ViewModels;
+using Toggl.Giskard.Fragments;
 using static Android.Support.V7.Widget.Toolbar;
 
 namespace Toggl.Giskard.Activities
@@ -56,6 +58,13 @@ namespace Toggl.Giskard.Activities
         {
             if (keyCode == Keycode.Back)
             {
+                var fragment = SupportFragmentManager.Fragments.FirstOrDefault();
+                if (fragment is SelectWorkspaceFragment selectWorkspaceFragment)
+                {
+                    selectWorkspaceFragment.ViewModel.CloseCommand.Execute();
+                    return true;
+                }
+
                 ViewModel.CloseCommand.Execute();
                 return true;
             }

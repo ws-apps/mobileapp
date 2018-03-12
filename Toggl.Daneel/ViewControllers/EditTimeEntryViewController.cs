@@ -9,9 +9,9 @@ using MvvmCross.Plugins.Visibility;
 using Toggl.Daneel.Combiners;
 using Toggl.Daneel.Extensions;
 using Toggl.Daneel.Presentation.Attributes;
-using Toggl.Daneel.Presentation.Transition;
 using Toggl.Foundation;
 using Toggl.Foundation.MvvmCross.Converters;
+using Toggl.Foundation.MvvmCross.Combiners;
 using Toggl.Foundation.MvvmCross.Helper;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using UIKit;
@@ -33,9 +33,9 @@ namespace Toggl.Daneel.ViewControllers
 
             prepareViews();
 
-            var durationConverter = new TimeSpanToDurationWithUnitValueConverter();
-            var dateConverter = new DateToTitleStringValueConverter();
-            var timeConverter = new DateTimeToTimeValueConverter();
+            var durationCombiner = new DurationValueCombiner();
+            var dateCombiner = new DateTimeOffsetDateFormatValueCombiner(TimeZoneInfo.Local);
+            var timeCombiner = new DateTimeOffsetTimeFormatValueCombiner(TimeZoneInfo.Local);
             var visibilityConverter = new MvxVisibilityValueConverter();
             var invertedBoolConverter = new BoolToConstantValueConverter<bool>(false, true);
             var inverterVisibilityConverter = new MvxInvertedVisibilityValueConverter();
@@ -77,8 +77,9 @@ namespace Toggl.Daneel.ViewControllers
                       .To(vm => vm.Billable);
 
             bindingSet.Bind(DurationLabel)
-                      .To(vm => vm.Duration)
-                      .WithConversion(durationConverter);
+                      .ByCombining(durationCombiner,
+                          vm => vm.Duration,
+                          vm => vm.DurationFormat);
 
             bindingSet.Bind(ProjectTaskClientLabel)
                       .For(v => v.AttributedText)
@@ -89,16 +90,19 @@ namespace Toggl.Daneel.ViewControllers
                           v => v.ProjectColor);
 
             bindingSet.Bind(StartDateLabel)
-                      .To(vm => vm.StartTime)
-                      .WithConversion(dateConverter);
+                      .ByCombining(dateCombiner,
+                          vm => vm.StartTime,
+                          vm => vm.DateFormat);
 
             bindingSet.Bind(StartTimeLabel)
-                      .To(vm => vm.StartTime)
-                      .WithConversion(timeConverter);
+                      .ByCombining(timeCombiner,
+                          vm => vm.StartTime,
+                          vm => vm.TimeFormat);
 
             bindingSet.Bind(EndTimeLabel)
-                      .To(vm => vm.StopTime)
-                      .WithConversion(timeConverter);
+                      .ByCombining(timeCombiner,
+                          vm => vm.StopTime,
+                          vm => vm.TimeFormat);
 
             //Commands
             bindingSet.Bind(CloseButton).To(vm => vm.CloseCommand);

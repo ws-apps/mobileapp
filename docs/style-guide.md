@@ -250,6 +250,25 @@ public void Baz(int newFoo)
 }
 ```
 
+Private methods that do not use instance members should be marked as `static`.
+```csharp
+public sealed class Foo
+{
+    private int number;
+    
+    public void Bar(int offset)
+    {
+    	int rating = twice(number * offset);
+	Console.WriteLine(rating);
+    }
+    
+    private static int twice(int value)
+    {
+    	return value * 2;
+    }
+}
+```
+
 Do not add spaces around parentheses.
 ```csharp
 // Do

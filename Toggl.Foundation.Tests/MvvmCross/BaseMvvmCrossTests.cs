@@ -9,7 +9,7 @@ using NSubstitute;
 
 namespace Toggl.Foundation.Tests.MvvmCross
 {
-    public abstract class BaseMvvmCrossTests
+    public abstract class BaseMvvmCrossTests : InteractorAwareTests
     {
         protected IMvxIoCProvider Ioc { get; private set; }
 
@@ -22,10 +22,9 @@ namespace Toggl.Foundation.Tests.MvvmCross
             MvxSingletonCache.Initialize();
             MvxSimpleIoCContainer.Initialize();
 
-            MvxSingleton<IMvxIoCProvider>.Instance.RegisterSingleton(MvxSingleton<IMvxIoCProvider>.Instance);
             MvxSingleton<IMvxIoCProvider>.Instance.RegisterSingleton<IMvxTrace>(new TestTrace());
             MvxSingleton<IMvxIoCProvider>.Instance.RegisterSingleton<IMvxSettings>(new MvxSettings());
-
+            
             MvxTrace.Initialize();
         }
 

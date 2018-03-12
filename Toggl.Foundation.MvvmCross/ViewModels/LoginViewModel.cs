@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MvvmCross.Core.Navigation;
 using MvvmCross.Core.ViewModels;
 using PropertyChanged;
+using Toggl.Foundation.Analytics;
 using Toggl.Foundation.DataSources;
 using Toggl.Foundation.Exceptions;
 using Toggl.Foundation.Login;
@@ -30,6 +31,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private readonly IMvxNavigationService navigationService;
         private readonly IPasswordManagerService passwordManagerService;
         private readonly IApiErrorHandlingService apiErrorHandlingService;
+        private readonly IAnalyticsService analyticsService;
 
         private LoginType loginType;
         private IDisposable loginDisposable;
@@ -136,19 +138,22 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             IOnboardingStorage onboardingStorage,
             IMvxNavigationService navigationService,
             IPasswordManagerService passwordManagerService,
-            IApiErrorHandlingService apiErrorHandlingService)
+            IApiErrorHandlingService apiErrorHandlingService,
+            IAnalyticsService analyticsService)
         {
             Ensure.Argument.IsNotNull(loginManager, nameof(loginManager));
             Ensure.Argument.IsNotNull(onboardingStorage, nameof(onboardingStorage));
             Ensure.Argument.IsNotNull(navigationService, nameof(navigationService));
             Ensure.Argument.IsNotNull(passwordManagerService, nameof(passwordManagerService));
             Ensure.Argument.IsNotNull(apiErrorHandlingService, nameof(apiErrorHandlingService));
+            Ensure.Argument.IsNotNull(analyticsService, nameof(analyticsService));
 
             this.loginManager = loginManager;
             this.onboardingStorage = onboardingStorage;
             this.navigationService = navigationService;
             this.passwordManagerService = passwordManagerService;
             this.apiErrorHandlingService = apiErrorHandlingService;
+            this.analyticsService = analyticsService;
 
             BackCommand = new MvxCommand(back);
             NextCommand = new MvxCommand(next, () => NextIsEnabled);
@@ -156,7 +161,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             ForgotPasswordCommand = new MvxCommand(forgotPassword);
             OpenPrivacyPolicyCommand = new MvxCommand(openPrivacyPolicyCommand);
             OpenTermsOfServiceCommand = new MvxCommand(openTermsOfServiceCommand);
-            StartPasswordManagerCommand = new MvxAsyncCommand(startPasswordManager);
+            StartPasswordManagerCommand = new MvxAsyncCommand(startPasswordManager, () => IsPasswordManagerAvailable);
             TogglePasswordVisibilityCommand = new MvxCommand(togglePasswordVisibility);
         }
 
@@ -226,6 +231,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             IsLoading = true;
             loginManager
                 .ResetPassword(Email)
+                .Do(_ => analyticsService.TrackResetPassword())
                 .Subscribe(onPasswordResetSuccess, onPasswordResetError);
         }
 
@@ -283,6 +289,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             loginDisposable =
                 loginManager
                     .Login(Email, Password)
+                    .Do(_ => analyticsService.TrackLoginEvent(AuthenticationMethod.EmailAndPassword))
                     .Subscribe(onDataSource, onError, onCompleted);
         }
 
@@ -292,7 +299,13 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
             IsLoading = true;
 
-            var googleObservable = IsLogin ? loginManager.LoginWithGoogle() : loginManager.SignUpWithGoogle();
+            var googleObservable = IsLogin
+                ? loginManager
+                    .LoginWithGoogle()
+                    .Do(_ => analyticsService.TrackLoginEvent(AuthenticationMethod.Google))
+                : loginManager
+                    .SignUpWithGoogle()
+                    .Do(_ => analyticsService.TrackSignUpEvent(AuthenticationMethod.Google));
             loginDisposable = googleObservable.Subscribe(onDataSource, onError, onCompleted);
         }
 
@@ -303,22 +316,27 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             loginDisposable =
                 loginManager
                     .SignUp(Email, Password)
+                    .Do(_ => analyticsService.TrackSignUpEvent(AuthenticationMethod.EmailAndPassword))
                     .Subscribe(onDataSource, onError, onCompleted);
         }
 
         private async Task startPasswordManager()
         {
-            if (!passwordManagerService.IsAvailable) return;
+            analyticsService.TrackPasswordManagerButtonClicked();
 
             var loginInfo = await passwordManagerService.GetLoginInformation();
 
             Email = loginInfo.Email;
             if (!NextIsEnabled) return;
-            
+
+            analyticsService.TrackPasswordManagerContainsValidEmail();
+
             next();
             Password = loginInfo.Password;
             if (!NextIsEnabled) return;
-            
+
+            analyticsService.TrackPasswordManagerContainsValidPassword();
+
             next();
         }
 

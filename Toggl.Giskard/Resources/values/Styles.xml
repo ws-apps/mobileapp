@@ -4,5 +4,10 @@
         <item name="android:windowBackground">@android:color/white</item>
         <item name="android:windowNoTitle">true</item>
     </style>
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:actionBarSize">56dp</item>
+    </style>
+    <style name="TogglDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:colorAccent">#328FFF</item>
+    </style>
 </resources>

@@ -16,8 +16,6 @@ namespace Toggl.Foundation.DataSources
         IObservable<long> TimeEntryDeleted { get; }
 
         IObservable<bool> IsEmpty { get; }
-
-        IObservable<IDatabaseTimeEntry> Start(StartTimeEntryDTO dto);
          IObservable<IDatabaseTimeEntry> Stop(DateTimeOffset stopTime);
 
         IObservable<IDatabaseTimeEntry> Update(EditTimeEntryDto dto);

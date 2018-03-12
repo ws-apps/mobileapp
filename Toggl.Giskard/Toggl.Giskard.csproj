@@ -31,8 +31,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AndroidSupportedAbis>armeabi-v7a</AndroidSupportedAbis>
-<AndroidHttpClientHandlerType>Xamarin.Android.Net.AndroidClientHandler</AndroidHttpClientHandlerType>
-<EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
+    <AndroidHttpClientHandlerType>Xamarin.Android.Net.AndroidClientHandler</AndroidHttpClientHandlerType>
+    <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <AndroidCreatePackagePerAbi>true</AndroidCreatePackagePerAbi>
@@ -206,8 +206,35 @@
     <Reference Include="Microsoft.AppCenter.Crashes">
       <HintPath>..\packages\Microsoft.AppCenter.Crashes.1.2.0\lib\MonoAndroid403\Microsoft.AppCenter.Crashes.dll</HintPath>
     </Reference>
+    <Reference Include="Xamarin.GooglePlayServices.Basement">
+      <HintPath>..\packages\Xamarin.GooglePlayServices.Basement.60.1142.0\lib\MonoAndroid80\Xamarin.GooglePlayServices.Basement.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.GooglePlayServices.Tasks">
+      <HintPath>..\packages\Xamarin.GooglePlayServices.Tasks.60.1142.0\lib\MonoAndroid80\Xamarin.GooglePlayServices.Tasks.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.GooglePlayServices.Base">
+      <HintPath>..\packages\Xamarin.GooglePlayServices.Base.60.1142.0\lib\MonoAndroid80\Xamarin.GooglePlayServices.Base.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.GooglePlayServices.Identity">
+      <HintPath>..\packages\Xamarin.GooglePlayServices.Identity.60.1142.0\lib\MonoAndroid80\Xamarin.GooglePlayServices.Identity.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.GooglePlayServices.Auth.Api.Phone">
+      <HintPath>..\packages\Xamarin.GooglePlayServices.Auth.Api.Phone.60.1142.0\lib\MonoAndroid80\Xamarin.GooglePlayServices.Auth.Api.Phone.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.GooglePlayServices.Auth.Base">
+      <HintPath>..\packages\Xamarin.GooglePlayServices.Auth.Base.60.1142.0\lib\MonoAndroid80\Xamarin.GooglePlayServices.Auth.Base.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.GooglePlayServices.Auth">
+      <HintPath>..\packages\Xamarin.GooglePlayServices.Auth.60.1142.0\lib\MonoAndroid80\Xamarin.GooglePlayServices.Auth.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Activities\SelectTagsActivity.cs" />
+    <Compile Include="Adapters\SelectCreatableEntityRecyclerAdapter.cs" />
+    <Compile Include="Adapters\SelectTagsRecyclerAdapter.cs" />
+    <Compile Include="Activities\SelectProjectActivity.cs" />
+    <Compile Include="Adapters\SelectProjectRecyclerAdapter.cs" />
+    <Compile Include="Bindings\ImageViewVerticalFlipTargetBinding.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="LinkerPleaseInclude.cs" />
@@ -223,12 +250,14 @@
     <Compile Include="Services\SharedPreferencesStorage.cs" />
     <Compile Include="Bootstrap\ColorPluginBootstrap.cs" />
     <Compile Include="Bootstrap\VisibilityPluginBootstrap.cs" />
-    <Compile Include="Fragments\SuggestionsFragment.cs" />
-    <Compile Include="Fragments\TimeEntriesLogFragment.cs" />
     <Compile Include="Activities\MainActivity.cs" />
-    <Compile Include="TemplateSelectors\TimeEntriesLogTemplateSelector.cs" />
-    <Compile Include="Adapters\TimeEntriesLogRecyclerAdapter.cs" />
-    <Compile Include="Views\TimeEntriesLogRecyclerView.cs" />
+    <Compile Include="TemplateSelectors\SelectTagsTemplateSelector.cs" />
+    <Compile Include="Views\SelectProjectRecyclerView.cs" />
+    <Compile Include="TemplateSelectors\MainTemplateSelector.cs" />
+    <Compile Include="Adapters\MainRecyclerAdapter.cs" />
+    <Compile Include="Views\SelectTagsRecyclerView.cs" />
+    <Compile Include="Views\MainRecyclerView.cs" />
+    <Compile Include="TemplateSelectors\SelectProjectTemplateSelector.cs" />
     <Compile Include="Startup\SetupTargetFactories.cs">
       <DependentUpon>SetupTargetFactories.tt</DependentUpon>
     </Compile>
@@ -242,7 +271,7 @@
     <Compile Include="Activities\SettingsActivity.cs" />
     <Compile Include="Bindings\EditTextFocusTargetBinding.cs" />
     <Compile Include="Presenters\TogglPresenter.cs" />
-    <Compile Include="Views\TimeEntriesLogRecyclerViewHolder.cs" />
+    <Compile Include="Views\MainRecyclerViewLogViewHolder.cs" />
     <Compile Include="Views\SuggestionsRecyclerViewSnapHelper.cs" />
     <Compile Include="Views\SuggestionsRecyclerViewHolder.cs" />
     <Compile Include="Adapters\SuggestionsRecyclerAdapter.cs" />
@@ -265,7 +294,6 @@
     <Compile Include="Bindings\EditTextTextFieldInfoTargetBinding.cs" />
     <Compile Include="Autocomplete\ProjectTokenSpan.cs" />
     <Compile Include="Autocomplete\TagsTokenSpan.cs" />
-    <Compile Include="Views\StartTimeEntryRecyclerViewHolder.cs" />
     <Compile Include="Services\AnalyticsService.cs" />
     <Compile Include="Fragments\SelectDateTimeFragment.cs" />
     <Compile Include="Bindings\FabVisibilityTargetBinding.cs" />
@@ -273,20 +301,54 @@
     <Compile Include="Helper\ApiAvailability.cs" />
     <Compile Include="Activities\EditProjectActivity.cs" />
     <Compile Include="Adapters\CreateSuggestionSegmentedRecyclerAdapter.cs" />
+    <Compile Include="Views\CircleView.cs" />
+    <Compile Include="Views\HueSaturationPickerView.cs" />
+    <Compile Include="Fragments\SelectColorFragment.cs" />
+    <Compile Include="Views\ValueSlider.cs" />
+    <Compile Include="TemplateSelectors\SelectColorTemplateSelector.cs" />
+    <Compile Include="Converters\DecimalToPercentageValueConverter.cs" />
     <Compile Include="Views\DurationEditText.cs" />
     <Compile Include="Activities\SelectClientActivity.cs" />
     <Compile Include="Adapters\SelectClientRecyclerAdapter.cs" />
     <Compile Include="TemplateSelectors\SelectClientTemplateSelector.cs" />
     <Compile Include="Views\SelectClientRecyclerView.cs" />
+    <Compile Include="Fragments\SelectWorkspaceFragment.cs" />
+    <Compile Include="TemplateSelectors\SelectWorkspaceTemplateSelector.cs" />
+    <Compile Include="Bindings\TextViewFontWeightTargetBinding.cs" />
+    <Compile Include="Services\LicenseProvider.cs" />
+    <Compile Include="TemplateSelectors\SettingsTemplateSelector.cs" />
+    <Compile Include="Views\SelectProjectWithExpandableTasksRecyclerViewHolder.cs" />
+    <Compile Include="Fragments\SelectDateFormatFragment.cs" />
+    <Compile Include="TemplateSelectors\SelectDateFormatTemplateSelector.cs" />
+    <Compile Include="Fragments\SelectBeginningOfWeekFragment.cs" />
+    <Compile Include="TemplateSelectors\SelectBeginningOfWeekTemplateSelector.cs" />
+    <Compile Include="Fragments\SelectDurationFormatFragment.cs" />
+    <Compile Include="TemplateSelectors\SelectDurationFormatTemplateSelector.cs" />
+    <Compile Include="Views\MainRecyclerViewSuggestionsViewHolder.cs" />
+    <Compile Include="Views\MainRecyclerViewTouchCallback.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\AndroidManifest.xml" />
     <None Include="packages.config" />
     <None Include="FodyWeavers.xml" />
+    <AndroidResource Include="Resources\layout\SelectTagsActivity.axml" />
+    <AndroidResource Include="Resources\layout\SelectProjectActivity.axml" />
+    <AndroidResource Include="Resources\layout\SelectProjectActivityProjectCell.axml" />
+    <AndroidResource Include="Resources\layout\SelectProjectActivityTaskCell.axml" />
+    <AndroidResource Include="Resources\layout\SelectProjectActivityWorkspaceHeader.axml" />
     <None Include="Startup\SetupTargetFactories.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>SetupTargetFactories.cs</LastGenOutput>
     </None>
+    <AndroidResource Include="Resources\layout\SelectDateFormatFragment.axml" />
+    <AndroidResource Include="Resources\layout\SelectDateFormatFragmentCell.axml" />
+    <AndroidResource Include="Resources\layout\SettingsActivityWorkspaceCell.axml" />
+    <AndroidResource Include="Resources\drawable\TransparentToLightGrayGradient.xml" />
+    <GoogleServicesJson Include="google-services.json" />
+    <AndroidResource Include="Resources\layout\SelectBeginningOfWeekFragment.axml" />
+    <AndroidResource Include="Resources\layout\SelectBeginningOfWeekFragmentCell.axml" />
+    <AndroidResource Include="Resources\layout\SelectDurationFormatFragment.axml" />
+    <AndroidResource Include="Resources\layout\SelectDurationFormatFragmentCell.axml" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\values\Strings.xml" />
@@ -492,17 +554,16 @@
     <AndroidResource Include="Resources\drawable-xxxhdpi\timer_light.png" />
     <AndroidResource Include="Resources\drawable-xxxhdpi\unsynced.png" />
     <AndroidResource Include="Resources\values\Colors.xml" />
-    <AndroidResource Include="Resources\layout\TimeEntriesLogFragmentCell.axml" />
+    <AndroidResource Include="Resources\layout\MainLogCell.axml" />
     <AndroidResource Include="Resources\drawable\TransparentToWhiteGradient.xml" />
-    <AndroidResource Include="Resources\layout\SuggestionsFragment.axml" />
-    <AndroidResource Include="Resources\layout\TimeEntriesLogFragment.axml" />
-    <AndroidResource Include="Resources\layout\TimeEntriesLogFragmentHeader.axml" />
+    <AndroidResource Include="Resources\layout\MainSuggestions.axml" />
+    <AndroidResource Include="Resources\layout\MainLogHeader.axml" />
     <AndroidResource Include="Resources\drawable\SmallDot.xml" />
-    <AndroidResource Include="Resources\layout\SuggestionsFragmentCard.axml" />
+    <AndroidResource Include="Resources\layout\MainSuggestionsCard.axml" />
     <AndroidResource Include="Resources\layout\MainRunningTimeEntry.axml" />
     <AndroidResource Include="Resources\layout\SettingsActivity.axml" />
     <AndroidResource Include="Resources\layout\BrowserActivity.axml" />
-    <AndroidResource Include="Resources\layout\TimeEntriesLogFragmentFooter.axml" />
+    <AndroidResource Include="Resources\layout\MainLogFooter.axml" />
     <AndroidResource Include="Resources\drawable\TopShadow.xml" />
     <AndroidResource Include="Resources\layout\StartTimeEntryActivity.axml" />
     <AndroidResource Include="Resources\layout\StartTimeEntryActivityTimeEntryCell.axml" />
@@ -517,8 +578,13 @@
     <AndroidResource Include="Resources\layout\EditProjectActivity.axml" />
     <AndroidResource Include="Resources\layout\SelectTagsActivityCell.axml" />
     <AndroidResource Include="Resources\layout\AbcCreateEntityCell.axml" />
+    <AndroidResource Include="Resources\layout\SelectColorFragment.axml" />
+    <AndroidResource Include="Resources\layout\SelectColorFragmentCell.axml" />
+    <AndroidResource Include="Resources\drawable\ValueSliderThumb.xml" />
     <AndroidResource Include="Resources\layout\SelectClientActivity.axml" />
     <AndroidResource Include="Resources\layout\SelectClientActivityCell.axml" />
+    <AndroidResource Include="Resources\layout\SelectWorkspaceFragment.axml" />
+    <AndroidResource Include="Resources\layout\SelectWorkspaceFragmentCell.axml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Toggl.Foundation\Toggl.Foundation.csproj">
@@ -549,6 +615,9 @@
   <ItemGroup>
     <Folder Include="Presenters\" />
   </ItemGroup>
+  <ItemGroup>
+    <ProguardConfiguration Include="ProGuard.cfg" />
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <Import Project="..\packages\Fody.2.2.0\build\netstandard1.2\Fody.targets" Condition="Exists('..\packages\Fody.2.2.0\build\netstandard1.2\Fody.targets')" />
   <Import Project="..\packages\NETStandard.Library.2.0.0\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('..\packages\NETStandard.Library.2.0.0\build\netstandard2.0\NETStandard.Library.targets')" />
@@ -571,4 +640,11 @@
   <Import Project="..\packages\Xamarin.Android.Support.Design.26.1.0.1\build\MonoAndroid80\Xamarin.Android.Support.Design.targets" Condition="Exists('..\packages\Xamarin.Android.Support.Design.26.1.0.1\build\MonoAndroid80\Xamarin.Android.Support.Design.targets')" />
   <Import Project="..\packages\Xamarin.Build.Download.0.4.7\build\Xamarin.Build.Download.targets" Condition="Exists('..\packages\Xamarin.Build.Download.0.4.7\build\Xamarin.Build.Download.targets')" />
   <Import Project="..\packages\Xamarin.Android.Support.v7.CardView.26.1.0.1\build\MonoAndroid80\Xamarin.Android.Support.v7.CardView.targets" Condition="Exists('..\packages\Xamarin.Android.Support.v7.CardView.26.1.0.1\build\MonoAndroid80\Xamarin.Android.Support.v7.CardView.targets')" />
+  <Import Project="..\packages\Xamarin.GooglePlayServices.Basement.60.1142.0\build\MonoAndroid80\Xamarin.GooglePlayServices.Basement.targets" Condition="Exists('..\packages\Xamarin.GooglePlayServices.Basement.60.1142.0\build\MonoAndroid80\Xamarin.GooglePlayServices.Basement.targets')" />
+  <Import Project="..\packages\Xamarin.GooglePlayServices.Tasks.60.1142.0\build\MonoAndroid80\Xamarin.GooglePlayServices.Tasks.targets" Condition="Exists('..\packages\Xamarin.GooglePlayServices.Tasks.60.1142.0\build\MonoAndroid80\Xamarin.GooglePlayServices.Tasks.targets')" />
+  <Import Project="..\packages\Xamarin.GooglePlayServices.Base.60.1142.0\build\MonoAndroid80\Xamarin.GooglePlayServices.Base.targets" Condition="Exists('..\packages\Xamarin.GooglePlayServices.Base.60.1142.0\build\MonoAndroid80\Xamarin.GooglePlayServices.Base.targets')" />
+  <Import Project="..\packages\Xamarin.GooglePlayServices.Identity.60.1142.0\build\MonoAndroid80\Xamarin.GooglePlayServices.Identity.targets" Condition="Exists('..\packages\Xamarin.GooglePlayServices.Identity.60.1142.0\build\MonoAndroid80\Xamarin.GooglePlayServices.Identity.targets')" />
+  <Import Project="..\packages\Xamarin.GooglePlayServices.Auth.Api.Phone.60.1142.0\build\MonoAndroid80\Xamarin.GooglePlayServices.Auth.Api.Phone.targets" Condition="Exists('..\packages\Xamarin.GooglePlayServices.Auth.Api.Phone.60.1142.0\build\MonoAndroid80\Xamarin.GooglePlayServices.Auth.Api.Phone.targets')" />
+  <Import Project="..\packages\Xamarin.GooglePlayServices.Auth.Base.60.1142.0\build\MonoAndroid80\Xamarin.GooglePlayServices.Auth.Base.targets" Condition="Exists('..\packages\Xamarin.GooglePlayServices.Auth.Base.60.1142.0\build\MonoAndroid80\Xamarin.GooglePlayServices.Auth.Base.targets')" />
+  <Import Project="..\packages\Xamarin.GooglePlayServices.Auth.60.1142.0\build\MonoAndroid80\Xamarin.GooglePlayServices.Auth.targets" Condition="Exists('..\packages\Xamarin.GooglePlayServices.Auth.60.1142.0\build\MonoAndroid80\Xamarin.GooglePlayServices.Auth.targets')" />
 </Project>

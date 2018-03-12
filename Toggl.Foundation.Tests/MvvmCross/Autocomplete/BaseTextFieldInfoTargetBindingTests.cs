@@ -92,7 +92,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.Autocomplete
             {
                 TargetBinding.SetValue(
                     TextFieldInfo
-                        .Empty
+                        .Empty(1)
                         .WithTextAndCursor("Something", 1)
                         .WithProjectAndTaskInfo(1, 2, "some project", "#1e1e1e", 0, ""));
 
@@ -106,7 +106,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.Autocomplete
             {
                 TargetBinding.SetValue(
                     TextFieldInfo
-                        .Empty
+                        .Empty(1)
                         .WithTextAndCursor("Something", 1)
                         .WithProjectAndTaskInfo(1, 2, "some project", "#1e1e1e", 0, ""));
 
@@ -137,7 +137,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.Autocomplete
                 tag2.WorkspaceId.Returns(3);
                 TargetBinding.SetValue(
                     TextFieldInfo
-                        .Empty
+                        .Empty(1)
                         .AddTag(new TagSuggestion(tag))
                         .AddTag(new TagSuggestion(tag2)));
 
@@ -155,7 +155,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.Autocomplete
                 const string newDescription = "A ";
                 TargetBinding.SetValue(
                     TextFieldInfo
-                        .Empty
+                        .Empty(1)
                         .WithTextAndCursor("A", 0)
                         .WithProjectAndTaskInfo(1, 2, "some project", "#1e1e1e", 0, ""));
                 TargetBinding.IsSelectingText = false;

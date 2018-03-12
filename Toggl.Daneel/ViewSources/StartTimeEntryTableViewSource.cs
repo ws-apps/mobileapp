@@ -48,6 +48,8 @@ namespace Toggl.Daneel.ViewSources
 
         public IMvxCommand<ProjectSuggestion> ToggleTasksCommand { get; set; }
 
+        public IMvxCommand<AutocompleteSuggestion> SelectSuggestionCommand { get; set; }
+
         public StartTimeEntryTableViewSource(UITableView tableView)
             : base(tableView, headerCellIdentifier, "")
         {
@@ -164,6 +166,15 @@ namespace Toggl.Daneel.ViewSources
             return ShouldShowNoTagsInfoMessage || ShouldShowNoProjectsInfoMessage
                 ? defaultRowHeight + noEntityCellHeight
                 : defaultRowHeight;
+        }
+
+        public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
+        {
+            base.RowSelected(tableView, indexPath);
+
+            var item = GetItemAt(indexPath);
+            if (item is AutocompleteSuggestion autocompleteSuggestion)
+                SelectSuggestionCommand.Execute(autocompleteSuggestion);
         }
 
         private string getIdentifier(object item)

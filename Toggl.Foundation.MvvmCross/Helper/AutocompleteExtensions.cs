@@ -1,31 +1,36 @@
 ﻿using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using Toggl.Foundation.Autocomplete.Suggestions;
 using Toggl.Foundation.MvvmCross.Collections;
 
 namespace Toggl.Foundation.MvvmCross.Helper
 {
+    using WorkspaceGroupedSuggestionsCollection = WorkspaceGroupedCollection<AutocompleteSuggestion>;
+    using WorkspaceSuggestionsGrouping = IGrouping<(long workspaceId, string workspaceName), AutocompleteSuggestion>;
+
     internal static class AutocompleteExtensions
     {
-        public static IEnumerable<WorkspaceGroupedCollection<AutocompleteSuggestion>> GroupByWorkspaceAddingNoProject(
+        public static IEnumerable<WorkspaceGroupedSuggestionsCollection> GroupByWorkspace(
             this IEnumerable<AutocompleteSuggestion> suggestions)
             => suggestions
                 .Where(suggestion => !string.IsNullOrEmpty(suggestion.WorkspaceName))
                 .GroupBy(suggestion => (suggestion.WorkspaceId, suggestion.WorkspaceName))
-                .Select(collectionWithNoProject);
+                .Select(createWorkspaceGroupedCollection);
 
+        public static IEnumerable<WorkspaceGroupedSuggestionsCollection> GroupByWorkspaceAddingNoProject(
+            this IEnumerable<AutocompleteSuggestion> suggestions)
+            => suggestions
+                .GroupByWorkspace()
+                .Select(withNoProject);
 
-        private static WorkspaceGroupedCollection<AutocompleteSuggestion> collectionWithNoProject(
-            IGrouping<(long workspaceId, string workspaceName), AutocompleteSuggestion> grouping)
+        private static WorkspaceGroupedSuggestionsCollection withNoProject(WorkspaceGroupedSuggestionsCollection collection)
         {
-            var collection = new WorkspaceGroupedCollection<AutocompleteSuggestion>(
-                grouping.Key.workspaceName, grouping);
-            collection.Insert(
-                0,
-                ProjectSuggestion.NoProject(
-                    grouping.Key.workspaceId,
-                    grouping.Key.workspaceName));
+            collection.Insert(0, ProjectSuggestion.NoProject(collection.WorkspaceId, collection.WorkspaceName));
             return collection;
         }
+
+        private static WorkspaceGroupedSuggestionsCollection createWorkspaceGroupedCollection(WorkspaceSuggestionsGrouping grouping)
+            => new WorkspaceGroupedSuggestionsCollection(grouping.Key.workspaceName, grouping.Key.workspaceId, grouping);
     }
 }

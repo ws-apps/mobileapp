@@ -2,6 +2,7 @@
 using NSubstitute;
 using Toggl.Foundation.Models;
 using Toggl.Foundation.Sync.States;
+using Toggl.Foundation.Tests.Mocks;
 using Toggl.PrimeRadiant;
 using Toggl.PrimeRadiant.Models;
 
@@ -20,7 +21,7 @@ namespace Toggl.Foundation.Tests.Sync.States.Push
                 => new UnsyncableTimeEntryState(repository);
 
             protected override IDatabaseTimeEntry CreateDirtyEntity()
-                => TimeEntry.Dirty(new Ultrawave.Models.TimeEntry { Description = Guid.NewGuid().ToString() });
+                => TimeEntry.Dirty(new MockTimeEntry { Description = Guid.NewGuid().ToString() });
         }
     }
 }

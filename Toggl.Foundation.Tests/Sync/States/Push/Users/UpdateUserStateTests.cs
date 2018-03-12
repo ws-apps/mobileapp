@@ -2,6 +2,7 @@
 using NSubstitute;
 using Toggl.Foundation.Models;
 using Toggl.Foundation.Sync.States;
+using Toggl.Foundation.Tests.Mocks;
 using Toggl.Multivac.Models;
 using Toggl.PrimeRadiant;
 using Toggl.PrimeRadiant.Models;
@@ -25,17 +26,17 @@ namespace Toggl.Foundation.Tests.Sync.States
                 => api.User.Update;
 
             protected override IDatabaseUser CreateDirtyEntity(long id, DateTimeOffset lastUpdate = default(DateTimeOffset))
-                => User.Dirty(new Ultrawave.Models.User { Id = id, Fullname = Guid.NewGuid().ToString(), At = lastUpdate });
+                => User.Dirty(new MockUser { Id = id, Fullname = Guid.NewGuid().ToString(), At = lastUpdate });
 
             protected override void AssertUpdateReceived(ITogglApi api, IDatabaseUser entity)
                 => api.User.Received().Update(entity);
 
             protected override IDatabaseUser CreateDirtyEntityWithNegativeId()
-                => User.Dirty(new Ultrawave.Models.User { Id = -1, Fullname = Guid.NewGuid().ToString() });
+                => User.Dirty(new MockUser { Id = -1, Fullname = Guid.NewGuid().ToString() });
 
             protected override IDatabaseUser CreateCleanWithPositiveIdFrom(IDatabaseUser entity)
             {
-                var te = new Ultrawave.Models.User(entity);
+                var te = new MockUser(entity);
                 te.Id = 1;
                 return User.Clean(te);
             }

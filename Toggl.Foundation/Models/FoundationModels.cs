@@ -28,6 +28,25 @@ namespace Toggl.Foundation.Models
         public string LastSyncErrorMessage { get; }
     }
 
+    internal partial class Preferences : IDatabasePreferences
+    {
+        public long Id { get; }
+
+        public TimeFormat TimeOfDayFormat { get; }
+
+        public DateFormat DateFormat { get; }
+
+        public DurationFormat DurationFormat { get; }
+
+        public bool CollapseTimeEntries { get; }
+
+        public bool IsDeleted { get; }
+
+        public SyncStatus SyncStatus { get; }
+
+        public string LastSyncErrorMessage { get; }
+    }
+
     internal partial class Project : IDatabaseProject
     {
         public long Id { get; }

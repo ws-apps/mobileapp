@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:local="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <toggl.giskard.views.CircleView
+        android:id="@+id/EditProjectColorCircle"
+        local:MvxBind="CircleColor NativeColor(Color)"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginTop="6dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="6dp" />
+    <ImageView
+        local:MvxBind="Visibility Visibility(Selected)"
+        android:src="@drawable/check_light"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+</FrameLayout>

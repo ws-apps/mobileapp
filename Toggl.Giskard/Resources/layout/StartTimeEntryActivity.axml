@@ -16,12 +16,12 @@
         android:layout_marginBottom="20dp"
         android:layout_gravity="bottom|right" />
     <toggl.giskard.views.StartTimeEntryRecyclerView
-        local:MvxBind="ItemsSource Suggestions; ItemClick SelectSuggestionCommand; CreateCommand CreateCommand; Text CurrentQuery; UseGrouping UseGrouping; IsSuggestingCreation SuggestCreation; IsSuggestingCreation IsSuggestingProjects; ToggleTasksCommand ToggleTaskSuggestionsCommand"
+        local:MvxBind="ItemsSource Suggestions; ItemClick SelectSuggestionCommand; CreateCommand CreateCommand; Text CurrentQuery; UseGrouping UseGrouping; IsSuggestingCreation SuggestCreation; IsSuggestingProjects IsSuggestingProjects; ToggleTasksCommand ToggleTaskSuggestionsCommand"
         local:MvxTemplateSelector="@string/StartTimeEntrySuggestionsTemplateSelector"
         android:scrollbars="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/startTimeEntryToolbarHeight" />
+        android:layout_marginTop="@dimen/expandedToolbarHeight" />
     <RelativeLayout
         android:id="@+id/StartTimeEntryDurationCard"
         android:background="@android:color/white"
@@ -47,8 +47,8 @@
     <RelativeLayout
         android:elevation="2dp"
         android:background="@android:color/white"
-        android:layout_height="@dimen/startTimeEntryToolbarHeight"
-        android:layout_width="match_parent">
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/expandedToolbarHeight">
         <ImageView
             local:MvxBind="Click BackCommand"
             android:clickable="true"

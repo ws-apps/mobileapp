@@ -45,6 +45,34 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
                 ViewModel.SelectableColors.Single(c => c.Selected).Color.ARGB.Should().Be(colorToSelect.Color.ARGB);
             }
+
+            [Fact, LogIfTooSlow]
+            public async Task ReturnsTheSelectedColorIfCustomColorsAreNotAllowed()
+            {
+                var initiallySelectedColor = Color.DefaultProjectColors.First();
+                var parameters = ColorParameters.Create(initiallySelectedColor, false);
+                ViewModel.Prepare(parameters);
+                var colorToSelect = ViewModel.SelectableColors.Last();
+
+                ViewModel.SelectColorCommand.Execute(colorToSelect);
+
+                await NavigationService.Received()
+                    .Close(Arg.Is(ViewModel), Arg.Is<MvxColor>(c => c.ARGB == colorToSelect.Color.ARGB));
+            }
+
+            [Fact, LogIfTooSlow]
+            public async Task DoesNotReturnIfCustomColorsAreAllowed()
+            {
+                var initiallySelectedColor = Color.DefaultProjectColors.First();
+                var parameters = ColorParameters.Create(initiallySelectedColor, true);
+                ViewModel.Prepare(parameters);
+                var colorToSelect = ViewModel.SelectableColors.Last();
+
+                ViewModel.SelectColorCommand.Execute(colorToSelect);
+
+                await NavigationService.DidNotReceive()
+                    .Close(Arg.Is(ViewModel), Arg.Any<MvxColor>());
+            }
         }
 
         public sealed class ThePrepareCommand : SelectColorViewModelTest

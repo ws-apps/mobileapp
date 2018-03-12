@@ -15,6 +15,7 @@ using Toggl.Foundation.MvvmCross.ViewModels;
 using UIKit;
 using Toggl.Foundation;
 using Foundation;
+using Toggl.Multivac;
 
 namespace Toggl.Daneel.ViewControllers
 {
@@ -36,6 +37,7 @@ namespace Toggl.Daneel.ViewControllers
             SuggestionsTableView.Source = source;
             source.ToggleTasksCommand = new MvxCommand<ProjectSuggestion>(toggleTaskSuggestions);
 
+            var parametricDurationConverter = new ParametricTimeSpanToDurationValueConverter();
             var invertedVisibilityConverter = new MvxInvertedVisibilityValueConverter();
             var invertedBoolConverter = new BoolToConstantValueConverter<bool>(false, true);
             var buttonColorConverter = new BoolToConstantValueConverter<UIColor>(
@@ -53,7 +55,7 @@ namespace Toggl.Daneel.ViewControllers
                       .To(vm => vm.UseGrouping);
 
             bindingSet.Bind(source)
-                      .For(v => v.SelectionChangedCommand)
+                      .For(v => v.SelectSuggestionCommand)
                       .To(vm => vm.SelectSuggestionCommand);
 
             bindingSet.Bind(source)
@@ -88,6 +90,11 @@ namespace Toggl.Daneel.ViewControllers
             bindingSet.Bind(DescriptionTextView)
                       .For(v => v.BindTextFieldInfo())
                       .To(vm => vm.TextFieldInfo);
+
+            bindingSet.Bind(TimeInput)
+                      .For(v => v.FormattedDuration)
+                      .To(vm => vm.DisplayedTime)
+                      .WithConversion(parametricDurationConverter, DurationFormat.Improved);
 
             bindingSet.Bind(Placeholder)
                       .To(vm => vm.PlaceholderText);
@@ -176,7 +183,6 @@ namespace Toggl.Daneel.ViewControllers
             }
 
             TimeInput.TintColor = Color.StartTimeEntry.Cursor.ToNativeColor();
-            TimeInput.Converter = new TimeSpanToDurationValueConverter();
 
             DescriptionTextView.TintColor = Color.StartTimeEntry.Cursor.ToNativeColor();
             DescriptionTextView.BecomeFirstResponder();

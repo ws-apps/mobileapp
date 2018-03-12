@@ -29,7 +29,4 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
     <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="MvvmCross\ViewModels\CalendarQuickSelectShortcuts\" />
-  </ItemGroup>
 </Project>
