@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Toggl.Multivac;
 using Toggl.Multivac.Models;
 using Toggl.PrimeRadiant;
 using Toggl.PrimeRadiant.Models;
@@ -52,24 +53,36 @@ namespace Toggl.Foundation.Models
 
     internal partial class Preferences
     {
-        private Preferences(IDatabasePreferences entity)
-            : this(entity as IPreferences, entity.SyncStatus, entity.LastSyncErrorMessage, entity.IsDeleted)
-        {
-            SyncStatus = entity.SyncStatus;
-            LastSyncErrorMessage = entity.LastSyncErrorMessage;
-            IsDeleted = entity.IsDeleted;
-        }
-
         public static Preferences From(IDatabasePreferences entity)
-            => new Preferences(entity);
+            => new Preferences(entity, entity.SyncStatus, entity.LastSyncErrorMessage, entity.IsDeleted );
 
         private Preferences(IPreferences entity, SyncStatus syncStatus, string lastSyncErrorMessage, bool isDeleted = false)
+            : this(entity.Id,
+                entity.TimeOfDayFormat,
+                entity.DateFormat,
+                entity.DurationFormat,
+                entity.CollapseTimeEntries,
+                syncStatus,
+                lastSyncErrorMessage,
+                isDeleted)
         {
-            Id = entity.Id;
-            TimeOfDayFormat = entity.TimeOfDayFormat;
-            DateFormat = entity.DateFormat;
-            DurationFormat = entity.DurationFormat;
-            CollapseTimeEntries = entity.CollapseTimeEntries;
+        }
+
+        public Preferences(
+            long id,
+            TimeFormat timeOfDayFormat,
+            DateFormat dateFormat,
+            DurationFormat durationFormat,
+            bool collapseTimeEntries,
+            SyncStatus syncStatus,
+            string lastSyncErrorMessage,
+            bool isDeleted)
+        {
+            Id = id;
+            TimeOfDayFormat = timeOfDayFormat;
+            DateFormat = dateFormat;
+            DurationFormat = durationFormat;
+            CollapseTimeEntries = collapseTimeEntries;
             SyncStatus = syncStatus;
             LastSyncErrorMessage = lastSyncErrorMessage;
             IsDeleted = isDeleted;
