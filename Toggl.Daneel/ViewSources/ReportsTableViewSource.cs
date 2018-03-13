@@ -18,6 +18,8 @@ namespace Toggl.Daneel.ViewSources
 
         public ReportsViewModel ViewModel { get; set; }
 
+        public event EventHandler<CGPoint> OnScroll;
+
         public ReportsTableViewSource(UITableView tableView)
             : base(tableView)
         {
@@ -57,5 +59,11 @@ namespace Toggl.Daneel.ViewSources
         public override nfloat GetHeightForRow(UITableView tableView, NSIndexPath indexPath) => 56;
 
         public override nfloat GetHeightForHeader(UITableView tableView, nint section) => headerHeight;
+
+        public override void Scrolled(UIScrollView scrollView)
+        {
+            var offset = scrollView.ContentOffset;
+            OnScroll?.Invoke(this, new CGPoint(offset.X, offset.Y - headerHeight));
+        }
     }
 }

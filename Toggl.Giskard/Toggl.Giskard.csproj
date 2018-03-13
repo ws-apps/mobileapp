@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Toggl.Giskard</RootNamespace>
     <AssemblyName>Toggl.Giskard</AssemblyName>
-    <TargetFrameworkVersion>v8.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v8.1</TargetFrameworkVersion>
     <AndroidApplication>True</AndroidApplication>
     <AndroidResgenFile>Resources\Resource.designer.cs</AndroidResgenFile>
     <AndroidResgenClass>Resource</AndroidResgenClass>
@@ -20,6 +20,7 @@
     <AndroidLinkMode>Full</AndroidLinkMode>
     <AndroidLinkSkip>Toggl.Giskard</AndroidLinkSkip>
     <EnableProguard>true</EnableProguard>
+    <JavaMaximumHeapSize>2G</JavaMaximumHeapSize>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -32,7 +33,6 @@
     <AndroidSupportedAbis>arm64-v8a;armeabi;armeabi-v7a;x86</AndroidSupportedAbis>
     <AndroidHttpClientHandlerType>Xamarin.Android.Net.AndroidClientHandler</AndroidHttpClientHandlerType>
     <EmbedAssembliesIntoApk>false</EmbedAssembliesIntoApk>
-    <JavaMaximumHeapSize>1G</JavaMaximumHeapSize>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <AndroidCreatePackagePerAbi>true</AndroidCreatePackagePerAbi>
