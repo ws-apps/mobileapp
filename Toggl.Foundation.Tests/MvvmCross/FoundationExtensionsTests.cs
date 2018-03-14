@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reactive.Concurrency;
 using FluentAssertions;
 using MvvmCross.Core.Navigation;
 using NSubstitute;
@@ -57,6 +58,7 @@ namespace Toggl.Foundation.Tests.MvvmCross
                 var apiFactory = Substitute.For<IApiFactory>();
                 var database = Substitute.For<ITogglDatabase>();
                 var timeService = Substitute.For<ITimeService>();
+                var scheduler = Substitute.For<IScheduler>();
                 var analyticsService = Substitute.For<IAnalyticsService>();
                 var googleService = Substitute.For<IGoogleService>();
                 var backgroundService = Substitute.For<IBackgroundService>();
@@ -68,6 +70,7 @@ namespace Toggl.Foundation.Tests.MvvmCross
                     apiFactory,
                     database,
                     timeService,
+                    scheduler,
                     analyticsService,
                     googleService,
                     applicationShortcutCreator,

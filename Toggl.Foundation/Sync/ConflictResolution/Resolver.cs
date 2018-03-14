@@ -12,6 +12,9 @@ namespace Toggl.Foundation.Sync.ConflictResolution
         public static IConflictResolver<IDatabaseProject> ForProjects()
             => new PreferNewer<IDatabaseProject>(new ProjectSyncSelector());
 
+        internal static IConflictResolver<IDatabaseUser> ForUser()
+            => new PreferNewer<IDatabaseUser>(new UserSyncSelector());
+
         public static IConflictResolver<IDatabaseWorkspace> ForWorkspaces()
             => new PreferNewer<IDatabaseWorkspace>(new WorkspaceSyncSelector());
 

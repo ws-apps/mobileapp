@@ -12,12 +12,15 @@ namespace Toggl.Foundation.DataSources
     public sealed class UserDataSource : IUserSource
     {
         private readonly ISingleObjectStorage<IDatabaseUser> storage;
+        private readonly ITimeService timeService;
 
-        public UserDataSource(ISingleObjectStorage<IDatabaseUser> storage)
+        public UserDataSource(ISingleObjectStorage<IDatabaseUser> storage, ITimeService timeService)
         {
             Ensure.Argument.IsNotNull(storage, nameof(storage));
+            Ensure.Argument.IsNotNull(timeService, nameof(timeService));
 
             this.storage = storage;
+            this.timeService = timeService;
         }
 
         public IObservable<IDatabaseUser> Current
@@ -40,6 +43,8 @@ namespace Toggl.Foundation.DataSources
             => User.Builder
                    .FromExisting(existing)
                    .SetBeginningOfWeek(dto.BeginningOfWeek)
+                   .SetSyncStatus(SyncStatus.SyncNeeded)
+                   .SetAt(timeService.CurrentDateTime)
                    .Build();
     }
 }

@@ -71,7 +71,8 @@ namespace Toggl.Daneel
             const string clientName = "Daneel";
             var version = NSBundle.MainBundle.InfoDictionary["CFBundleShortVersionString"].ToString();
             var database = new Database();
-            var timeService = new TimeService(Scheduler.Default);
+            var scheduler = Scheduler.Default;
+            var timeService = new TimeService(scheduler);
             var suggestionProviderContainer = new SuggestionProviderContainer(
                 new MostUsedTimeEntrySuggestionProvider(database, timeService, maxNumberOfSuggestions)
             );
@@ -81,6 +82,7 @@ namespace Toggl.Daneel
                 version,
                 database,
                 timeService,
+                scheduler,
                 new MailService((ITopViewControllerProvider)Presenter),
                 new GoogleService(),
                 environment,

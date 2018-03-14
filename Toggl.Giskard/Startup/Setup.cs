@@ -65,7 +65,8 @@ namespace Toggl.Giskard
             var version = packageInfo.VersionName;
             var sharedPreferences = ApplicationContext.GetSharedPreferences(clientName, FileCreationMode.Private);
             var database = new Database();
-            var timeService = new TimeService(Scheduler.Default);
+            var scheduler = Scheduler.Default;
+            var timeService = new TimeService(scheduler);
             var suggestionProviderContainer = new SuggestionProviderContainer(
                 new MostUsedTimeEntrySuggestionProvider(database, timeService, maxNumberOfSuggestions)
             );
@@ -75,6 +76,7 @@ namespace Toggl.Giskard
                 version,
                 database,
                 timeService,
+                scheduler,
                 new MailService(),
                 new GoogleService(),
                 environment,

@@ -71,6 +71,7 @@ namespace Toggl.Foundation
             var fetchAllSince = new FetchAllSinceState(database, api, timeService);
             var persistWorkspaces = new PersistWorkspacesState(database.Workspaces, database.SinceParameters);
             var persistWorkspaceFeatures = new PersistWorkspacesFeaturesState(database.WorkspaceFeatures, database.SinceParameters);
+            var persistUser = new PersistUserState(database.User, database.SinceParameters);
             var persistTags = new PersistTagsState(database.Tags, database.SinceParameters);
             var persistClients = new PersistClientsState(database.Clients, database.SinceParameters);
             var persistPreferences = new PersistPreferencesState(dataSource.Preferences, database.SinceParameters);
@@ -82,7 +83,8 @@ namespace Toggl.Foundation
 
             transitions.ConfigureTransition(entryPoint, fetchAllSince.Start);
             transitions.ConfigureTransition(fetchAllSince.FetchStarted, persistWorkspaces.Start);
-            transitions.ConfigureTransition(persistWorkspaces.FinishedPersisting, persistWorkspaceFeatures.Start);
+            transitions.ConfigureTransition(persistWorkspaces.FinishedPersisting, persistUser.Start);
+            transitions.ConfigureTransition(persistUser.FinishedPersisting, persistWorkspaceFeatures.Start);
             transitions.ConfigureTransition(persistWorkspaceFeatures.FinishedPersisting, persistPreferences.Start);
             transitions.ConfigureTransition(persistPreferences.FinishedPersisting, persistTags.Start);
             transitions.ConfigureTransition(persistTags.FinishedPersisting, persistClients.Start);

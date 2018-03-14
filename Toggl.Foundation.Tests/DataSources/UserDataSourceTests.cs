@@ -35,7 +35,7 @@ namespace Toggl.Foundation.Tests.DataSources
 
                 DataBase.User.Returns(Storage);
 
-                return new UserDataSource(DataBase.User);
+                return new UserDataSource(DataBase.User, TimeService);
             }
 
             private IDatabaseUser newUser(long id, long workspaceId)
@@ -72,11 +72,15 @@ namespace Toggl.Foundation.Tests.DataSources
 
         public sealed class TheConstructor
         {
-            [Fact, LogIfTooSlow]
-            public void ThrowsIfTheArgumentIsNull()
+            [Theory, LogIfTooSlow]
+            [ClassData(typeof(TwoParameterConstructorTestData))]
+            public void ThrowsIfAnyArgumentIsNull(bool useRepository, bool useTimeServide)
             {
+                var repository = useRepository ? Substitute.For<ISingleObjectStorage<IDatabaseUser>>() : null;
+                var timeService = useTimeServide ? Substitute.For<ITimeService>() : null;
+
                 Action tryingToConstructWithEmptyParameters =
-                    () => new UserDataSource(null);
+                    () => new UserDataSource(repository, timeService);
 
                 tryingToConstructWithEmptyParameters
                     .ShouldThrow<ArgumentNullException>();

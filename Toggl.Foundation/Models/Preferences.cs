@@ -1,6 +1,7 @@
 ﻿using System;
 using Toggl.Foundation.DTOs;
 using Toggl.Multivac;
+using Toggl.PrimeRadiant;
 using Toggl.PrimeRadiant.Models;
 
 namespace Toggl.Foundation.Models
@@ -33,6 +34,8 @@ namespace Toggl.Foundation.Models
 
             public bool CollapseTimeEntries { get; private set; }
 
+            public SyncStatus SyncStatus { get; private set; }
+
             private Builder()
             {
             }
@@ -43,6 +46,7 @@ namespace Toggl.Foundation.Models
                 TimeOfDayFormat = preferences.TimeOfDayFormat;
                 DurationFormat = preferences.DurationFormat;
                 CollapseTimeEntries = preferences.CollapseTimeEntries;
+                SyncStatus = preferences.SyncStatus;
             }
 
             public Preferences Build()
@@ -92,6 +96,12 @@ namespace Toggl.Foundation.Models
                 return this;
             }
 
+            public Builder SetSyncStatus(SyncStatus syncStatus)
+            {
+                SyncStatus = syncStatus;
+                return this;
+            }
+
             private void ensureValidity()
             {
                 if (Enum.IsDefined(typeof(DurationFormat), DurationFormat) == false)
@@ -112,6 +122,7 @@ namespace Toggl.Foundation.Models
             TimeOfDayFormat = builder.TimeOfDayFormat;
             DurationFormat = builder.DurationFormat;
             CollapseTimeEntries = builder.CollapseTimeEntries;
+            SyncStatus = builder.SyncStatus;
         }
     }
 }

@@ -103,6 +103,7 @@ namespace Toggl.Daneel.Views.EditDuration
         private void finishEditing(object sender, EventArgs e)
         {
             isEditing = false;
+            setText(formattedDuration);
         }
 
         private void tryUpdate(DurationFieldInfo nextInput)

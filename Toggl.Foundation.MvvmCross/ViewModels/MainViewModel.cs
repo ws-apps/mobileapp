@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -20,6 +21,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
     [Preserve(AllMembers = true)]
     public sealed class MainViewModel : MvxViewModel
     {
+        private readonly TimeSpan currentTimeEntryDueTime = TimeSpan.FromMilliseconds(50);
+
         private bool isStopButtonEnabled = false;
 
         private CompositeDisposable disposeBag = new CompositeDisposable();
@@ -29,6 +32,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private readonly IUserPreferences userPreferences;
         private readonly IOnboardingStorage onboardingStorage;
         private readonly IMvxNavigationService navigationService;
+        private readonly IScheduler scheduler;
 
         public TimeSpan CurrentTimeEntryElapsedTime { get; private set; } = TimeSpan.Zero;
 
@@ -92,19 +96,22 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             ITimeService timeService,
             IOnboardingStorage onboardingStorage,
             IMvxNavigationService navigationService,
-            IUserPreferences userPreferences)
+            IUserPreferences userPreferences,
+            IScheduler scheduler)
         {
             Ensure.Argument.IsNotNull(dataSource, nameof(dataSource));
             Ensure.Argument.IsNotNull(timeService, nameof(timeService));
             Ensure.Argument.IsNotNull(onboardingStorage, nameof(onboardingStorage));
             Ensure.Argument.IsNotNull(navigationService, nameof(navigationService));
             Ensure.Argument.IsNotNull(userPreferences, nameof(userPreferences));
+            Ensure.Argument.IsNotNull(scheduler, nameof(scheduler));
 
             this.dataSource = dataSource;
             this.timeService = timeService;
             this.navigationService = navigationService;
             this.onboardingStorage = onboardingStorage;
             this.userPreferences = userPreferences;
+            this.scheduler = scheduler;
 
             RefreshCommand = new MvxCommand(refresh);
             OpenReportsCommand = new MvxAsyncCommand(openReports);
@@ -129,6 +136,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             var currentlyRunningTimeEntryDisposable = dataSource
                 .TimeEntries
                 .CurrentlyRunningTimeEntry
+                .Throttle(currentTimeEntryDueTime, scheduler) // avoid overwhelming the UI with frequent updates
                 .Subscribe(setRunningEntry);
             
             var syncManagerDisposable = dataSource

@@ -53,7 +53,7 @@ namespace Toggl.Foundation.DataSources
 
             this.minimumTimeInBackgroundForFullSync = minimumTimeInBackgroundForFullSync;
 
-            User = new UserDataSource(database.User);
+            User = new UserDataSource(database.User, timeService);
             Tags = new TagsDataSource(database.IdProvider, database.Tags, timeService);
             Tasks = new TasksDataSource(database.Tasks);
             Workspaces = new WorkspacesDataSource(database);

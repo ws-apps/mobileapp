@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using FluentAssertions;
 using FsCheck.Xunit;
+using Microsoft.Reactive.Testing;
 using NSubstitute;
 using Toggl.Foundation.MvvmCross.Parameters;
 using Toggl.Foundation.MvvmCross.ViewModels;
@@ -25,9 +27,13 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         {
             protected ISubject<SyncProgress> ProgressSubject { get; } = new Subject<SyncProgress>();
 
+            protected IUserPreferences UserPreferences { get; } = Substitute.For<IUserPreferences>();
+
+            protected TestScheduler Scheduler { get; } = new TestScheduler();
+
             protected override MainViewModel CreateViewModel()
             {
-                var vm = new MainViewModel(DataSource, TimeService, OnboardingStorage, NavigationService, UserPreferences);
+                var vm = new MainViewModel(DataSource, TimeService, OnboardingStorage, NavigationService, UserPreferences, Scheduler);
                 vm.Prepare();
                 return vm;
             }
@@ -45,21 +51,23 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         public sealed class TheConstructor : MainViewModelTest
         {
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(FiveParameterConstructorTestData))]
+            [ClassData(typeof(SixParameterConstructorTestData))]
             public void ThrowsIfAnyOfTheArgumentsIsNull(bool useDataSource,
                                                         bool useTimeService,
                                                         bool useOnboardingStorage,
                                                         bool useNavigationService,
-                                                        bool useUserPreferences)
+                                                        bool useUserPreferences,
+                                                        bool useScheduler)
             {
                 var dataSource = useDataSource ? DataSource : null;
                 var timeService = useTimeService ? TimeService : null;
                 var navigationService = useNavigationService ? NavigationService : null;
                 var onboardingStorage = useOnboardingStorage ? OnboardingStorage : null;
                 var userPreferences = useUserPreferences ? UserPreferences : null;
+                var scheduler = useScheduler ? Scheduler : null;
 
                 Action tryingToConstructWithEmptyParameters =
-                    () => new MainViewModel(dataSource, timeService, onboardingStorage, navigationService, userPreferences);
+                    () => new MainViewModel(dataSource, timeService, onboardingStorage, navigationService, userPreferences, scheduler);
 
                 tryingToConstructWithEmptyParameters
                     .ShouldThrow<ArgumentNullException>();
@@ -253,6 +261,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 DataSource.TimeEntries.CurrentlyRunningTimeEntry.Returns(observable);
 
                 ViewModel.Initialize().Wait();
+                Scheduler.AdvanceBy(TimeSpan.FromMilliseconds(50).Ticks);
             }
 
             [Fact, LogIfTooSlow]
@@ -319,6 +328,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             public async Task CannotBeExecutedWhenNoTimeEntryIsRunning()
             {
                 subject.OnNext(null);
+                Scheduler.AdvanceBy(TimeSpan.FromMilliseconds(50).Ticks);
 
                 await ViewModel.StopTimeEntryCommand.ExecuteAsync();
 
@@ -332,6 +342,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
                 await ViewModel.StopTimeEntryCommand.ExecuteAsync();
                 subject.OnNext(secondTimeEntry);
+                Scheduler.AdvanceBy(TimeSpan.FromMilliseconds(50).Ticks);
                 await ViewModel.StopTimeEntryCommand.ExecuteAsync();
 
                 await DataSource.TimeEntries.Received(2).Stop(Arg.Any<DateTimeOffset>());
@@ -413,6 +424,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
                 await ViewModel.Initialize();
                 currentTimeEntrySubject.OnNext(timeEntry);
+                Scheduler.AdvanceBy(TimeSpan.FromMilliseconds(50).Ticks);
             }
 
             [Fact, LogIfTooSlow]
@@ -428,6 +440,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             {
                 await prepare();
                 currentTimeEntrySubject.OnNext(null);
+                Scheduler.AdvanceBy(TimeSpan.FromMilliseconds(50).Ticks);
 
                 ActualValue.Should().Be(ExpectedEmptyValue);
             }

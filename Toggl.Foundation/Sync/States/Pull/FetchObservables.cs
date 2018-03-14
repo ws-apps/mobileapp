@@ -8,6 +8,7 @@ namespace Toggl.Foundation.Sync.States
     internal sealed class FetchObservables
     {
         public ISinceParameters SinceParameters { get; }
+        public IObservable<IUser> User { get; }
         public IObservable<List<IWorkspace>> Workspaces { get; }
         public IObservable<List<IWorkspaceFeatureCollection>> WorkspaceFeatures { get; }
         public IObservable<List<IClient>> Clients { get; }
@@ -18,13 +19,15 @@ namespace Toggl.Foundation.Sync.States
         public IObservable<IPreferences> Preferences { get; }
 
         public FetchObservables(FetchObservables old, ISinceParameters sinceParameters)
-            : this(sinceParameters, old.Workspaces, old.WorkspaceFeatures, old.Clients, old.Projects, old.TimeEntries, old.Tags, old.Tasks, old.Preferences)
+            : this(sinceParameters, old.Workspaces, old.WorkspaceFeatures, old.User, old.Clients,
+                   old.Projects, old.TimeEntries, old.Tags, old.Tasks, old.Preferences)
         {
         }
 
         public FetchObservables(ISinceParameters sinceParameters,
             IObservable<List<IWorkspace>> workspaces,
             IObservable<List<IWorkspaceFeatureCollection>> workspaceFeatures, 
+            IObservable<IUser> user,
             IObservable<List<IClient>> clients,
             IObservable<List<IProject>> projects,
             IObservable<List<ITimeEntry>> timeEntries,
@@ -36,6 +39,7 @@ namespace Toggl.Foundation.Sync.States
             SinceParameters = sinceParameters;
             Workspaces = workspaces;
             WorkspaceFeatures = workspaceFeatures;
+            User = user;
             Clients = clients;
             Projects = projects;
             TimeEntries = timeEntries;

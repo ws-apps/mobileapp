@@ -65,7 +65,9 @@ namespace Toggl.Daneel
             ProjectDot.Image = ProjectDot
                 .Image
                 .ImageWithRenderingMode(UIImageRenderingMode.AlwaysTemplate);
-            
+
+            FadeView.FadeRight = true;
+
             if (Suggestion == null)
                 Hidden = true;
         }

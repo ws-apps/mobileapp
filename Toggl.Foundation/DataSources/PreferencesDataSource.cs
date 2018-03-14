@@ -98,6 +98,7 @@ namespace Toggl.Foundation.DataSources
             => Preferences.Builder
                 .FromExisting(existing)
                 .SetFrom(dto)
+                .SetSyncStatus(SyncStatus.SyncNeeded)
                 .Build();
     }
 }

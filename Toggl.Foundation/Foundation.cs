@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reactive.Concurrency;
 using Toggl.Foundation.Analytics;
 using Toggl.Foundation.Login;
 using Toggl.Foundation.Services;
@@ -18,6 +19,7 @@ namespace Toggl.Foundation
         public IApiFactory ApiFactory { get; internal set; }
         public ITogglDatabase Database { get; internal set; }
         public ITimeService TimeService { get; internal set; }
+        public IScheduler Scheduler { get; internal set; }
         public IMailService MailService { get; internal set; }
         public IGoogleService GoogleService { get; internal set; }
         public ApiEnvironment ApiEnvironment { get; internal set; }
@@ -32,6 +34,7 @@ namespace Toggl.Foundation
             string version,
             ITogglDatabase database,
             ITimeService timeService,
+            IScheduler scheduler,
             IMailService mailService,
             IGoogleService googleService,
             ApiEnvironment apiEnvironment,
@@ -44,6 +47,7 @@ namespace Toggl.Foundation
             Ensure.Argument.IsNotNull(database, nameof(database));
             Ensure.Argument.IsNotNull(clientName, nameof(clientName));
             Ensure.Argument.IsNotNull(timeService, nameof(timeService));
+            Ensure.Argument.IsNotNull(scheduler, nameof(scheduler));
             Ensure.Argument.IsNotNull(mailService, nameof(mailService));
             Ensure.Argument.IsNotNull(googleService, nameof(googleService));
             Ensure.Argument.IsNotNull(shortcutCreator, nameof(shortcutCreator));
@@ -58,6 +62,7 @@ namespace Toggl.Foundation
                 Database = database,
                 UserAgent = userAgent,
                 TimeService = timeService,
+                Scheduler = scheduler,
                 MailService = mailService,
                 GoogleService = googleService,
                 ApiEnvironment = apiEnvironment,
