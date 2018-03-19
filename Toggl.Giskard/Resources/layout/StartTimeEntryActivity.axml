@@ -80,7 +80,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true" />
         <ImageView
-            local:MvxBind="Click ToggleBillableCommand; DrawableId BillableDrawable(IsBillable); Visibility Visibility(IsBillableAvailable), CommandParameter=true"
+            local:MvxBind="Click ToggleBillableCommand; DrawableId BillableDrawable(IsBillable); Visibility Visibility(IsBillableAvailable, true)"
             android:id="@+id/StartTimeEntryToolbarBillable"
             android:background="@drawable/billable"
             android:layout_width="24dp"
