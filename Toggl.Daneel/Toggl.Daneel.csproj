@@ -413,6 +413,18 @@
     <ImageAsset Include="Resources\Images.xcassets\playIcon.imageset\play.png" />
     <ImageAsset Include="Resources\Images.xcassets\playIcon.imageset\play%402x.png" />
     <ImageAsset Include="Resources\Images.xcassets\playIcon.imageset\play%403x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\bgNoiseBlue.imageset\Contents.json" />
+    <ImageAsset Include="Resources\Images.xcassets\bgNoiseBlue.imageset\bgNoiseBlue.png" />
+    <ImageAsset Include="Resources\Images.xcassets\bgNoiseBlue.imageset\bgNoiseBlue%402x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\bgNoiseBlue.imageset\bgNoiseBlue%403x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\bgNoisePurple.imageset\Contents.json" />
+    <ImageAsset Include="Resources\Images.xcassets\bgNoisePurple.imageset\bgNoisePurple.png" />
+    <ImageAsset Include="Resources\Images.xcassets\bgNoisePurple.imageset\bgNoisePurple%402x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\bgNoisePurple.imageset\bgNoisePurple%403x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\bgNoiseYellow.imageset\Contents.json" />
+    <ImageAsset Include="Resources\Images.xcassets\bgNoiseYellow.imageset\bgNoiseYellow.png" />
+    <ImageAsset Include="Resources\Images.xcassets\bgNoiseYellow.imageset\bgNoiseYellow%402x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\bgNoiseYellow.imageset\bgNoiseYellow%403x.png" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="LaunchScreen.storyboard" />
