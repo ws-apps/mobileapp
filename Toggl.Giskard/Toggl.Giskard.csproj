@@ -355,6 +355,11 @@
     <AndroidResource Include="Resources\drawable-xhdpi\logo.png" />
     <AndroidResource Include="Resources\drawable-xxhdpi\logo.png" />
     <AndroidResource Include="Resources\drawable-xxxhdpi\logo.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\google_signin.png" />
+    <AndroidResource Include="Resources\drawable-mdpi\google_signin.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\google_signin.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\google_signin.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\google_signin.png" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\values\Strings.xml" />
