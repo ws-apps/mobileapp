@@ -25,22 +25,6 @@ namespace Toggl.Giskard.Activities
 
             base.OnCreate(bundle);
             SetContentView(Resource.Layout.LoginActivity);
-
-            setupToolbar();
-        }
-
-        private void setupToolbar()
-        {
-            var toolbar = FindViewById<Toolbar>(Resource.Id.LoginToolbar);
-
-            toolbar.Title = ViewModel.Title;
-
-            SetSupportActionBar(toolbar);
-
-            SupportActionBar.SetDisplayHomeAsUpEnabled(true);
-            SupportActionBar.SetDisplayShowHomeEnabled(true);
-
-            toolbar.NavigationClick += navigationClick;
         }
 
         public override bool OnKeyDown(Keycode keyCode, KeyEvent e)
@@ -52,11 +36,6 @@ namespace Toggl.Giskard.Activities
             }
 
             return base.OnKeyDown(keyCode, e);
-        }
-
-        private void navigationClick(object sender, NavigationClickEventArgs args)
-        {
-            executeBackCommand();
         }
 
         private void executeBackCommand()

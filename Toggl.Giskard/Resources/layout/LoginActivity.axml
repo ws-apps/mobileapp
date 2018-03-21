@@ -6,14 +6,12 @@
     android:animateLayoutChanges="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/LoginToolbar"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        android:elevation="4dp"
-        android:minHeight="?attr/actionBarSize"
-        android:background="@color/lightToolbarBackground"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+    <View
+        android:id="@+id/LoginInputControlAnchor"
+        android:layout_below="@+id/LoginToolbar"
+        android:layout_marginTop="104dp"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp" />
     <EditText
         android:id="@+id/LoginEmailTextField"
         local:MvxBind="Text EmailToString(Email); Visibility Visibility(EmailFieldVisible); Focus IsEmailFocused"
@@ -31,7 +29,9 @@
         android:layout_height="30dp"
         android:layout_marginTop="104dp"
         android:layout_width="match_parent"
-        android:layout_below="@id/LoginToolbar" />
+        android:layout_below="@id/LoginToolbar"
+        android:layout_marginRight="50dp"
+        android:textSize="24sp" />
     <EditText
         android:id="@+id/LoginPasswordTextField"
         local:MvxBind="Text PasswordToString(Password); Visibility Visibility(IsPasswordPage); Focus IsPasswordPage"
@@ -41,7 +41,6 @@
         android:hint="Password"
         android:focusable="true"
         android:singleLine="true"
-        android:paddingLeft="16dp"
         android:focusableInTouchMode="true"
         android:textColor="@color/defaultEditText"
         android:textColorHint="@color/placeholderText"
@@ -50,9 +49,12 @@
         android:layout_marginTop="104dp"
         android:layout_marginRight="50dp"
         android:layout_width="match_parent"
-        android:layout_below="@id/LoginToolbar" />
+        android:layout_below="@id/LoginToolbar"
+        android:textSize="24sp"
+        android:paddingLeft="16dp" />
     <TextView
-        local:MvxBind="Text InfoText"
+        android:id="@+id/LoginStatusLabel"
+        local:MvxBind="Text InfoText; TextColor LoginInfoTextColor(IsErrorText)"
         android:textSize="12dp"
         android:textStyle="normal"
         android:lineSpacingExtra="6sp"
@@ -62,7 +64,20 @@
         android:layout_marginRight="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/LoginPasswordTextField" />
+        android:layout_below="@id/LoginInputControlAnchor" />
+    <ImageView
+        android:id="@+id/LoginGoogleLogin"
+        android:clickable="true"
+        local:MvxBind="Click GoogleLoginCommand; Visibility Visibility(IsLogin)"
+        android:background="?attr/selectableItemBackground"
+        android:src="@drawable/google_signin"
+        android:layout_width="167dp"
+        android:layout_height="36dp"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="24dp"
+        android:layout_marginLeft="16dp"
+        android:layout_alignParentBottom="true"
+        android:scaleType="fitStart" />
     <TextView
         android:id="@+id/LoginGoogleSignUp"
         local:MvxBind="Click GoogleLoginCommand; Visibility Visibility(IsSignUp)"
@@ -80,21 +95,20 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentBottom="true" />
     <TextView
-        android:id="@+id/LoginGoogleLogin"
-        local:MvxBind="Click GoogleLoginCommand; Visibility Visibility(IsLogin)"
+        android:id="@+id/LoginForgotPasswordLabel"
+        local:MvxBind="Click ForgotPasswordCommand; Visibility Visibility(ShowForgotPassword)"
         android:textSize="14sp"
-        android:gravity="bottom"
+        android:fontFamily="sans-serif-medium"
         android:clickable="true"
         android:textStyle="normal"
-        android:lineSpacingExtra="6sp"
-        android:text="Login with Google"
+        android:textAllCaps="true"
+        android:text="@string/ForgotPassword"
         android:textColor="@color/defaultText"
-        android:layout_marginLeft="16dp"
-        android:layout_marginBottom="17dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentBottom="true" />
+        android:layout_below="@id/LoginStatusLabel"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="16dp" />
     <TextView
         android:id="@+id/LoginTermsOfServiceLabel"
         local:MvxBind="Click OpenTermsOfServiceCommand"
@@ -169,5 +183,30 @@
         android:layout_height="30dp"
         android:layout_marginRight="20dp"
         android:layout_alignParentRight="true"
-        android:layout_alignTop="@id/LoginPasswordTextField" />
+        android:layout_alignTop="@id/LoginInputControlAnchor" />
+    <LinearLayout
+        android:id="@+id/LoginToolbar"
+        android:orientation="horizontal"
+        android:elevation="2dp"
+        android:background="@android:color/white"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/normalToolbarHeight"
+        android:gravity="center_vertical">
+        <ImageView
+            local:MvxBind="Click BackCommand"
+            android:clickable="true"
+            android:src="@drawable/arrow_back"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="20dp" />
+        <TextView
+            local:MvxBind="Text Title"
+            android:text="@string/Login"
+            android:textColor="@color/darkLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="19sp"
+            android:id="@+id/LoginTitle" />
+    </LinearLayout>
 </RelativeLayout>

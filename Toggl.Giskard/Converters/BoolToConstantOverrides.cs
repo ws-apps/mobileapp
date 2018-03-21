@@ -41,4 +41,10 @@ namespace Toggl.Giskard.Converters
         public CreateProjectButtonColorValueConverter() 
             : base(Color.ParseColor("#328fff"), new Color(ColorUtils.SetAlphaComponent(Color.ParseColor("#328fff").ToArgb(), 127))) { }
     }
+
+    public sealed class LoginInfoTextColorValueConverter : BoolToConstantValueConverter<Color>
+    {
+        public LoginInfoTextColorValueConverter()
+            : base(Color.ParseColor("#e20505"), Color.ParseColor("#5e5b5b")) { }
+    }
 }
