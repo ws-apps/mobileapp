@@ -12,5 +12,7 @@ namespace Toggl.Foundation.Interactors
         IInteractor<IObservable<IDatabaseTimeEntry>> StartSuggestion(Suggestion suggestion);
 
         IInteractor<IObservable<IDatabaseTimeEntry>> ContinueTimeEntry(ITimeEntryPrototype prototype);
+
+        IInteractor<IObservable<IDatabaseTimeEntry>> ContinueMostRecentTimeEntry();
     }
 }

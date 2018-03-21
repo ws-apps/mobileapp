@@ -143,18 +143,6 @@ namespace Toggl.Foundation {
             }
         }
         
-        public static string EmailIsAlreadyUsedError {
-            get {
-                return ResourceManager.GetString("EmailIsAlreadyUsedError", resourceCulture);
-            }
-        }
-        
-        public static string TryLoggingInInstead {
-            get {
-                return ResourceManager.GetString("TryLoggingInInstead", resourceCulture);
-            }
-        }
-        
         public static string StartTimeEntryPlaceholder {
             get {
                 return ResourceManager.GetString("StartTimeEntryPlaceholder", resourceCulture);
@@ -605,12 +593,6 @@ namespace Toggl.Foundation {
             }
         }
         
-        public static string TimeEntrySuggestion {
-            get {
-                return ResourceManager.GetString("TimeEntrySuggestion", resourceCulture);
-            }
-        }
-        
         public static string NoEmailErrorTitle {
             get {
                 return ResourceManager.GetString("NoEmailErrorTitle", resourceCulture);
@@ -671,9 +653,33 @@ namespace Toggl.Foundation {
             }
         }
         
+        public static string ContinueLastEntry {
+            get {
+                return ResourceManager.GetString("ContinueLastEntry", resourceCulture);
+            }
+        }
+        
         public static string TapToRetry {
             get {
                 return ResourceManager.GetString("TapToRetry", resourceCulture);
+            }
+        }
+        
+        public static string TimeEntrySuggestion {
+            get {
+                return ResourceManager.GetString("TimeEntrySuggestion", resourceCulture);
+            }
+        }
+        
+        public static string EmailIsAlreadyUsedError {
+            get {
+                return ResourceManager.GetString("EmailIsAlreadyUsedError", resourceCulture);
+            }
+        }
+        
+        public static string TryLoggingInInstead {
+            get {
+                return ResourceManager.GetString("TryLoggingInInstead", resourceCulture);
             }
         }
     }

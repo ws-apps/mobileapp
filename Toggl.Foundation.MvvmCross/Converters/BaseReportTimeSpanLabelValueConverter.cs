@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Globalization;
 using MvvmCross.Platform.Converters;
-using Toggl.Foundation.MvvmCross.Converters;
 
-namespace Toggl.Daneel.Converters
+namespace Toggl.Foundation.MvvmCross.Converters
 {
     public abstract class BaseReportTimeSpanLabelValueConverter<TString> : MvxValueConverter<TimeSpan, TString>
     {

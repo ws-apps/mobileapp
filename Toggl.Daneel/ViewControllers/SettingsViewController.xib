@@ -27,8 +27,11 @@
                 <outlet property="LoggingOutLabel" destination="agY-8S-Buy" id="yr0-19-vIP"/>
                 <outlet property="LoggingOutView" destination="9pV-m0-9wY" id="1O8-3P-zPS"/>
                 <outlet property="LogoutButton" destination="L2S-P3-jra" id="name-outlet-L2S-P3-jra"/>
+                <outlet property="LogoutContainerView" destination="7XI-te-r4v" id="wFV-tE-5A5"/>
+                <outlet property="LogoutVerticalOffsetConstraint" destination="XRr-pw-oi7" id="Hgl-cb-Po2"/>
                 <outlet property="ManualModeSwitch" destination="ohF-qt-ZZa" id="xth-Kj-iue"/>
                 <outlet property="ManualModeView" destination="oxz-tC-Puw" id="lbe-hw-A8S"/>
+                <outlet property="ScrollView" destination="fDP-ob-6P0" id="ARR-dd-Woy"/>
                 <outlet property="SyncedIcon" destination="2Xf-GA-0Ym" id="BfG-Gy-Dva"/>
                 <outlet property="SyncedLabel" destination="iJW-AF-Ph9" id="3St-Va-wwC"/>
                 <outlet property="SyncedView" destination="mJh-gC-yPW" id="OZ2-Nh-oY5"/>
@@ -56,11 +59,11 @@
                         <constraint firstAttribute="height" constant="1" id="2Eg-Sy-sY7"/>
                     </constraints>
                 </view>
-                <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fDP-ob-6P0">
+                <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fDP-ob-6P0">
                     <rect key="frame" x="0.0" y="33" width="414" height="703"/>
                     <subviews>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PRE-Ar-6sY" userLabel="ContentView">
-                            <rect key="frame" x="0.0" y="-1" width="414" height="615.33333333333337"/>
+                            <rect key="frame" x="0.0" y="0.0" width="414" height="597.33333333333337"/>
                             <subviews>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dsU-1j-Z4S" userLabel="Profile Section">
                                     <rect key="frame" x="0.0" y="0.0" width="414" height="91"/>
@@ -428,7 +431,7 @@
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="You can add your data manually, instead of tracking in real time." lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OGc-fM-VQ8" userLabel="Manual Mode Explanation Label">
                                             <rect key="frame" x="16" y="78" width="382" height="14.333333333333329"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                            <color key="textColor" white="0.66666666669999997" alpha="1" colorSpace="calibratedWhite"/>
+                                            <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
@@ -508,10 +511,10 @@
                                     </constraints>
                                 </view>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="7XI-te-r4v" userLabel="Sign Out Section">
-                                    <rect key="frame" x="0.0" y="480.99999999999994" width="414" height="134.33333333333331"/>
+                                    <rect key="frame" x="0.0" y="504.99999999999994" width="414" height="92.333333333333314"/>
                                     <subviews>
                                         <view contentMode="scaleToFill" restorationIdentifier="SyncingView" translatesAutoresizingMaskIntoConstraints="NO" id="305">
-                                            <rect key="frame" x="168.33333333333334" y="42" width="78" height="14.333333333333336"/>
+                                            <rect key="frame" x="168.33333333333334" y="0.0" width="78" height="14.333333333333334"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Syncing..." textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FaX-g8-EOP">
                                                     <rect key="frame" x="0.0" y="0.0" width="56" height="14.333333333333334"/>
@@ -537,7 +540,7 @@
                                             </constraints>
                                         </view>
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mJh-gC-yPW">
-                                            <rect key="frame" x="176" y="42" width="62.333333333333343" height="14.333333333333336"/>
+                                            <rect key="frame" x="176" y="0.0" width="62.333333333333343" height="14.333333333333334"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Synced" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iJW-AF-Ph9">
                                                     <rect key="frame" x="0.0" y="0.0" width="42.333333333333336" height="14.333333333333334"/>
@@ -559,7 +562,7 @@
                                             </constraints>
                                         </view>
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9pV-m0-9wY">
-                                            <rect key="frame" x="120.33333333333331" y="42" width="174" height="14.333333333333336"/>
+                                            <rect key="frame" x="120.33333333333331" y="0.0" width="174" height="14.333333333333334"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Logging you out securely..." textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="agY-8S-Buy">
                                                     <rect key="frame" x="0.0" y="0.0" width="152" height="14.333333333333334"/>
@@ -585,14 +588,14 @@
                                             </constraints>
                                         </view>
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8Qk-3T-5lj" userLabel="Logout Top Separator">
-                                            <rect key="frame" x="0.0" y="64.333333333333371" width="414" height="1"/>
+                                            <rect key="frame" x="0.0" y="22.333333333333371" width="414" height="1"/>
                                             <color key="backgroundColor" red="0.90980392156862744" green="0.90980392156862744" blue="0.90980392156862744" alpha="1" colorSpace="calibratedRGB"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="1" id="RK1-kL-TtT"/>
                                             </constraints>
                                         </view>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="L2S-P3-jra">
-                                            <rect key="frame" x="0.0" y="65.333333333333371" width="414" height="44"/>
+                                            <rect key="frame" x="0.0" y="23.333333333333371" width="414" height="44"/>
                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="44" id="Kiw-at-rAm"/>
@@ -613,7 +616,7 @@
                                             </userDefinedRuntimeAttributes>
                                         </button>
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hpG-it-oft" userLabel="Logout Bottom Separator">
-                                            <rect key="frame" x="0.0" y="109.33333333333337" width="414" height="1"/>
+                                            <rect key="frame" x="0.0" y="67.333333333333371" width="414" height="1"/>
                                             <color key="backgroundColor" red="0.90980392156862744" green="0.90980392156862744" blue="0.90980392156862744" alpha="1" colorSpace="calibratedRGB"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="1" id="R8L-Md-o8F"/>
@@ -630,11 +633,11 @@
                                         <constraint firstItem="9pV-m0-9wY" firstAttribute="centerX" secondItem="305" secondAttribute="centerX" id="P3G-r9-HsT"/>
                                         <constraint firstItem="305" firstAttribute="centerX" secondItem="7XI-te-r4v" secondAttribute="centerX" id="Q6i-f4-mxN"/>
                                         <constraint firstItem="hpG-it-oft" firstAttribute="top" secondItem="L2S-P3-jra" secondAttribute="bottom" id="U1R-3k-lo0"/>
+                                        <constraint firstItem="305" firstAttribute="top" secondItem="7XI-te-r4v" secondAttribute="top" id="VQb-mk-8XM"/>
                                         <constraint firstAttribute="trailing" secondItem="L2S-P3-jra" secondAttribute="trailing" id="WY1-sb-QYB"/>
                                         <constraint firstItem="L2S-P3-jra" firstAttribute="top" secondItem="8Qk-3T-5lj" secondAttribute="bottom" id="evz-1p-AWd"/>
                                         <constraint firstAttribute="trailing" secondItem="hpG-it-oft" secondAttribute="trailing" id="mi6-gh-5DJ"/>
                                         <constraint firstItem="L2S-P3-jra" firstAttribute="leading" secondItem="7XI-te-r4v" secondAttribute="leading" id="oli-eH-U6n"/>
-                                        <constraint firstItem="305" firstAttribute="top" secondItem="7XI-te-r4v" secondAttribute="top" constant="42" id="qNn-i6-0Qo"/>
                                         <constraint firstItem="9pV-m0-9wY" firstAttribute="centerY" secondItem="305" secondAttribute="centerY" id="rz0-I9-pab"/>
                                         <constraint firstItem="hpG-it-oft" firstAttribute="leading" secondItem="7XI-te-r4v" secondAttribute="leading" id="uLG-Rg-agN"/>
                                         <constraint firstItem="mJh-gC-yPW" firstAttribute="centerY" secondItem="305" secondAttribute="centerY" id="umw-lD-4RO"/>
@@ -650,7 +653,7 @@
                                 <constraint firstItem="0bh-ZU-DVv" firstAttribute="leading" secondItem="PRE-Ar-6sY" secondAttribute="leading" id="DbG-vu-ypG"/>
                                 <constraint firstAttribute="trailing" secondItem="e5t-dK-F9o" secondAttribute="trailing" id="KA0-Je-9LM"/>
                                 <constraint firstItem="dsU-1j-Z4S" firstAttribute="leading" secondItem="PRE-Ar-6sY" secondAttribute="leading" id="MHM-IP-Ttt"/>
-                                <constraint firstItem="7XI-te-r4v" firstAttribute="top" secondItem="e5t-dK-F9o" secondAttribute="bottom" id="XRr-pw-oi7"/>
+                                <constraint firstItem="7XI-te-r4v" firstAttribute="top" secondItem="e5t-dK-F9o" secondAttribute="bottom" constant="24" id="XRr-pw-oi7"/>
                                 <constraint firstItem="7XI-te-r4v" firstAttribute="leading" secondItem="PRE-Ar-6sY" secondAttribute="leading" id="YXc-ht-mcC"/>
                                 <constraint firstItem="YmB-qg-e0b" firstAttribute="leading" secondItem="PRE-Ar-6sY" secondAttribute="leading" id="ZHu-Lx-DY9"/>
                                 <constraint firstAttribute="trailing" secondItem="YmB-qg-e0b" secondAttribute="trailing" id="dTR-bz-F1U"/>
@@ -665,7 +668,7 @@
                     <constraints>
                         <constraint firstAttribute="trailing" secondItem="PRE-Ar-6sY" secondAttribute="trailing" id="9Jy-VQ-Lc0"/>
                         <constraint firstItem="PRE-Ar-6sY" firstAttribute="leading" secondItem="fDP-ob-6P0" secondAttribute="leading" id="ADr-d1-mhA"/>
-                        <constraint firstItem="PRE-Ar-6sY" firstAttribute="top" secondItem="fDP-ob-6P0" secondAttribute="top" constant="-1" id="aql-vg-Z9x"/>
+                        <constraint firstItem="PRE-Ar-6sY" firstAttribute="top" secondItem="fDP-ob-6P0" secondAttribute="top" id="aql-vg-Z9x"/>
                         <constraint firstItem="PRE-Ar-6sY" firstAttribute="width" secondItem="fDP-ob-6P0" secondAttribute="width" id="s6P-dt-fMw"/>
                         <constraint firstAttribute="bottom" secondItem="PRE-Ar-6sY" secondAttribute="bottom" id="ylH-bX-IZv"/>
                     </constraints>
@@ -673,7 +676,7 @@
             </subviews>
             <color key="backgroundColor" red="0.98039215686274506" green="0.98431372549019602" blue="0.9882352941176471" alpha="1" colorSpace="calibratedRGB"/>
             <constraints>
-                <constraint firstItem="zSK-oz-LmT" firstAttribute="bottom" secondItem="fDP-ob-6P0" secondAttribute="bottom" id="0NY-7V-TdM"/>
+                <constraint firstAttribute="bottom" secondItem="fDP-ob-6P0" secondAttribute="bottom" id="0NY-7V-TdM"/>
                 <constraint firstItem="7Dg-fR-w2z" firstAttribute="top" secondItem="zSK-oz-LmT" secondAttribute="top" constant="12" id="9A2-rU-Dgd"/>
                 <constraint firstAttribute="trailing" secondItem="7Dg-fR-w2z" secondAttribute="trailing" id="EYs-ZV-dck"/>
                 <constraint firstItem="7Dg-fR-w2z" firstAttribute="leading" secondItem="2" secondAttribute="leading" id="RX9-Ll-i7c"/>

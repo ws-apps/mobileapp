@@ -325,7 +325,15 @@
     <Compile Include="TemplateSelectors\SelectDurationFormatTemplateSelector.cs" />
     <Compile Include="Views\MainRecyclerViewSuggestionsViewHolder.cs" />
     <Compile Include="Views\MainRecyclerViewTouchCallback.cs" />
+    <Compile Include="Services\GiskardOnboardingService.cs" />
     <Compile Include="Converters\TransparentColorValueConverter.cs" />
+    <Compile Include="Adapters\ReportsRecyclerAdapter.cs" />
+    <Compile Include="TemplateSelectors\ReportsTemplateSelector.cs" />
+    <Compile Include="Activities\ReportsActivity.cs" />
+    <Compile Include="Views\ReportsRecyclerView.cs" />
+    <Compile Include="Converters\ReportPercentageLabelValueConverter.cs" />
+    <Compile Include="Converters\ReportTimeSpanLabelValueConverter.cs" />
+    <Compile Include="Bindings\ViewWidthPercentageTargetBinding.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\AndroidManifest.xml" />
@@ -350,6 +358,8 @@
     <AndroidResource Include="Resources\layout\SelectDurationFormatFragment.axml" />
     <AndroidResource Include="Resources\layout\SelectDurationFormatFragmentCell.axml" />
     <AndroidResource Include="Resources\drawable\RoundedRectangle.xml" />
+    <AndroidResource Include="Resources\layout\ReportsActivity.axml" />
+    <AndroidResource Include="Resources\layout\ReportsActivitySummary.axml" />
     <AndroidResource Include="Resources\drawable-hdpi\logo.png" />
     <AndroidResource Include="Resources\drawable-mdpi\logo.png" />
     <AndroidResource Include="Resources\drawable-xhdpi\logo.png" />
@@ -368,6 +378,11 @@
     <AndroidResource Include="Resources\mipmap-xhdpi\ic_launcher.png" />
     <AndroidResource Include="Resources\mipmap-xxhdpi\ic_launcher.png" />
     <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_launcher.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\reports_total_chart.png" />
+    <AndroidResource Include="Resources\drawable-mdpi\reports_total_chart.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\reports_total_chart.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\reports_total_chart.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\reports_total_chart.png" />
     <AndroidResource Include="Resources\mipmap-anydpi-v26\ic_launcher.xml" />
     <AndroidResource Include="Resources\drawable-hdpi\ic_launcher.png" />
     <AndroidResource Include="Resources\drawable-mdpi\ic_launcher.png" />

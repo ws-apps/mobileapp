@@ -63,28 +63,30 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             }
 
             protected override StartTimeEntryViewModel CreateViewModel()
-                => new StartTimeEntryViewModel(TimeService, DataSource, DialogService, InteractorFactory, NavigationService);
+                => new StartTimeEntryViewModel(TimeService, DataSource, DialogService, UserPreferences, InteractorFactory, NavigationService);
         }
 
         public sealed class TheConstructor : StartTimeEntryViewModelTest
         {
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(FiveParameterConstructorTestData))]
+            [ClassData(typeof(SixParameterConstructorTestData))]
             public void ThrowsIfAnyOfTheArgumentsIsNull(
                 bool useDataSource, 
                 bool useTimeService, 
-                bool useDialogService, 
+                bool useDialogService,
+                bool useUserPreferences,
                 bool useInteractorFactory,
                 bool useNavigationService)
             {
                 var dataSource = useDataSource ? DataSource : null;
                 var timeService = useTimeService ? TimeService : null;
                 var dialogService = useDialogService ? DialogService : null;
+                var userPreferences = useUserPreferences ? UserPreferences : null;
                 var interactorFactory = useInteractorFactory ? InteractorFactory : null;
                 var navigationService = useNavigationService ? NavigationService : null;
 
                 Action tryingToConstructWithEmptyParameters =
-                    () => new StartTimeEntryViewModel(timeService, dataSource, dialogService, interactorFactory, navigationService);
+                    () => new StartTimeEntryViewModel(timeService, dataSource, dialogService, userPreferences, interactorFactory, navigationService);
 
                 tryingToConstructWithEmptyParameters
                     .ShouldThrow<ArgumentNullException>();

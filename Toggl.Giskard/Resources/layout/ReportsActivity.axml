@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:local="http://schemas.android.com/apk/res-auto"
+    android:background="@color/lightGray"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <toggl.giskard.views.ReportsRecyclerView
+        local:MvxBind="ViewModel ."
+        local:MvxTemplateSelector="@string/ReportsTemplateSelector"
+        android:scrollbars="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize" />
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/Toolbar"
+        android:minHeight="?attr/actionBarSize"
+        android:background="@color/toolbarBlack"
+        local:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            local:MvxBind="Click BackCommand"
+            android:background="@drawable/logo_icon"
+            android:layout_gravity="start"
+            android:layout_marginLeft="16dp"
+            android:layout_width="22dp"
+            android:layout_height="22dp" />
+        <Button
+            local:MvxBind="Click OpenSettingsCommand"
+            android:background="@drawable/settings_dark"
+            android:layout_gravity="end"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp" />
+        <ImageView
+            android:src="@drawable/timer_light"
+            android:layout_gravity="end"
+            android:layout_width="24dp"
+            android:layout_height="24dp" />
+    </android.support.v7.widget.Toolbar>
+</android.support.design.widget.CoordinatorLayout>

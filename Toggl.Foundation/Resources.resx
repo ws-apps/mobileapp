@@ -64,12 +64,6 @@ Please try again.</value>
     <data name="GenericSignUpError">
         <value>Sorry, we’re having trouble signing you up. Please try again.</value>
     </data>
-    <data name="EmailIsAlreadyUsedError">
-      <value>User with this email already exists.</value>
-    </data>
-    <data name="TryLoggingInInstead">
-      <value>Try logging in instead.</value>
-    </data>
     <data name="StartTimeEntryPlaceholder">
         <value>What are you working on?</value>
     </data>
@@ -299,9 +293,6 @@ categorize your tracked time.</value>
     <data name="MostRecentEntry">
         <value>Most recent entry</value>
     </data>
-    <data name="TimeEntrySuggestion">
-        <value>Time entry suggestion</value>
-    </data>
     <data name="NoEmailErrorTitle">
         <value>Oops! Seems like your email
 account is not set up</value>
@@ -333,7 +324,19 @@ account is not set up</value>
      <data name="DurationFormatDecimal">
         <value>Decimal (0.79 h)</value>
     </data>
+    <data name="ContinueLastEntry">
+        <value>Continue last entry</value>
+     </data>
      <data name="TapToRetry">
         <value>Tap to retry</value>
+    </data>
+    <data name="TimeEntrySuggestion">       
+        <value>Time entry suggestion</value>      
+    </data>
+    <data name="EmailIsAlreadyUsedError">       
+        <value>User with this email already exists.</value>     
+    </data>       
+    <data name="TryLoggingInInstead">     
+        <value>Try logging in instead.</value>      
     </data>
 </root>

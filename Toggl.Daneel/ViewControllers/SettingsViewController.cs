@@ -141,6 +141,12 @@ namespace Toggl.Daneel.ViewControllers
             startAnimations();
         }
 
+        public override void ViewWillLayoutSubviews()
+        {
+            base.ViewWillLayoutSubviews();
+            tryAlignLogoutButtonWithBottomEdge();
+        }
+
         private void prepareViews()
         {
             // Syncing indicator colors
@@ -165,6 +171,15 @@ namespace Toggl.Daneel.ViewControllers
         {
             SyncingActivityIndicatorView.StartAnimation();
             LoggingOutActivityIndicatorView.StartAnimation();
+        }
+
+        private void tryAlignLogoutButtonWithBottomEdge()
+        {
+            var contentHeight = LogoutContainerView.Frame.Top - LogoutVerticalOffsetConstraint.Constant + LogoutContainerView.Frame.Height;
+            var bottomOffset = verticalSpacing;
+            var idealDistance = ScrollView.Frame.Height - contentHeight - bottomOffset;
+            var distance = Math.Max(idealDistance, verticalSpacing);
+            LogoutVerticalOffsetConstraint.Constant = (nfloat)distance;
         }
     }
 }

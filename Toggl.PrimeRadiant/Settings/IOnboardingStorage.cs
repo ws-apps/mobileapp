@@ -1,4 +1,5 @@
 ﻿using System;
+using Toggl.PrimeRadiant.Onboarding;
 
 namespace Toggl.PrimeRadiant.Settings
 {
@@ -11,5 +12,8 @@ namespace Toggl.PrimeRadiant.Settings
         bool IsNewUser();
         string GetLastOpened();
         bool CompletedOnboarding();
+
+        bool WasDismissed(IDismissable dismissable);
+        void Dismiss(IDismissable dismissable);
     }
 }

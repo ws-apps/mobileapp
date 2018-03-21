@@ -1,5 +1,6 @@
 ﻿using System;
 using Toggl.Multivac;
+using Toggl.PrimeRadiant.Onboarding;
 
 namespace Toggl.PrimeRadiant.Settings
 {
@@ -14,6 +15,8 @@ namespace Toggl.PrimeRadiant.Settings
         private const string completedOnboardingKey = "CompletedOnboarding";
 
         private const string preferManualMode = "PreferManualMode";
+
+        private const string onboardingPrefix = "Onboarding_";
 
         private readonly Version version;
         private readonly IKeyValueStorage keyValueStorage;
@@ -89,6 +92,10 @@ namespace Toggl.PrimeRadiant.Settings
         public bool CompletedOnboarding() => keyValueStorage.GetBool(completedOnboardingKey);
 
         public string GetLastOpened() => keyValueStorage.GetString(lastAccessDateKey);
+
+        public bool WasDismissed(IDismissable dismissable) => keyValueStorage.GetBool(onboardingPrefix + dismissable.Key);
+
+        public void Dismiss(IDismissable dismissable) => keyValueStorage.SetBool(onboardingPrefix + dismissable.Key, true);
 
         #endregion
 

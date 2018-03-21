@@ -2,7 +2,7 @@
 using System.Globalization;
 using MvvmCross.Platform.Converters;
 
-namespace Toggl.Daneel.Converters
+namespace Toggl.Foundation.MvvmCross.Converters
 {
     public abstract class BaseReportPercentageLabelValueConverter<TString> : MvxValueConverter<float?, TString>
     {

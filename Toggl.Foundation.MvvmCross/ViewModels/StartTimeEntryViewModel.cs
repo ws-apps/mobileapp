@@ -18,7 +18,11 @@ using Toggl.Foundation.MvvmCross.Services;
 using Toggl.Multivac;
 using Toggl.Multivac.Extensions;
 using static Toggl.Foundation.Helper.Constants;
+using Toggl.Foundation.MvvmCross.ViewModels;
+using Toggl.Foundation;
+using Toggl.PrimeRadiant.Settings;
 
+[assembly: MvxNavigation(typeof(StartTimeEntryViewModel), ApplicationUrls.StartTimeEntry)]
 namespace Toggl.Foundation.MvvmCross.ViewModels
 {
     [Preserve(AllMembers = true)]
@@ -28,6 +32,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private readonly ITimeService timeService;
         private readonly ITogglDataSource dataSource;
         private readonly IDialogService dialogService;
+        private readonly IUserPreferences userPreferences;
         private readonly IInteractorFactory interactorFactory;
         private readonly IMvxNavigationService navigationService;
         private readonly Subject<TextFieldInfo> infoSubject = new Subject<TextFieldInfo>();
@@ -170,18 +175,21 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             ITimeService timeService,
             ITogglDataSource dataSource,
             IDialogService dialogService,
+            IUserPreferences userPreferences,
             IInteractorFactory interactorFactory,
             IMvxNavigationService navigationService)
         {
             Ensure.Argument.IsNotNull(dataSource, nameof(dataSource));
             Ensure.Argument.IsNotNull(timeService, nameof(timeService));
             Ensure.Argument.IsNotNull(dialogService, nameof(dialogService));
+            Ensure.Argument.IsNotNull(userPreferences, nameof(userPreferences));
             Ensure.Argument.IsNotNull(interactorFactory, nameof(interactorFactory));
             Ensure.Argument.IsNotNull(navigationService, nameof(navigationService));
 
             this.dataSource = dataSource;
             this.timeService = timeService;
             this.dialogService = dialogService;
+            this.userPreferences = userPreferences;
             this.navigationService = navigationService;
             this.interactorFactory = interactorFactory;
 
@@ -195,6 +203,15 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             ToggleProjectSuggestionsCommand = new MvxCommand(toggleProjectSuggestions);
             SelectSuggestionCommand = new MvxAsyncCommand<AutocompleteSuggestion>(selectSuggestion);
             ToggleTaskSuggestionsCommand = new MvxCommand<ProjectSuggestion>(toggleTaskSuggestions);
+        }
+
+        public void Init()
+        {
+            var now = timeService.CurrentDateTime;
+            var startTimeEntryParameters = userPreferences.IsManualModeEnabled()
+                ? StartTimeEntryParameters.ForManualMode(now)
+                : StartTimeEntryParameters.ForTimerMode(now);
+            Prepare(startTimeEntryParameters);
         }
 
         public override void Prepare(StartTimeEntryParameters parameter)

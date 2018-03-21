@@ -21,18 +21,16 @@ namespace Toggl.Foundation.Interactors
         private readonly ITogglDataSource dataSource;
         private readonly ITimeEntryPrototype prototype;
         private readonly IAnalyticsService analyticsService;
-        private readonly IApplicationShortcutCreator shortcutCreator;
 
         public CreateTimeEntryInteractor(
             IIdProvider idProvider, 
             ITimeService timeService, 
             ITogglDataSource dataSource, 
             IAnalyticsService analyticsService, 
-            IApplicationShortcutCreator shortcutCreator, 
             ITimeEntryPrototype prototype, 
             DateTimeOffset startTime, 
             TimeSpan? duration)
-            : this(idProvider, timeService, dataSource, analyticsService, shortcutCreator, prototype, startTime, duration,
+            : this(idProvider, timeService, dataSource, analyticsService, prototype, startTime, duration,
                 prototype.Duration.HasValue ? TimeEntryStartOrigin.Manual : TimeEntryStartOrigin.Timer) { }
 
         public CreateTimeEntryInteractor(
@@ -40,7 +38,6 @@ namespace Toggl.Foundation.Interactors
             ITimeService timeService,
             ITogglDataSource dataSource,
             IAnalyticsService analyticsService,
-            IApplicationShortcutCreator shortcutCreator,
             ITimeEntryPrototype prototype,
             DateTimeOffset startTime,
             TimeSpan? duration,
@@ -51,7 +48,6 @@ namespace Toggl.Foundation.Interactors
             Ensure.Argument.IsNotNull(idProvider, nameof(idProvider));
             Ensure.Argument.IsNotNull(dataSource, nameof(dataSource));
             Ensure.Argument.IsNotNull(timeService, nameof(timeService));
-            Ensure.Argument.IsNotNull(shortcutCreator, nameof(shortcutCreator));
             Ensure.Argument.IsNotNull(analyticsService, nameof(analyticsService));
 
             this.origin = origin;
@@ -61,7 +57,6 @@ namespace Toggl.Foundation.Interactors
             this.idProvider = idProvider;
             this.dataSource = dataSource;
             this.timeService = timeService;
-            this.shortcutCreator = shortcutCreator;
             this.analyticsService = analyticsService;
         }
 
@@ -69,7 +64,6 @@ namespace Toggl.Foundation.Interactors
             => dataSource.User.Current
                 .Select(userFromPrototype)
                 .SelectMany(dataSource.TimeEntries.Create)
-                .Do(shortcutCreator.OnTimeEntryStarted)
                 .Do(_ => dataSource.SyncManager.PushSync())
                 .Do(_ => analyticsService.TrackStartedTimeEntry(origin));
 

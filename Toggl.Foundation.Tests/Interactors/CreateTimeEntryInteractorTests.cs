@@ -174,22 +174,6 @@ namespace Toggl.Foundation.Tests.Interactors
                 executeCommand.ShouldThrow<Exception>();
                 await DataSource.SyncManager.DidNotReceive().PushSync();
             }
-
-            [Fact, LogIfTooSlow]
-            public async Task NotifiesShortcutCreatorAboutNewEntry()
-            {
-                var dto = CreatePrototype(ValidTime, ValidDescription, true, ProjectId, TaskId);
-                await CallInteractor(dto);
-
-                ApplicationShortcutCreator
-                    .Received()
-                    .OnTimeEntryStarted(
-                        Arg.Is<ITimeEntry>(te =>
-                            te.Description == dto.Description
-                            && te.Billable == dto.IsBillable
-                            && te.ProjectId == dto.ProjectId
-                            && te.TaskId == dto.TaskId));
-            }
         }
 
         public sealed class TheContinueTimeEntryInteractor : BaseCreateTimeEntryInteractorTest

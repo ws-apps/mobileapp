@@ -1,6 +1,7 @@
 ﻿using System;
 using Toggl.Foundation.Analytics;
 using Toggl.Foundation.DataSources;
+using Toggl.Foundation.Interactors.Shared;
 using Toggl.Foundation.Models;
 using Toggl.Foundation.Shortcuts;
 using Toggl.Foundation.Suggestions;
@@ -50,7 +51,6 @@ namespace Toggl.Foundation.Interactors
                 timeService,
                 dataSource,
                 analyticsService,
-                shortcutCreator,
                 prototype,
                 prototype.StartTime,
                 prototype.Duration);
@@ -61,7 +61,6 @@ namespace Toggl.Foundation.Interactors
                 timeService,
                 dataSource,
                 analyticsService,
-                shortcutCreator,
                 prototype,
                 timeService.CurrentDateTime,
                 null,
@@ -73,10 +72,16 @@ namespace Toggl.Foundation.Interactors
                 timeService,
                 dataSource,
                 analyticsService,
-                shortcutCreator,
                 suggestion,
                 timeService.CurrentDateTime,
                 null,
                 TimeEntryStartOrigin.Suggestion);
+
+        public IInteractor<IObservable<IDatabaseTimeEntry>> ContinueMostRecentTimeEntry()
+            => new ContinueMostRecentTimeEntryInteractor(
+                idProvider,
+                timeService,
+                dataSource,
+                analyticsService);
     }
 }

@@ -19,31 +19,33 @@ namespace Toggl.Foundation.Tests
         public class TheCreateMethod
         {
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(ElevenParameterConstructorTestData))]
+            [ClassData(typeof(TwelveParameterConstructorTestData))]
             public void ThrowsIfAnyOfTheArgumentsIsNull(
                 bool useClientName,
                 bool useVersion,
                 bool useDatabase,
-                bool useTimeService,
                 bool useScheduler,
+                bool useTimeService,
                 bool useMailService,
                 bool useGoogleService,
                 bool useAnalyticsService,
                 bool usePlatformConstants,
                 bool useApplicationShortcutCreator,
-                bool useSuggestionProviderContainer)
+                bool useSuggestionProviderContainer,
+                bool useOnboardingService)
             {
                 var version = useVersion ? "1.0" : null;
                 var clientName = useClientName ? "Some Client" : null;
+                var scheduler = useScheduler ? Substitute.For<IScheduler>() : null;
                 var database = useDatabase ? Substitute.For<ITogglDatabase>() : null;
                 var timeService = useTimeService ? Substitute.For<ITimeService>() : null;
-                var scheduler = useScheduler ? Substitute.For<IScheduler>() : null;
                 var mailService = useMailService ? Substitute.For<IMailService>() : null;
                 var googleService = useGoogleService ? Substitute.For<IGoogleService>() : null;
                 var analyticsService = useAnalyticsService ? Substitute.For<IAnalyticsService>() : null;
                 var platformConstants = usePlatformConstants ? Substitute.For<IPlatformConstants>() : null;
                 var applicationShortcutCreator = useApplicationShortcutCreator ? Substitute.For<IApplicationShortcutCreator>() : null;
                 var suggestionProviderContainer = useSuggestionProviderContainer ? Substitute.For<ISuggestionProviderContainer>() : null;
+                var onboardingService = useOnboardingService ? Substitute.For<IOnboardingService>() : null;
 
                 Action tryingToConstructWithEmptyParameters =
                     () => Foundation.Create(
@@ -58,7 +60,8 @@ namespace Toggl.Foundation.Tests
                         analyticsService,
                         platformConstants,
                         applicationShortcutCreator,
-                        suggestionProviderContainer
+                        suggestionProviderContainer,
+                        onboardingService
                     );
 
                 tryingToConstructWithEmptyParameters

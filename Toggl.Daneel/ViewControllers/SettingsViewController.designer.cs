@@ -59,10 +59,19 @@ namespace Toggl.Daneel.ViewControllers
 		UIKit.UIButton LogoutButton { get; set; }
 
 		[Outlet]
+		UIKit.UIView LogoutContainerView { get; set; }
+
+		[Outlet]
+		UIKit.NSLayoutConstraint LogoutVerticalOffsetConstraint { get; set; }
+
+		[Outlet]
 		UIKit.UISwitch ManualModeSwitch { get; set; }
 
 		[Outlet]
 		UIKit.UIView ManualModeView { get; set; }
+
+		[Outlet]
+		UIKit.UIScrollView ScrollView { get; set; }
 
 		[Outlet]
 		UIKit.UIImageView SyncedIcon { get; set; }
@@ -177,6 +186,11 @@ namespace Toggl.Daneel.ViewControllers
 				LogoutButton = null;
 			}
 
+			if (LogoutVerticalOffsetConstraint != null) {
+				LogoutVerticalOffsetConstraint.Dispose ();
+				LogoutVerticalOffsetConstraint = null;
+			}
+
 			if (ManualModeSwitch != null) {
 				ManualModeSwitch.Dispose ();
 				ManualModeSwitch = null;
@@ -245,6 +259,16 @@ namespace Toggl.Daneel.ViewControllers
 			if (WorkspaceView != null) {
 				WorkspaceView.Dispose ();
 				WorkspaceView = null;
+			}
+
+			if (LogoutContainerView != null) {
+				LogoutContainerView.Dispose ();
+				LogoutContainerView = null;
+			}
+
+			if (ScrollView != null) {
+				ScrollView.Dispose ();
+				ScrollView = null;
 			}
 		}
 	}

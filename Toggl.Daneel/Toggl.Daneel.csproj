@@ -789,6 +789,7 @@
     <Compile Include="Views\Settings\DayOfWeekViewCell.designer.cs">
       <DependentUpon>DayOfWeekViewCell.cs</DependentUpon>
     </Compile>
+    <Compile Include="Services\DaneelOnboardingService.cs" />
     <Compile Include="Extensions\OnboardingExtensions.cs" />
     <Compile Include="Converters\TimeFormatToLocaleValueConverter.cs" />
   </ItemGroup>
