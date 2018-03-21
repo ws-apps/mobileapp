@@ -40,6 +40,9 @@ namespace Toggl.Daneel.ViewControllers
 		UIKit.UIButton StartTimeEntryButton { get; set; }
 
 		[Outlet]
+		UIKit.UIView StartTimeEntryOnboardingBubbleView { get; set; }
+
+		[Outlet]
 		[GeneratedCode ("iOS Designer", "1.0")]
 		UIKit.UIButton StopTimeEntryButton { get; set; }
 
@@ -115,6 +118,11 @@ namespace Toggl.Daneel.ViewControllers
 			if (WelcomeBackView != null) {
 				WelcomeBackView.Dispose ();
 				WelcomeBackView = null;
+			}
+
+			if (StartTimeEntryOnboardingBubbleView != null) {
+				StartTimeEntryOnboardingBubbleView.Dispose ();
+				StartTimeEntryOnboardingBubbleView = null;
 			}
 		}
 	}
