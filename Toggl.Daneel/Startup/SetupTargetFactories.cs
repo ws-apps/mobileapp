@@ -39,6 +39,11 @@ namespace Toggl.Daneel
                 view => new DatePickerDateTimeOffsetTargetBinding(view)
             );
 
+            registry.RegisterCustomBindingFactory<UIImageView>(
+                ImageViewImageTargetBinding.BindingName,
+                view => new ImageViewImageTargetBinding(view)
+            );
+
             registry.RegisterCustomBindingFactory<NSLayoutConstraint>(
                 LayoutConstraintAnimatedConstantTargetBinding.BindingName,
                 view => new LayoutConstraintAnimatedConstantTargetBinding(view)
@@ -97,6 +102,11 @@ namespace Toggl.Daneel
             registry.RegisterCustomBindingFactory<TextViewWithPlaceholder>(
                 TextViewWithPlaceholderTextTargetBinding.BindingName,
                 view => new TextViewWithPlaceholderTextTargetBinding(view)
+            );
+
+            registry.RegisterCustomBindingFactory<UIView>(
+                ViewAnimatedBackgroundGradientTargetBinding.BindingName,
+                view => new ViewAnimatedBackgroundGradientTargetBinding(view)
             );
 
             registry.RegisterCustomBindingFactory<UIView>(

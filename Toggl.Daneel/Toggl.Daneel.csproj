@@ -803,6 +803,8 @@
     </Compile>
     <Compile Include="Extensions\OnboardingExtensions.cs" />
     <Compile Include="Converters\TimeFormatToLocaleValueConverter.cs" />
+    <Compile Include="Binding\ViewAnimatedBackgroundGradientTargetBinding.cs" />
+    <Compile Include="Binding\ImageViewImageTargetBinding.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Toggl.Foundation.MvvmCross\Toggl.Foundation.MvvmCross.csproj">
