@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using Toggl.Multivac;
 using Toggl.PrimeRadiant.Onboarding;
 
@@ -16,10 +18,15 @@ namespace Toggl.PrimeRadiant.Settings
 
         private const string preferManualMode = "PreferManualMode";
 
+        private const string startButtonWasTappedBeforeKey = "StartButtonWasNotTappedBefore";
+
         private const string onboardingPrefix = "Onboarding_";
 
         private readonly Version version;
         private readonly IKeyValueStorage keyValueStorage;
+
+        private ISubject<bool> isNewUserSubject;
+        private ISubject<bool> startButtonWasPressedSubject;
 
         public SettingsStorage(Version version, IKeyValueStorage keyValueStorage)
         {
@@ -27,6 +34,14 @@ namespace Toggl.PrimeRadiant.Settings
 
             this.version = version;
             this.keyValueStorage = keyValueStorage;
+
+            var isNewUser = keyValueStorage.GetBool(isNewUserKey);
+            isNewUserSubject = new BehaviorSubject<bool>(isNewUser);
+            IsNewUser = isNewUserSubject.AsObservable().DistinctUntilChanged();
+
+            var startButtonWasPressed = keyValueStorage.GetBool(startButtonWasTappedBeforeKey);
+            startButtonWasPressedSubject = new BehaviorSubject<bool>(startButtonWasPressed);
+            StartButtonWasTappedBefore = startButtonWasPressedSubject.AsObservable().DistinctUntilChanged();
         }
 
         #region IAccessRestrictionStorage
@@ -71,6 +86,10 @@ namespace Toggl.PrimeRadiant.Settings
 
         #region IOnboardingStorage
 
+        public IObservable<bool> IsNewUser { get; }
+
+        public IObservable<bool> StartButtonWasTappedBefore { get; }
+
         public void SetLastOpened(DateTimeOffset date)
         {
             var dateString = date.ToString();
@@ -79,6 +98,7 @@ namespace Toggl.PrimeRadiant.Settings
 
         public void SetIsNewUser(bool isNewUser)
         {
+            isNewUserSubject.OnNext(isNewUser);
             keyValueStorage.SetBool(isNewUserKey, isNewUser);
         }
 
@@ -87,11 +107,16 @@ namespace Toggl.PrimeRadiant.Settings
             keyValueStorage.SetBool(completedOnboardingKey, true);
         }
 
-        public bool IsNewUser() => keyValueStorage.GetBool(isNewUserKey);
 
         public bool CompletedOnboarding() => keyValueStorage.GetBool(completedOnboardingKey);
 
         public string GetLastOpened() => keyValueStorage.GetString(lastAccessDateKey);
+
+        public void StartButtonWasTapped()
+        {
+            startButtonWasPressedSubject.OnNext(true);
+            keyValueStorage.SetBool(startButtonWasTappedBeforeKey, true);
+        }
 
         public bool WasDismissed(IDismissable dismissable) => keyValueStorage.GetBool(onboardingPrefix + dismissable.Key);
 

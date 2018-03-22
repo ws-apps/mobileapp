@@ -1,37 +1,25 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using Toggl.Foundation.MvvmCross.ViewModels;
 using Toggl.Multivac;
 using Toggl.PrimeRadiant.Onboarding;
+using Toggl.PrimeRadiant.Settings;
 
 namespace Toggl.Daneel.Onboarding.MainView
 {
     public sealed class StartTimeEntryOnboardingStep : IOnboardingStep
     {
-        private readonly ISubject<bool> shouldBeVisibleSubject;
-        private readonly MainViewModel mainViewModel;
-
-        private bool shouldBeVisible => mainViewModel.IsWelcome;
+        public IOnboardingStorage OnboardingStorage { get; }
 
         public IObservable<bool> ShouldBeVisible { get; }
 
-        public StartTimeEntryOnboardingStep(MainViewModel mainViewModel)
+        public StartTimeEntryOnboardingStep(IOnboardingStorage onboardingStorage)
         {
-            Ensure.Argument.IsNotNull(mainViewModel, nameof(mainViewModel));
+            Ensure.Argument.IsNotNull(onboardingStorage, nameof(onboardingStorage));
 
-            this.mainViewModel = mainViewModel;
+            OnboardingStorage = onboardingStorage;
 
-            shouldBeVisibleSubject = new BehaviorSubject<bool>(shouldBeVisible);
-            ShouldBeVisible = shouldBeVisibleSubject.AsObservable().DistinctUntilChanged();
-
-            mainViewModel.PropertyChanged += onPropertyChanged;
-        }
-
-        private void onPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            shouldBeVisibleSubject.OnNext(shouldBeVisible);
+            ShouldBeVisible = onboardingStorage.IsNewUser.CombineLatest(onboardingStorage.StartButtonWasTappedBefore,
+                (isNewUser, startButtonWasTapped) => isNewUser && !startButtonWasTapped);
         }
     }
 }

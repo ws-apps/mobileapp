@@ -76,7 +76,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         {
             await base.Initialize();
 
-            IsWelcome = onboardingStorage.IsNewUser();
+            IsWelcome = await onboardingStorage.IsNewUser;
 
             await reset();
 
