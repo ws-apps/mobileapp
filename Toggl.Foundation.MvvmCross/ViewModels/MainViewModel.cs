@@ -11,6 +11,7 @@ using PropertyChanged;
 using Toggl.Foundation.DataSources;
 using Toggl.Foundation.MvvmCross.Parameters;
 using Toggl.Foundation.MvvmCross.ViewModels.Hints;
+using Toggl.Foundation.Services;
 using Toggl.Foundation.Sync;
 using Toggl.Multivac;
 using Toggl.PrimeRadiant.Models;
@@ -30,7 +31,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private readonly ITimeService timeService;
         private readonly ITogglDataSource dataSource;
         private readonly IUserPreferences userPreferences;
-        private readonly IOnboardingStorage onboardingStorage;
+        private readonly IOnboardingService onboardingService;
         private readonly IMvxNavigationService navigationService;
         private readonly IScheduler scheduler;
 
@@ -77,6 +78,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public SuggestionsViewModel SuggestionsViewModel { get; } = Mvx.IocConstruct<SuggestionsViewModel>();
 
+        public IOnboardingService OnboardingService => onboardingService;
+
         public IMvxAsyncCommand StartTimeEntryCommand { get; }
 
         public IMvxAsyncCommand StopTimeEntryCommand { get; }
@@ -94,14 +97,14 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         public MainViewModel(
             ITogglDataSource dataSource,
             ITimeService timeService,
-            IOnboardingStorage onboardingStorage,
+            IOnboardingService onboardingService,
             IMvxNavigationService navigationService,
             IUserPreferences userPreferences,
             IScheduler scheduler)
         {
             Ensure.Argument.IsNotNull(dataSource, nameof(dataSource));
             Ensure.Argument.IsNotNull(timeService, nameof(timeService));
-            Ensure.Argument.IsNotNull(onboardingStorage, nameof(onboardingStorage));
+            Ensure.Argument.IsNotNull(onboardingService, nameof(onboardingService));
             Ensure.Argument.IsNotNull(navigationService, nameof(navigationService));
             Ensure.Argument.IsNotNull(userPreferences, nameof(userPreferences));
             Ensure.Argument.IsNotNull(scheduler, nameof(scheduler));
@@ -109,7 +112,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             this.dataSource = dataSource;
             this.timeService = timeService;
             this.navigationService = navigationService;
-            this.onboardingStorage = onboardingStorage;
+            this.onboardingService = onboardingService;
             this.userPreferences = userPreferences;
             this.scheduler = scheduler;
 
