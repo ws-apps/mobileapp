@@ -576,7 +576,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
             protected void PrepareIsWelcome(bool isWelcome)
             {
-                OnboardingStorage.IsNewUser().Returns(isWelcome);
+                var observable = Observable.Return(isWelcome);
+                OnboardingStorage.IsNewUser.Returns(observable);
             }
         }
 
