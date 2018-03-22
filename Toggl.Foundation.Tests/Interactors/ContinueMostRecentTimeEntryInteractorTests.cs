@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
 using Toggl.Foundation.Analytics;
-using Toggl.Foundation.Interactors.Shared;
+using Toggl.Foundation.Interactors;
 using Toggl.Foundation.Tests.Generators;
 using Toggl.PrimeRadiant;
 using Toggl.PrimeRadiant.Models;

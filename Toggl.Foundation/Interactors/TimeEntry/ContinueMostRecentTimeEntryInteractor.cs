@@ -9,7 +9,7 @@ using Toggl.PrimeRadiant;
 using Toggl.PrimeRadiant.Models;
 using static Toggl.Multivac.Extensions.EnumerableExtensions;
 
-namespace Toggl.Foundation.Interactors.Shared
+namespace Toggl.Foundation.Interactors
 {
     public class ContinueMostRecentTimeEntryInteractor : IInteractor<IObservable<IDatabaseTimeEntry>>
     {

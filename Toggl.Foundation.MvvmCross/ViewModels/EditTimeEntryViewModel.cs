@@ -8,6 +8,7 @@ using MvvmCross.Core.ViewModels;
 using PropertyChanged;
 using Toggl.Foundation.DataSources;
 using Toggl.Foundation.DTOs;
+using Toggl.Foundation.Interactors;
 using Toggl.Foundation.MvvmCross.Parameters;
 using Toggl.Foundation.MvvmCross.Services;
 using Toggl.Multivac;
@@ -25,10 +26,10 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private readonly ITimeService timeService;
         private readonly ITogglDataSource dataSource;
         private readonly IDialogService dialogService;
+        private readonly IInteractorFactory interactorFactory;
         private readonly IMvxNavigationService navigationService;
 
         private readonly HashSet<long> tagIds = new HashSet<long>();
-
         private IDisposable deleteDisposable;
         private IDisposable tickingDisposable;
         private IDisposable confirmDisposable;
@@ -167,20 +168,23 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         public IMvxCommand ToggleBillableCommand { get; }
 
         public EditTimeEntryViewModel(
-            ITogglDataSource dataSource,
-            IMvxNavigationService navigationService,
             ITimeService timeService,
+            ITogglDataSource dataSource,
+            IInteractorFactory interactorFactory,
+            IMvxNavigationService navigationService,
             IDialogService dialogService)
         {
             Ensure.Argument.IsNotNull(dataSource, nameof(dataSource));
-            Ensure.Argument.IsNotNull(navigationService, nameof(navigationService));
             Ensure.Argument.IsNotNull(timeService, nameof(timeService));
             Ensure.Argument.IsNotNull(dialogService, nameof(dialogService));
+            Ensure.Argument.IsNotNull(interactorFactory, nameof(interactorFactory));
+            Ensure.Argument.IsNotNull(navigationService, nameof(navigationService));
 
             this.dataSource = dataSource;
-            this.navigationService = navigationService;
             this.timeService = timeService;
             this.dialogService = dialogService;
+            this.interactorFactory = interactorFactory;
+            this.navigationService = navigationService;
 
             DeleteCommand = new MvxAsyncCommand(delete);
             ConfirmCommand = new MvxCommand(confirm);
@@ -475,7 +479,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         private async Task updateFeaturesAvailability()
         {
-            AllowsBillableRates = await dataSource.Workspaces.WorkspaceHasFeature(workspaceId, WorkspaceFeatureId.Pro);
+            AllowsBillableRates = await interactorFactory.WorkspaceAllowsBillableRates(workspaceId).Execute();
         }
     }
 }

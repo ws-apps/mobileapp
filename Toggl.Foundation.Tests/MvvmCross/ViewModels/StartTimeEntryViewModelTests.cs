@@ -15,6 +15,7 @@ using Toggl.Foundation.MvvmCross.Parameters;
 using Toggl.Foundation.MvvmCross.Services;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using Toggl.Foundation.Tests.Generators;
+using Toggl.Foundation.Tests.Mocks;
 using Toggl.Multivac;
 using Toggl.Multivac.Extensions;
 using Toggl.PrimeRadiant.Models;
@@ -161,11 +162,12 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [InlineData(false)]
             public async Task ChecksIfBillableIsAvailableForTheDefaultWorkspace(bool billableValue)
             {
-                var workspace = Substitute.For<IDatabaseWorkspace>();
-                workspace.Id.Returns(10);
-                DataSource.Workspaces.GetDefault()
-                    .Returns(Observable.Return(workspace));
-                DataSource.Workspaces.WorkspaceHasFeature(10, WorkspaceFeatureId.Pro)
+                var user = new MockUser { DefaultWorkspaceId = 10 };
+                DataSource.User.Current.Returns(Observable.Return(user));
+            
+                InteractorFactory
+                    .IsBillableAvailableForWorkspace(10)
+                    .Execute()
                     .Returns(Observable.Return(billableValue));
                 var parameter = new StartTimeEntryParameters(DateTimeOffset.UtcNow, "", null);
                 ViewModel.Prepare(parameter);
@@ -1174,11 +1176,11 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 [InlineData(null)]
                 public void SetsTheAppropriateBillableValue(bool? billableValue)
                 {
-                    Project.Billable.Returns(billableValue);
-                    DataSource.Projects.GetById(ProjectId).Returns(Observable.Return(Project));
-                    DataSource.Workspaces.GetById(WorkspaceId).Returns(Observable.Return(Workspace));
-                    DataSource.Workspaces.WorkspaceHasFeature(WorkspaceId, WorkspaceFeatureId.Pro)
+                    InteractorFactory.GetWorkspaceById(WorkspaceId).Execute().Returns(Observable.Return(Workspace));
+                    InteractorFactory.IsBillableAvailableForProject(ProjectId).Execute()
                         .Returns(Observable.Return(true));
+                    InteractorFactory.ProjectDefaultsToBillable(ProjectId).Execute()
+                        .Returns(Observable.Return(billableValue ?? false));
 
                     ViewModel.SelectSuggestionCommand.Execute(Suggestion);
 
@@ -1194,8 +1196,10 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 {
                     Project.Billable.Returns(billableValue);
                     DataSource.Projects.GetById(ProjectId).Returns(Observable.Return(Project));
-                    DataSource.Workspaces.GetById(WorkspaceId).Returns(Observable.Return(Workspace));
-                    DataSource.Workspaces.WorkspaceHasFeature(WorkspaceId, WorkspaceFeatureId.Pro)
+                    InteractorFactory.GetWorkspaceById(WorkspaceId).Execute().Returns(Observable.Return(Workspace));
+                    InteractorFactory
+                        .IsBillableAvailableForWorkspace(10)
+                        .Execute()
                         .Returns(Observable.Return(false));
 
                     ViewModel.SelectSuggestionCommand.Execute(Suggestion);

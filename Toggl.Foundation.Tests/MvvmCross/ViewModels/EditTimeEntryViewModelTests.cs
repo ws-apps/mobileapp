@@ -55,23 +55,28 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             }
 
             protected override EditTimeEntryViewModel CreateViewModel()
-                => new EditTimeEntryViewModel(DataSource, NavigationService, TimeService, DialogService);
+                => new EditTimeEntryViewModel(TimeService, DataSource, InteractorFactory, NavigationService, DialogService);
         }
 
         public sealed class TheConstructor : EditTimeEntryViewModelTest
         {
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(FourParameterConstructorTestData))]
+            [ClassData(typeof(FiveParameterConstructorTestData))]
             public void ThrowsIfAnyOfTheArgumentsIsNull(
-                bool useDataSource, bool useNavigationService, bool useTimeService, bool useDialogService)
+                bool useDataSource, 
+                bool useNavigationService, 
+                bool useTimeService,
+                bool useInteractorFactory,
+                bool useDialogService)
             {
                 var dataSource = useDataSource ? DataSource : null;
-                var navigationService = useNavigationService ? NavigationService : null;
                 var timeService = useTimeService ? TimeService : null;
                 var dialogService = useDialogService ? DialogService : null;
+                var navigationService = useNavigationService ? NavigationService : null;
+                var interactorFactory = useInteractorFactory ? InteractorFactory : null;
 
                 Action tryingToConstructWithEmptyParameters =
-                    () => new EditTimeEntryViewModel(dataSource, navigationService, timeService, dialogService);
+                    () => new EditTimeEntryViewModel(timeService, dataSource, interactorFactory, navigationService, dialogService);
 
                 tryingToConstructWithEmptyParameters.ShouldThrow<ArgumentNullException>();
             }
@@ -997,7 +1002,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
                 DataSource.TimeEntries.GetById(Arg.Is(timeEntry.Id))
                     .Returns(Observable.Return(timeEntry));
-                
+
                 ViewModel.Prepare(timeEntry.Id);
                 await ViewModel.Initialize();
             }
@@ -1044,7 +1049,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                         (builder, _) => builder.Append(character))
                     .ToString();
         }
-    
+
         public sealed class TheSelectStartDateCommand : EditTimeEntryViewModelTest
         {
             [Fact]

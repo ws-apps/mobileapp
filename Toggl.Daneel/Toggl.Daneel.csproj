@@ -413,6 +413,10 @@
     <ImageAsset Include="Resources\Images.xcassets\playIcon.imageset\play.png" />
     <ImageAsset Include="Resources\Images.xcassets\playIcon.imageset\play%402x.png" />
     <ImageAsset Include="Resources\Images.xcassets\playIcon.imageset\play%403x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\doneGreen.imageset\Contents.json" />
+    <ImageAsset Include="Resources\Images.xcassets\doneGreen.imageset\doneGreen.png" />
+    <ImageAsset Include="Resources\Images.xcassets\doneGreen.imageset\doneGreen%402x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\doneGreen.imageset\doneGreen%403x.png" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="LaunchScreen.storyboard" />

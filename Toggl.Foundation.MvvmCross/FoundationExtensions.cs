@@ -102,6 +102,7 @@ namespace Toggl.Foundation.MvvmCross
 
             Mvx.RegisterSingleton(self.BackgroundService);
             Mvx.RegisterSingleton(dialogService);
+            Mvx.RegisterSingleton(self.Database);
             Mvx.RegisterSingleton(browserService);
             Mvx.RegisterSingleton(self.UserAgent);
             Mvx.RegisterSingleton(self.TimeService);

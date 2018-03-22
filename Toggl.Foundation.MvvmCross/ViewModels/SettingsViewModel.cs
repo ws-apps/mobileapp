@@ -7,6 +7,7 @@ using MvvmCross.Core.Navigation;
 using MvvmCross.Core.ViewModels;
 using Toggl.Foundation.DataSources;
 using Toggl.Foundation.DTOs;
+using Toggl.Foundation.Interactors;
 using Toggl.Foundation.MvvmCross.Parameters;
 using Toggl.Foundation.MvvmCross.Services;
 using Toggl.Foundation.Services;
@@ -27,6 +28,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private readonly ITogglDataSource dataSource;
         private readonly IDialogService dialogService;
         private readonly IPlatformConstants platformConstants;
+        private readonly IInteractorFactory interactorFactory;
         private readonly IMvxNavigationService navigationService;
         private readonly IUserPreferences userPreferences;
         private readonly IMailService mailService;
@@ -106,6 +108,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             IMailService mailService,
             ITogglDataSource dataSource,
             IDialogService dialogService,
+            IInteractorFactory interactorFactory,
             IPlatformConstants platformConstants,
             IUserPreferences userPreferences,
             IMvxNavigationService navigationService)
@@ -115,6 +118,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             Ensure.Argument.IsNotNull(mailService, nameof(mailService));
             Ensure.Argument.IsNotNull(dialogService, nameof(dialogService));
             Ensure.Argument.IsNotNull(userPreferences, nameof(userPreferences));
+            Ensure.Argument.IsNotNull(interactorFactory, nameof(interactorFactory));
             Ensure.Argument.IsNotNull(navigationService, nameof(navigationService));
             Ensure.Argument.IsNotNull(platformConstants, nameof(platformConstants));
 
@@ -122,6 +126,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             this.dataSource = dataSource;
             this.mailService = mailService;
             this.dialogService = dialogService;
+            this.interactorFactory = interactorFactory;
             this.navigationService = navigationService;
             this.platformConstants = platformConstants;
             this.userPreferences = userPreferences;
@@ -157,7 +162,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         public override async Task Initialize()
         {
             var user = await dataSource.User.Current;
-            var defaultWorkspace = await dataSource.Workspaces.GetDefault();
+            var defaultWorkspace = await interactorFactory.GetDefaultWorkspace().Execute();
 
             Email = user.Email;
             Name = user.Fullname;
@@ -166,7 +171,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             IsManualModeEnabled = userPreferences.IsManualModeEnabled();
             BeginningOfWeek = user.BeginningOfWeek;
 
-            var workspaces = await dataSource.Workspaces.GetAll();
+            var workspaces = await interactorFactory.GetAllWorkspaces().Execute();
             foreach (var workspace in workspaces)
             {
                 Workspaces.Add(new SelectableWorkspaceViewModel(workspace, workspace.Id == workspaceId));
@@ -217,7 +222,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         {
             if (selectedWorkspaceId == workspaceId) return;
 
-            var workspace = await dataSource.Workspaces.GetById(selectedWorkspaceId);
+            var workspace = await interactorFactory.GetWorkspaceById(selectedWorkspaceId).Execute();
             workspaceId = selectedWorkspaceId;
             WorkspaceName = workspace.Name;
 
