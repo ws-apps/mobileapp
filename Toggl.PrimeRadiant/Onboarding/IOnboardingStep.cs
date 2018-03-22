@@ -1,7 +1,9 @@
-﻿namespace Toggl.PrimeRadiant.Onboarding
+﻿using System;
+
+namespace Toggl.PrimeRadiant.Onboarding
 {
     public interface IOnboardingStep
     {
-        bool ShouldBeVisible { get; }
+        IObservable<bool> ShouldBeVisible { get; }
     }
 }
