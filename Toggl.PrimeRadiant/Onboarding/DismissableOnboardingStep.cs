@@ -30,7 +30,7 @@ namespace Toggl.PrimeRadiant.Onboarding
             Key = key;
 
             var wasAlreadyDismissed = storage.WasDismissed(this);
-            shouldBeVisibleSubject = new BehaviorSubject<bool>(wasAlreadyDismissed);
+            shouldBeVisibleSubject = new BehaviorSubject<bool>(!wasAlreadyDismissed);
             internalSubscription = onboardingStep.ShouldBeVisible.Subscribe(shouldBeVisibleSubject.OnNext);
 
             ShouldBeVisible = shouldBeVisibleSubject.AsObservable();
