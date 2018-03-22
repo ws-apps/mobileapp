@@ -333,7 +333,10 @@ namespace Toggl.Daneel.ViewControllers
             StartTimeEntryOnboardingBubbleView.AddGestureRecognizer(tapOnStartButtonBubble);
 
             onboardingDisposable = step.ShouldBeVisible
-                .Subscribe(visible => StartTimeEntryOnboardingBubbleView.Hidden = !visible);
+                .Subscribe(visible => InvokeOnMainThread(() =>
+                {
+                    StartTimeEntryOnboardingBubbleView.Hidden = !visible;
+                }));
         }
 
         internal void Reload()
