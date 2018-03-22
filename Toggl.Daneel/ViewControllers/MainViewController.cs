@@ -10,7 +10,7 @@ using MvvmCross.Plugins.Color.iOS;
 using MvvmCross.Plugins.Visibility;
 using Toggl.Daneel.Combiners;
 using Toggl.Daneel.Extensions;
-using Toggl.Daneel.Services;
+using Toggl.Daneel.Onboarding.MainView;
 using Toggl.Daneel.Suggestions;
 using Toggl.Daneel.Views;
 using Toggl.Daneel.ViewSources;
@@ -18,7 +18,7 @@ using Toggl.Foundation.MvvmCross.Converters;
 using Toggl.Foundation.MvvmCross.Helper;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using Toggl.Multivac;
-using Toggl.PrimeRadiant.Onboarding;
+using Toggl.PrimeRadiant.Extensions;
 using UIKit;
 using static Toggl.Foundation.MvvmCross.Helper.Animation;
 
@@ -43,8 +43,6 @@ namespace Toggl.Daneel.ViewControllers
 
         private bool viewInitialized;
         private IDisposable onboardingDisposable;
-
-        private DaneelOnboardingService onboardingService => (DaneelOnboardingService)ViewModel.OnboardingService;
 
         public MainViewController()
             : base(nameof(MainViewController), null)
@@ -327,7 +325,7 @@ namespace Toggl.Daneel.ViewControllers
 
         private void prepareOnboarding()
         {
-            var step = onboardingService.CreateStartTimeEntryOnboardingStep(ViewModel);
+            var step = new StartTimeEntryOnboardingStep(ViewModel.OnboardingStorage).ToDismissableStep();
 
             var tapOnStartButtonBubble = new UITapGestureRecognizer(() => step.Dismiss());
             StartTimeEntryOnboardingBubbleView.AddGestureRecognizer(tapOnStartButtonBubble);
