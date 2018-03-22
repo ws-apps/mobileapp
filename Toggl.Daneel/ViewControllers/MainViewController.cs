@@ -41,9 +41,8 @@ namespace Toggl.Daneel.ViewControllers
         private readonly UIButton settingsButton = new UIButton(new CGRect(0, 0, 40, 40));
         private readonly UIImageView titleImage = new UIImageView(UIImage.FromBundle("togglLogo"));
 
-        private DismissableOnboardingStep startTimeEntryOnboardingStep;
-
         private bool viewInitialized;
+        private IDisposable onboardingDisposable;
 
         private DaneelOnboardingService onboardingService => (DaneelOnboardingService)ViewModel.OnboardingService;
 
@@ -211,6 +210,7 @@ namespace Toggl.Daneel.ViewControllers
 
             if (!disposing) return;
             spiderBroView.Dispose();
+            onboardingDisposable.Dispose();
         }
 
         public override void ViewDidLayoutSubviews()
@@ -332,7 +332,7 @@ namespace Toggl.Daneel.ViewControllers
             var tapOnStartButtonBubble = new UITapGestureRecognizer(() => step.Dismiss());
             StartTimeEntryOnboardingBubbleView.AddGestureRecognizer(tapOnStartButtonBubble);
 
-            step.ShouldBeVisible
+            onboardingDisposable = step.ShouldBeVisible
                 .Subscribe(visible => StartTimeEntryOnboardingBubbleView.Hidden = !visible);
         }
 
