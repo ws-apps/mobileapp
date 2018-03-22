@@ -23,6 +23,7 @@ namespace Toggl.Giskard.Activities
     public sealed class LoginActivity : MvxAppCompatActivity<LoginViewModel>
     {
         private IDisposable disposable;
+        private Toolbar toolbar;
 
         protected override void OnCreate(Bundle bundle)
         {
@@ -36,7 +37,7 @@ namespace Toggl.Giskard.Activities
 
         private void setupToolbar()
         {
-            var toolbar = FindViewById<Toolbar>(Resource.Id.LoginToolbar);
+            toolbar = FindViewById<Toolbar>(Resource.Id.LoginToolbar);
             toolbar.Title = ViewModel.Title;
 
             SetSupportActionBar(toolbar);
@@ -49,11 +50,7 @@ namespace Toggl.Giskard.Activities
 
         private void onTitleChanged(object sender, PropertyChangedEventArgs args)
         {
-            var toolbar = FindViewById<Toolbar>(Resource.Id.LoginToolbar);
-            if (toolbar != null)
-            {
-                toolbar.Title = ViewModel.Title;
-            }
+            toolbar.Title = ViewModel.Title;
         }
 
         public override bool OnKeyDown(Keycode keyCode, KeyEvent e)
