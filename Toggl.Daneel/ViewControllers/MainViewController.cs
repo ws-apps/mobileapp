@@ -1,4 +1,5 @@
-﻿using CoreGraphics;
+﻿using System;
+using CoreGraphics;
 using Foundation;
 using MvvmCross.Binding.BindingContext;
 using MvvmCross.Binding.iOS;
@@ -9,6 +10,7 @@ using MvvmCross.Plugins.Color.iOS;
 using MvvmCross.Plugins.Visibility;
 using Toggl.Daneel.Combiners;
 using Toggl.Daneel.Extensions;
+using Toggl.Daneel.Services;
 using Toggl.Daneel.Suggestions;
 using Toggl.Daneel.Views;
 using Toggl.Daneel.ViewSources;
@@ -16,6 +18,7 @@ using Toggl.Foundation.MvvmCross.Converters;
 using Toggl.Foundation.MvvmCross.Helper;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using Toggl.Multivac;
+using Toggl.PrimeRadiant.Onboarding;
 using UIKit;
 using static Toggl.Foundation.MvvmCross.Helper.Animation;
 
@@ -38,7 +41,11 @@ namespace Toggl.Daneel.ViewControllers
         private readonly UIButton settingsButton = new UIButton(new CGRect(0, 0, 40, 40));
         private readonly UIImageView titleImage = new UIImageView(UIImage.FromBundle("togglLogo"));
 
+        private DismissableOnboardingStep startTimeEntryOnboardingStep;
+
         private bool viewInitialized;
+
+        private DaneelOnboardingService onboardingService => (DaneelOnboardingService)ViewModel.OnboardingService;
 
         public MainViewController()
             : base(nameof(MainViewController), null)
@@ -50,6 +57,7 @@ namespace Toggl.Daneel.ViewControllers
             base.ViewDidLoad();
 
             prepareViews();
+            prepareOnboarding();
 
             var source = new MainTableViewSource(TimeEntriesLogTableView);
             var suggestionsView = new SuggestionsView();
@@ -315,6 +323,17 @@ namespace Toggl.Daneel.ViewControllers
             spiderBroView.WidthAnchor.ConstraintEqualTo(spiderContainerView.WidthAnchor).Active = true;
             spiderBroView.BottomAnchor.ConstraintEqualTo(spiderContainerView.BottomAnchor).Active = true;
             spiderBroView.CenterXAnchor.ConstraintEqualTo(spiderContainerView.CenterXAnchor).Active = true;
+        }
+
+        private void prepareOnboarding()
+        {
+            var step = onboardingService.CreateStartTimeEntryOnboardingStep(ViewModel);
+
+            var tapOnStartButtonBubble = new UITapGestureRecognizer(() => step.Dismiss());
+            StartTimeEntryOnboardingBubbleView.AddGestureRecognizer(tapOnStartButtonBubble);
+
+            step.ShouldBeVisible
+                .Subscribe(visible => StartTimeEntryOnboardingBubbleView.Hidden = !visible);
         }
 
         internal void Reload()
