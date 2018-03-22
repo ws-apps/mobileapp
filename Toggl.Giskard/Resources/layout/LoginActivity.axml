@@ -52,6 +52,7 @@
         android:layout_width="match_parent"
         android:layout_below="@id/LoginToolbar" />
     <TextView
+        android:id="@+id/InfoTextField"
         local:MvxBind="Text InfoText"
         android:textSize="12dp"
         android:textStyle="normal"
@@ -63,6 +64,20 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/LoginPasswordTextField" />
+    <TextView
+        local:MvxBind="Click ChangeSignUpToLoginCommand; Visibility Visibility(TryLoggingInInsteadOfSignup)"
+        android:textSize="12sp"
+        android:text="@string/TryLoggingInInstead"
+        android:textStyle="normal"
+        android:lineSpacingExtra="6sp"
+        android:textColor="@color/defaultText"
+        android:layout_marginTop="4dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/InfoTextField"
+    />
     <TextView
         android:id="@+id/LoginGoogleSignUp"
         local:MvxBind="Click GoogleLoginCommand; Visibility Visibility(IsSignUp)"
