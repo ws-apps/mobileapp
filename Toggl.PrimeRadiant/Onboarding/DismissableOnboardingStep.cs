@@ -12,7 +12,8 @@ namespace Toggl.PrimeRadiant.Onboarding
         private readonly IOnboardingStorage storage;
         private readonly ISubject<bool> shouldBeVisibleSubject;
 
-        private IDisposable internalSubscription;
+        private bool wasDismissed;
+        private IDisposable shouldBeVisibleSubscription;
 
         public IObservable<bool> ShouldBeVisible { get; }
 
@@ -29,18 +30,25 @@ namespace Toggl.PrimeRadiant.Onboarding
 
             Key = key;
 
-            var wasAlreadyDismissed = storage.WasDismissed(this);
-            shouldBeVisibleSubject = new BehaviorSubject<bool>(!wasAlreadyDismissed);
-            internalSubscription = onboardingStep.ShouldBeVisible.Subscribe(shouldBeVisibleSubject.OnNext);
+            wasDismissed = storage.WasDismissed(this);
+            shouldBeVisibleSubject = new BehaviorSubject<bool>(!wasDismissed);
+            shouldBeVisibleSubscription = onboardingStep.ShouldBeVisible.Subscribe(onShouldBeVisibleValue);
 
             ShouldBeVisible = shouldBeVisibleSubject.AsObservable();
         }
 
         public void Dismiss()
         {
+            wasDismissed = true;
             storage.Dismiss(this);
             shouldBeVisibleSubject.OnNext(false);
-            shouldBeVisibleSubject.OnCompleted();
+        }
+
+        private void onShouldBeVisibleValue(bool shouldBeVisible)
+        {
+            if (wasDismissed) return;
+
+            shouldBeVisibleSubject.OnNext(shouldBeVisible);
         }
     }
 }
