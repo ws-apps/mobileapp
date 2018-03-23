@@ -49,4 +49,10 @@ namespace Toggl.Giskard.Converters
         public ReportsChartColorValueConverter()
             : base(Reports.Disabled.ToAndroidColor(), Reports.TotalTimeActivated.ToAndroidColor()) { }
     }
+
+    public sealed class LoginInfoTextColorValueConverter : BoolToConstantValueConverter<Color>
+    {
+        public LoginInfoTextColorValueConverter()
+            : base(Color.ParseColor("#e20505"), Color.ParseColor("#5e5b5b")) { }
+    }
 }
