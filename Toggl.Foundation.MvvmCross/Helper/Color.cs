@@ -227,7 +227,9 @@ namespace Toggl.Foundation.MvvmCross.Helper
 
             public static readonly MvxColor PercentageActivated = new MvxColor(0, 171, 252);
 
-            public static readonly MvxColor PercentageDisabled = new MvxColor(6, 170, 245, 62);
+            public static readonly MvxColor PercentageActivatedBackground = new MvxColor(6, 170, 245, 61);
+
+            public static readonly MvxColor PercentageDisabled = new MvxColor(181, 188, 192, 30);
 
             public static readonly MvxColor TotalTimeActivated = new MvxColor(76, 217, 100);
 
