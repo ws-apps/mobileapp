@@ -337,6 +337,7 @@
     <Compile Include="Bindings\ViewWidthPercentageTargetBinding.cs" />
     <Compile Include="Views\PieChartView.cs" />
     <Compile Include="Views\ReportsRecyclerViewHolder.cs" />
+    <Compile Include="Startup\TogglBindingBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\AndroidManifest.xml" />
