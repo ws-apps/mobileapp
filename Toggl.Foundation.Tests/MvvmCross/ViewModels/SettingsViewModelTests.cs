@@ -43,13 +43,14 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     InteractorFactory,
                     PlatformConstants,
                     UserPreferences,
+                    OnboardingStorage,
                     NavigationService);
         }
 
         public sealed class TheConstructor : SettingsViewModelTest
         {
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(EightParameterConstructorTestData))]
+            [ClassData(typeof(NineParameterConstructorTestData))]
             public void ThrowsIfAnyOfTheArgumentsIsNull(
                 bool useUserAgent,
                 bool useDataSource,
@@ -58,6 +59,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 bool useInteractorFactory,
                 bool usePlatformConstants,
                 bool useUserPreferences,
+                bool useOnboardingStorage,
                 bool useNavigationService)
             {
                 var userAgent = useUserAgent ? UserAgent : null;
@@ -65,6 +67,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 var mailService = useMailService ? MailService : null;
                 var dialogService = useDialogService ? DialogService : null;
                 var userPreferences = useUserPreferences ? UserPreferences : null;
+                var onboardingStorage = useOnboardingStorage ? OnboardingStorage : null;
                 var navigationService = useNavigationService ? NavigationService : null;
                 var platformConstants = usePlatformConstants ? PlatformConstants : null;
                 var interactorFactory = useInteractorFactory ? InteractorFactory : null;
@@ -78,6 +81,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                         interactorFactory,
                         platformConstants,
                         userPreferences,
+                        onboardingStorage,
                         navigationService);
 
                 tryingToConstructWithEmptyParameters
@@ -189,6 +193,15 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 await ViewModel.LogoutCommand.ExecuteAsync();
 
                 UserPreferences.Received().Reset();
+            }
+
+            [Fact, LogIfTooSlow]
+            public async Task ResetsOnboarding()
+            {
+                doNotShowConfirmationDialog();
+                await ViewModel.LogoutCommand.ExecuteAsync();
+
+                OnboardingStorage.Received().Reset();
             }
 
             [Fact, LogIfTooSlow]
