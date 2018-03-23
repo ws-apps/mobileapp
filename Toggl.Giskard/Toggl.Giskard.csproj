@@ -327,6 +327,7 @@
     <Compile Include="Views\MainRecyclerViewTouchCallback.cs" />
     <Compile Include="Converters\TransparentColorValueConverter.cs" />
     <Compile Include="Adapters\ReportsRecyclerAdapter.cs" />
+    <Compile Include="Extensions\ViewExtensions.cs" />
     <Compile Include="TemplateSelectors\ReportsTemplateSelector.cs" />
     <Compile Include="Activities\ReportsActivity.cs" />
     <Compile Include="Views\ReportsRecyclerView.cs" />
