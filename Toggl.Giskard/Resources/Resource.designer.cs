@@ -4818,6 +4818,21 @@ namespace Toggl.Giskard
 			// aapt resource value: 0x7f0c001d
 			public const int MvxBindingTagUnique = 2131492893;
 			
+			// aapt resource value: 0x7f0c0102
+			public const int ReportsActivityItemClientName = 2131493122;
+			
+			// aapt resource value: 0x7f0c0105
+			public const int ReportsActivityItemDuration = 2131493125;
+			
+			// aapt resource value: 0x7f0c0103
+			public const int ReportsActivityItemFade = 2131493123;
+			
+			// aapt resource value: 0x7f0c0104
+			public const int ReportsActivityItemPercentage = 2131493124;
+			
+			// aapt resource value: 0x7f0c0101
+			public const int ReportsActivityItemProjectName = 2131493121;
+			
 			// aapt resource value: 0x7f0c0100
 			public const int ReportsSummaryBillable = 2131493120;
 			
@@ -4839,74 +4854,74 @@ namespace Toggl.Giskard
 			// aapt resource value: 0x7f0c0040
 			public const int SYM = 2131492928;
 			
-			// aapt resource value: 0x7f0c0101
-			public const int SelectColorRecyclerView = 2131493121;
-			
-			// aapt resource value: 0x7f0c0104
-			public const int SelectProjectActivityProjectCellClientName = 2131493124;
-			
-			// aapt resource value: 0x7f0c0103
-			public const int SelectProjectActivityProjectCellProjectName = 2131493123;
-			
 			// aapt resource value: 0x7f0c0106
-			public const int SelectProjectActivityProjectCellTasks = 2131493126;
+			public const int SelectColorRecyclerView = 2131493126;
 			
-			// aapt resource value: 0x7f0c0102
-			public const int SelectProjectActivitySelectionToken = 2131493122;
-			
-			// aapt resource value: 0x7f0c0105
-			public const int SelectProjectActivityTaskCollapseArrow = 2131493125;
-			
-			// aapt resource value: 0x7f0c0107
-			public const int SelectProjectToggleTasksButton = 2131493127;
+			// aapt resource value: 0x7f0c0109
+			public const int SelectProjectActivityProjectCellClientName = 2131493129;
 			
 			// aapt resource value: 0x7f0c0108
-			public const int SelectTagsBackIcon = 2131493128;
+			public const int SelectProjectActivityProjectCellProjectName = 2131493128;
+			
+			// aapt resource value: 0x7f0c010b
+			public const int SelectProjectActivityProjectCellTasks = 2131493131;
+			
+			// aapt resource value: 0x7f0c0107
+			public const int SelectProjectActivitySelectionToken = 2131493127;
+			
+			// aapt resource value: 0x7f0c010a
+			public const int SelectProjectActivityTaskCollapseArrow = 2131493130;
+			
+			// aapt resource value: 0x7f0c010c
+			public const int SelectProjectToggleTasksButton = 2131493132;
+			
+			// aapt resource value: 0x7f0c010d
+			public const int SelectTagsBackIcon = 2131493133;
 			
 			// aapt resource value: 0x7f0c00cc
 			public const int SelectWorkspaceContainer = 2131493068;
 			
-			// aapt resource value: 0x7f0c0109
-			public const int SelectWorkspaceListContainer = 2131493129;
-			
-			// aapt resource value: 0x7f0c010c
-			public const int StartTimeEntryDescriptionTextField = 2131493132;
-			
-			// aapt resource value: 0x7f0c010a
-			public const int StartTimeEntryDoneButton = 2131493130;
-			
-			// aapt resource value: 0x7f0c010b
-			public const int StartTimeEntryDurationCard = 2131493131;
+			// aapt resource value: 0x7f0c010e
+			public const int SelectWorkspaceListContainer = 2131493134;
 			
 			// aapt resource value: 0x7f0c0111
-			public const int StartTimeEntryProjectCellCaret = 2131493137;
+			public const int StartTimeEntryDescriptionTextField = 2131493137;
+			
+			// aapt resource value: 0x7f0c010f
+			public const int StartTimeEntryDoneButton = 2131493135;
+			
+			// aapt resource value: 0x7f0c0110
+			public const int StartTimeEntryDurationCard = 2131493136;
+			
+			// aapt resource value: 0x7f0c0116
+			public const int StartTimeEntryProjectCellCaret = 2131493142;
 			
 			// aapt resource value: 0x7f0c0093
 			public const int StartTimeEntryProjectCellFade = 2131493011;
 			
-			// aapt resource value: 0x7f0c0110
-			public const int StartTimeEntryProjectCellProjectLabel = 2131493136;
+			// aapt resource value: 0x7f0c0115
+			public const int StartTimeEntryProjectCellProjectLabel = 2131493141;
+			
+			// aapt resource value: 0x7f0c0117
+			public const int StartTimeEntryProjectCellTaskCountLabel = 2131493143;
+			
+			// aapt resource value: 0x7f0c0119
+			public const int StartTimeEntryTimeEntryCellProjectLabel = 2131493145;
+			
+			// aapt resource value: 0x7f0c011a
+			public const int StartTimeEntryTimeEntryCellTaskLabel = 2131493146;
+			
+			// aapt resource value: 0x7f0c0118
+			public const int StartTimeEntryToggleTasksButton = 2131493144;
 			
 			// aapt resource value: 0x7f0c0112
-			public const int StartTimeEntryProjectCellTaskCountLabel = 2131493138;
+			public const int StartTimeEntryToolbarBillable = 2131493138;
 			
 			// aapt resource value: 0x7f0c0114
-			public const int StartTimeEntryTimeEntryCellProjectLabel = 2131493140;
-			
-			// aapt resource value: 0x7f0c0115
-			public const int StartTimeEntryTimeEntryCellTaskLabel = 2131493141;
+			public const int StartTimeEntryToolbarProject = 2131493140;
 			
 			// aapt resource value: 0x7f0c0113
-			public const int StartTimeEntryToggleTasksButton = 2131493139;
-			
-			// aapt resource value: 0x7f0c010d
-			public const int StartTimeEntryToolbarBillable = 2131493133;
-			
-			// aapt resource value: 0x7f0c010f
-			public const int StartTimeEntryToolbarProject = 2131493135;
-			
-			// aapt resource value: 0x7f0c010e
-			public const int StartTimeEntryToolbarTag = 2131493134;
+			public const int StartTimeEntryToolbarTag = 2131493139;
 			
 			// aapt resource value: 0x7f0c00e6
 			public const int SuggestionsHintTextView = 2131493094;
@@ -5190,14 +5205,14 @@ namespace Toggl.Giskard
 			// aapt resource value: 0x7f0c0069
 			public const int list_item = 2131492969;
 			
-			// aapt resource value: 0x7f0c0118
-			public const int masked = 2131493144;
+			// aapt resource value: 0x7f0c011d
+			public const int masked = 2131493149;
 			
 			// aapt resource value: 0x7f0c00ef
 			public const int media_actions = 2131493103;
 			
-			// aapt resource value: 0x7f0c0116
-			public const int message = 2131493142;
+			// aapt resource value: 0x7f0c011b
+			public const int message = 2131493147;
 			
 			// aapt resource value: 0x7f0c003a
 			public const int middle = 2131492922;
@@ -5445,8 +5460,8 @@ namespace Toggl.Giskard
 			// aapt resource value: 0x7f0c0016
 			public const int view_offset_helper = 2131492886;
 			
-			// aapt resource value: 0x7f0c0117
-			public const int visible = 2131493143;
+			// aapt resource value: 0x7f0c011c
+			public const int visible = 2131493148;
 			
 			// aapt resource value: 0x7f0c0023
 			public const int wide = 2131492899;
@@ -5730,106 +5745,109 @@ namespace Toggl.Giskard
 			public const int ReportsActivityHeader = 2130968646;
 			
 			// aapt resource value: 0x7f040047
-			public const int select_dialog_item_material = 2130968647;
+			public const int ReportsActivityItem = 2130968647;
 			
 			// aapt resource value: 0x7f040048
-			public const int select_dialog_multichoice_material = 2130968648;
+			public const int select_dialog_item_material = 2130968648;
 			
 			// aapt resource value: 0x7f040049
-			public const int select_dialog_singlechoice_material = 2130968649;
+			public const int select_dialog_multichoice_material = 2130968649;
 			
 			// aapt resource value: 0x7f04004a
-			public const int SelectBeginningOfWeekFragment = 2130968650;
+			public const int select_dialog_singlechoice_material = 2130968650;
 			
 			// aapt resource value: 0x7f04004b
-			public const int SelectBeginningOfWeekFragmentCell = 2130968651;
+			public const int SelectBeginningOfWeekFragment = 2130968651;
 			
 			// aapt resource value: 0x7f04004c
-			public const int SelectClientActivity = 2130968652;
+			public const int SelectBeginningOfWeekFragmentCell = 2130968652;
 			
 			// aapt resource value: 0x7f04004d
-			public const int SelectClientActivityCell = 2130968653;
+			public const int SelectClientActivity = 2130968653;
 			
 			// aapt resource value: 0x7f04004e
-			public const int SelectColorFragment = 2130968654;
+			public const int SelectClientActivityCell = 2130968654;
 			
 			// aapt resource value: 0x7f04004f
-			public const int SelectColorFragmentCell = 2130968655;
+			public const int SelectColorFragment = 2130968655;
 			
 			// aapt resource value: 0x7f040050
-			public const int SelectDateFormatFragment = 2130968656;
+			public const int SelectColorFragmentCell = 2130968656;
 			
 			// aapt resource value: 0x7f040051
-			public const int SelectDateFormatFragmentCell = 2130968657;
+			public const int SelectDateFormatFragment = 2130968657;
 			
 			// aapt resource value: 0x7f040052
-			public const int SelectDurationFormatFragment = 2130968658;
+			public const int SelectDateFormatFragmentCell = 2130968658;
 			
 			// aapt resource value: 0x7f040053
-			public const int SelectDurationFormatFragmentCell = 2130968659;
+			public const int SelectDurationFormatFragment = 2130968659;
 			
 			// aapt resource value: 0x7f040054
-			public const int SelectProjectActivity = 2130968660;
+			public const int SelectDurationFormatFragmentCell = 2130968660;
 			
 			// aapt resource value: 0x7f040055
-			public const int SelectProjectActivityProjectCell = 2130968661;
+			public const int SelectProjectActivity = 2130968661;
 			
 			// aapt resource value: 0x7f040056
-			public const int SelectProjectActivityTaskCell = 2130968662;
+			public const int SelectProjectActivityProjectCell = 2130968662;
 			
 			// aapt resource value: 0x7f040057
-			public const int SelectProjectActivityWorkspaceHeader = 2130968663;
+			public const int SelectProjectActivityTaskCell = 2130968663;
 			
 			// aapt resource value: 0x7f040058
-			public const int SelectTagsActivity = 2130968664;
+			public const int SelectProjectActivityWorkspaceHeader = 2130968664;
 			
 			// aapt resource value: 0x7f040059
-			public const int SelectTagsActivityCell = 2130968665;
+			public const int SelectTagsActivity = 2130968665;
 			
 			// aapt resource value: 0x7f04005a
-			public const int SelectWorkspaceFragment = 2130968666;
+			public const int SelectTagsActivityCell = 2130968666;
 			
 			// aapt resource value: 0x7f04005b
-			public const int SelectWorkspaceFragmentCell = 2130968667;
+			public const int SelectWorkspaceFragment = 2130968667;
 			
 			// aapt resource value: 0x7f04005c
-			public const int SettingsActivity = 2130968668;
+			public const int SelectWorkspaceFragmentCell = 2130968668;
 			
 			// aapt resource value: 0x7f04005d
-			public const int SettingsActivityWorkspaceCell = 2130968669;
+			public const int SettingsActivity = 2130968669;
 			
 			// aapt resource value: 0x7f04005e
-			public const int SplashScreen = 2130968670;
+			public const int SettingsActivityWorkspaceCell = 2130968670;
 			
 			// aapt resource value: 0x7f04005f
-			public const int StartTimeEntryActivity = 2130968671;
+			public const int SplashScreen = 2130968671;
 			
 			// aapt resource value: 0x7f040060
-			public const int StartTimeEntryActivityEmptyCell = 2130968672;
+			public const int StartTimeEntryActivity = 2130968672;
 			
 			// aapt resource value: 0x7f040061
-			public const int StartTimeEntryActivityNoEntityCell = 2130968673;
+			public const int StartTimeEntryActivityEmptyCell = 2130968673;
 			
 			// aapt resource value: 0x7f040062
-			public const int StartTimeEntryActivityProjectCell = 2130968674;
+			public const int StartTimeEntryActivityNoEntityCell = 2130968674;
 			
 			// aapt resource value: 0x7f040063
-			public const int StartTimeEntryActivityTagCell = 2130968675;
+			public const int StartTimeEntryActivityProjectCell = 2130968675;
 			
 			// aapt resource value: 0x7f040064
-			public const int StartTimeEntryActivityTaskCell = 2130968676;
+			public const int StartTimeEntryActivityTagCell = 2130968676;
 			
 			// aapt resource value: 0x7f040065
-			public const int StartTimeEntryActivityTimeEntryCell = 2130968677;
+			public const int StartTimeEntryActivityTaskCell = 2130968677;
 			
 			// aapt resource value: 0x7f040066
-			public const int StartTimeEntryActivityWorkspaceHeader = 2130968678;
+			public const int StartTimeEntryActivityTimeEntryCell = 2130968678;
 			
 			// aapt resource value: 0x7f040067
-			public const int support_simple_spinner_dropdown_item = 2130968679;
+			public const int StartTimeEntryActivityWorkspaceHeader = 2130968679;
 			
 			// aapt resource value: 0x7f040068
-			public const int tooltip = 2130968680;
+			public const int support_simple_spinner_dropdown_item = 2130968680;
+			
+			// aapt resource value: 0x7f040069
+			public const int tooltip = 2130968681;
 			
 			static Layout()
 			{

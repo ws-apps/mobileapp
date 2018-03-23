@@ -606,6 +606,7 @@
     <AndroidResource Include="Resources\layout\SelectClientActivityCell.axml" />
     <AndroidResource Include="Resources\layout\SelectWorkspaceFragment.axml" />
     <AndroidResource Include="Resources\layout\SelectWorkspaceFragmentCell.axml" />
+    <AndroidResource Include="Resources\layout\ReportsActivityItem.axml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Toggl.Foundation\Toggl.Foundation.csproj">
