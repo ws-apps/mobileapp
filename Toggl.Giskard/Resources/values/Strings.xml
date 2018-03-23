@@ -38,6 +38,7 @@
     <string name="DefaultWorkspace">Default Workspace</string>
     <string name="Total">Total</string>
     <string name="TryLoggingInInstead"><u>Try logging in instead.</u></string>
+    <string name="ForgotPassword">Forgot your password?</string>
 
     <string name="MainTemplateSelector" translatable="false">Toggl.Giskard.TemplateSelectors.MainTemplateSelector, Toggl.Giskard</string>
     <string name="ReportsTemplateSelector" translatable="false">Toggl.Giskard.TemplateSelectors.ReportsTemplateSelector, Toggl.Giskard</string>
