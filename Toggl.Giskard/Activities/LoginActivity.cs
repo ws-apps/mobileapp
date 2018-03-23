@@ -1,17 +1,21 @@
 using System;
+using System.Linq;
 using System.ComponentModel;
 using Android.App;
 using Android.Content.PM;
+using Android.Gms.Common;
 using Android.Graphics;
 using Android.OS;
 using Android.Support.V7.Widget;
 using Android.Views;
+using Android.Widget;
 using MvvmCross.Droid.Support.V7.AppCompat;
 using MvvmCross.Droid.Views.Attributes;
 using MvvmCross.Platform.WeakSubscription;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using Toggl.Giskard.Extensions;
 using static Android.Support.V7.Widget.Toolbar;
+using Toolbar = Android.Support.V7.Widget.Toolbar;
 
 namespace Toggl.Giskard.Activities
 {
@@ -32,6 +36,8 @@ namespace Toggl.Giskard.Activities
             base.OnCreate(bundle);
             SetContentView(Resource.Layout.LoginActivity);
 
+            setupGoogleText();
+
             setupToolbar();
         }
 
@@ -46,6 +52,16 @@ namespace Toggl.Giskard.Activities
 
             toolbar.NavigationClick += navigationClick;
             disposable = ViewModel.WeakSubscribe<PropertyChangedEventArgs>(nameof(ViewModel.Title), onTitleChanged);
+        }
+
+        private void setupGoogleText()
+        {
+            var text = Resources.GetString(Resource.String.common_signin_button_text_long);
+
+            FindViewById<SignInButton>(Resource.Id.LoginGoogleLogin)
+                .GetChildren<TextView>()
+                .First()
+                .Text = text;
         }
 
         private void onTitleChanged(object sender, PropertyChangedEventArgs args)
