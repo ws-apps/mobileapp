@@ -33,6 +33,15 @@ namespace Toggl.Daneel.Views.Reports
 		[Outlet]
 		UIKit.UILabel TotalDurationLabel { get; set; }
 		
+		[Outlet]
+		UIKit.UILabel BillableTitleLabel { get; set; }
+
+		[Outlet]
+		UIKit.UILabel TotalTitleLabel { get; set; }
+
+		[Outlet]
+		UIKit.UIView OverviewCardView { get; set; }
+
 		void ReleaseDesignerOutlets ()
 		{
 			if (BillablePercentageLabel != null) {
@@ -68,6 +77,21 @@ namespace Toggl.Daneel.Views.Reports
 			if (TotalDurationLabel != null) {
 				TotalDurationLabel.Dispose ();
 				TotalDurationLabel = null;
+			}
+
+			if (BillableTitleLabel != null) {
+				BillableTitleLabel.Dispose ();
+				BillableTitleLabel = null;
+			}
+
+			if (TotalTitleLabel != null) {
+				TotalTitleLabel.Dispose ();
+				TotalTitleLabel = null;
+			}
+
+			if (OverviewCardView != null) {
+				OverviewCardView.Dispose ();
+				OverviewCardView = null;
 			}
 		}
 	}

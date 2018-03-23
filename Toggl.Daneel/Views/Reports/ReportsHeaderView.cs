@@ -1,17 +1,16 @@
 ﻿using System;
+using CoreGraphics;
 using Foundation;
 using MvvmCross.Binding.BindingContext;
 using MvvmCross.Binding.iOS;
 using MvvmCross.Binding.iOS.Views;
 using MvvmCross.Plugins.Color.iOS;
 using Toggl.Daneel.Converters;
-using Toggl.Daneel.Extensions;
 using Toggl.Foundation.MvvmCross.Combiners;
 using Toggl.Foundation.MvvmCross.Converters;
 using Toggl.Foundation.MvvmCross.Helper;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using UIKit;
-using static Toggl.Foundation.MvvmCross.Helper.Animation;
 
 namespace Toggl.Daneel.Views.Reports
 {
@@ -36,6 +35,13 @@ namespace Toggl.Daneel.Views.Reports
 
             var templateImage = TotalDurationGraph.Image.ImageWithRenderingMode(UIImageRenderingMode.AlwaysTemplate);
             TotalDurationGraph.Image = templateImage;
+
+            prepareViews();
+
+            var colorConverter = new BoolToConstantValueConverter<UIColor>(
+                Color.Reports.Disabled.ToNativeColor(),
+                Color.Reports.TotalTimeActivated.ToNativeColor()
+            );
 
             var durationCombiner = new DurationValueCombiner();
 
@@ -72,10 +78,12 @@ namespace Toggl.Daneel.Views.Reports
                 bindingSet.Bind(TotalDurationGraph)
                           .For(v => v.TintColor)
                           .To(vm => vm.TotalTimeIsZero)
-                          .WithConversion(new BoolToConstantValueConverter<UIColor>(
-                              Color.Reports.Disabled.ToNativeColor(),
-                              Color.Reports.TotalTimeActivated.ToNativeColor()
-                          ));
+                          .WithConversion(colorConverter);
+
+                bindingSet.Bind(TotalDurationLabel)
+                          .For(v => v.TextColor)
+                          .To(vm => vm.TotalTimeIsZero)
+                          .WithConversion(colorConverter);
 
                 //Visibility
                 bindingSet.Bind(EmptyStateView)
@@ -84,6 +92,34 @@ namespace Toggl.Daneel.Views.Reports
 
                 bindingSet.Apply();
             });
+        }
+
+        private void prepareViews()
+        {
+            prepareCard(OverviewCardView);
+
+            TotalTitleLabel.AttributedText = prepareKerning(TotalTitleLabel.Text, -0.2);
+            TotalDurationLabel.AttributedText = prepareKerning(TotalDurationLabel.Text, -0.2);
+            BillableTitleLabel.AttributedText = prepareKerning(BillableTitleLabel.Text, -0.2);
+            BillablePercentageLabel.AttributedText = prepareKerning(BillablePercentageLabel.Text, -0.2);
+        }
+
+        private void prepareCard(UIView view)
+        {
+            view.Layer.CornerRadius = 8;
+            view.Layer.ShadowColor = UIColor.Black.CGColor;
+            view.Layer.ShadowRadius = 16;
+            view.Layer.ShadowOffset = new CGSize(0, 2);
+            view.Layer.ShadowOpacity = 0.1f;
+        }
+
+        private NSAttributedString prepareKerning(string text, double letterSpacing)
+        {
+            var attributedText = new NSMutableAttributedString(text);
+            var range = new NSRange(0, text.Length - 1);
+
+            attributedText.AddAttribute(UIStringAttributeKey.KerningAdjustment, new NSNumber(letterSpacing), range);
+            return attributedText;
         }
     }
 }
