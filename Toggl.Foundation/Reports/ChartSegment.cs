@@ -1,10 +1,10 @@
 ﻿using System;
 using Toggl.Multivac;
 using Toggl.Multivac.Extensions;
-using static Toggl.Multivac.Math;
 
 namespace Toggl.Foundation.Reports
 {
+    [Preserve(AllMembers = true)]
     public struct ChartSegment
     {
         public TimeSpan TrackedTime { get; }
