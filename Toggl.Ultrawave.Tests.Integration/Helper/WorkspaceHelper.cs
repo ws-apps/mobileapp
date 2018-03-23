@@ -32,7 +32,7 @@ namespace Toggl.Ultrawave.Tests.Integration.Helper
         {
             var json = $"{{\"pricing_plan_id\":{(int)plan}}}";
 
-            await makeRequest($"https://toggl.space/api/v9/workspaces/{workspaceId}/subscriptions", HttpMethod.Post, user, json);
+            await makeRequest($"https://toggl.space/api/v9/workspaces/{workspaceId}/subscription", HttpMethod.Post, user, json);
         }
 
         public static async Task<List<int>> GetAllAvailablePricingPlans(IUser user)
