@@ -163,7 +163,7 @@ namespace Toggl.Foundation.MvvmCross
                     .RegisterServices();
 
             var loginManager =
-                new LoginManager(self.ApiFactory, self.Database, self.GoogleService, self.ShortcutCreator, self.AccessRestrictionStorage, createDataSource);
+                new LoginManager(self.ApiFactory, self.Database, self.GoogleService, self.ShortcutCreator, self.AccessRestrictionStorage, createDataSource, scheduler);
 
             app.Initialize(loginManager, self.NavigationService, self.AccessRestrictionStorage);
         }

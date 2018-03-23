@@ -3,6 +3,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Reactive.Testing;
 using NSubstitute;
 using Toggl.Foundation.DataSources;
 using Toggl.Foundation.Login;
@@ -15,8 +16,10 @@ using Toggl.PrimeRadiant;
 using Toggl.PrimeRadiant.Models;
 using Toggl.PrimeRadiant.Settings;
 using Toggl.Ultrawave;
+using Toggl.Ultrawave.Exceptions;
 using Toggl.Ultrawave.Network;
 using Xunit;
+using Xunit.Sdk;
 using FoundationUser = Toggl.Foundation.Models.User;
 using User = Toggl.Ultrawave.Models.User;
 
@@ -37,14 +40,13 @@ namespace Toggl.Foundation.Tests.Login
             protected IAccessRestrictionStorage AccessRestrictionStorage { get; } = Substitute.For<IAccessRestrictionStorage>();
             protected ITogglDataSource DataSource { get; } = Substitute.For<ITogglDataSource>();
             protected IApplicationShortcutCreator ApplicationShortcutCreator { get; } = Substitute.For<IApplicationShortcutCreator>();
-
             protected readonly ILoginManager LoginManager;
-
+            protected TestScheduler TestScheduler { get;  } = new TestScheduler();  
             protected ITogglDataSource CreateDataSource(ITogglApi api) => DataSource;
 
             protected LoginManagerTest()
             {
-                LoginManager = new LoginManager(ApiFactory, Database, GoogleService, ApplicationShortcutCreator, AccessRestrictionStorage, CreateDataSource);
+                LoginManager = new LoginManager(ApiFactory, Database, GoogleService, ApplicationShortcutCreator, AccessRestrictionStorage, CreateDataSource, TestScheduler);
 
                 Api.User.Get().Returns(Observable.Return(User));
                 Api.User.GetWithGoogle().Returns(Observable.Return(User));
@@ -64,7 +66,8 @@ namespace Toggl.Foundation.Tests.Login
                 bool useGoogleService,
                 bool useAccessRestrictionStorage,
                 bool useApplicationShortcutCreator,
-                bool useCreateDataSource)
+                bool useCreateDataSource,
+                bool useScheduler)
             {
                 var database = useDatabase ? Database : null;
                 var apiFactory = useApiFactory ? ApiFactory : null;
@@ -72,9 +75,10 @@ namespace Toggl.Foundation.Tests.Login
                 var accessRestrictionStorage = useAccessRestrictionStorage ? AccessRestrictionStorage : null;
                 var createDataSource = useCreateDataSource ? CreateDataSource : (Func<ITogglApi, ITogglDataSource>)null;
                 var shortcutCreator = useApplicationShortcutCreator ? ApplicationShortcutCreator : null;
+                var testScheduler = useScheduler ? TestScheduler : null;
 
                 Action tryingToConstructWithEmptyParameters =
-                    () => new LoginManager(apiFactory, database, googleService, shortcutCreator, accessRestrictionStorage, createDataSource);
+                    () => new LoginManager(apiFactory, database, googleService, shortcutCreator, accessRestrictionStorage, createDataSource, testScheduler);
 
                 tryingToConstructWithEmptyParameters
                     .ShouldThrow<ArgumentNullException>();
@@ -121,6 +125,26 @@ namespace Toggl.Foundation.Tests.Login
                     await Database.Clear();
                     await Api.User.Get();
                 });
+            }
+            
+            [Fact, LogIfTooSlow]
+            public async Task RetriesAfterAWhileWhenTheAPIThrowsUserIsMissingApiTokenException()
+            {
+                Api.User.Get().Returns(Observable.Throw<IUser>(
+                   new UserIsMissingApiTokenException(Substitute.For<IRequest>(), Substitute.For<IResponse>())));
+
+                var observer = TestScheduler.CreateObserver<ITogglDataSource>();
+                LoginManager.Login(Email, Password).Subscribe(observer);                    
+                
+                TestScheduler.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
+                TestScheduler.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
+
+                Api.User.Get().Returns(Observable.Return(User));
+                
+                TestScheduler.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
+                TestScheduler.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
+                TestScheduler.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
+                TestScheduler.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);       
             }
 
             [Fact, LogIfTooSlow]

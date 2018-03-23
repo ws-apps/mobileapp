@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using Toggl.Foundation.DataSources;
+using Toggl.Foundation.Extensions;
 using Toggl.Foundation.Models;
 using Toggl.Foundation.Shortcuts;
 using Toggl.Multivac;
@@ -8,6 +10,7 @@ using Toggl.Multivac.Models;
 using Toggl.PrimeRadiant;
 using Toggl.PrimeRadiant.Settings;
 using Toggl.Ultrawave;
+using Toggl.Ultrawave.Exceptions;
 using Toggl.Ultrawave.Network;
 
 namespace Toggl.Foundation.Login
@@ -20,6 +23,7 @@ namespace Toggl.Foundation.Login
         private readonly IApplicationShortcutCreator shortcutCreator;
         private readonly IAccessRestrictionStorage accessRestrictionStorage;
         private readonly Func<ITogglApi, ITogglDataSource> createDataSource;
+        private readonly IScheduler scheduler;
 
         public LoginManager(
             IApiFactory apiFactory,
@@ -27,7 +31,9 @@ namespace Toggl.Foundation.Login
             IGoogleService googleService,
             IApplicationShortcutCreator shortcutCreator,
             IAccessRestrictionStorage accessRestrictionStorage,
-            Func<ITogglApi, ITogglDataSource> createDataSource)
+            Func<ITogglApi, ITogglDataSource> createDataSource,
+            IScheduler scheduler
+            )
         {
             Ensure.Argument.IsNotNull(database, nameof(database));
             Ensure.Argument.IsNotNull(apiFactory, nameof(apiFactory));
@@ -35,13 +41,14 @@ namespace Toggl.Foundation.Login
             Ensure.Argument.IsNotNull(googleService, nameof(googleService));
             Ensure.Argument.IsNotNull(shortcutCreator, nameof(shortcutCreator));
             Ensure.Argument.IsNotNull(createDataSource, nameof(createDataSource));
-
+            Ensure.Argument.IsNotNull(scheduler, nameof(scheduler));
             this.database = database;
             this.apiFactory = apiFactory;
             this.accessRestrictionStorage = accessRestrictionStorage;
             this.googleService = googleService;
             this.shortcutCreator = shortcutCreator;
             this.createDataSource = createDataSource;
+            this.scheduler = scheduler;
         }
 
         public IObservable<ITogglDataSource> Login(Email email, Password password)
@@ -54,12 +61,16 @@ namespace Toggl.Foundation.Login
             var credentials = Credentials.WithPassword(email, password);
 
             return database
-                    .Clear()
-                    .SelectMany(_ => apiFactory.CreateApiWith(credentials).User.Get())
-                    .Select(User.Clean)
-                    .SelectMany(database.User.Create)
-                    .Select(dataSourceFromUser)
-                    .Do(shortcutCreator.OnLogin);
+                .Clear()
+                .SelectMany(_ => apiFactory.CreateApiWith(credentials).User.Get())
+                .Select(User.Clean)
+                .SelectMany(database.User.Create)
+                .Select(dataSourceFromUser)
+                .Do(shortcutCreator.OnLogin)
+                .DelayedConditionalRetry(3, 
+                    attempt => attempt == 0 ? TimeSpan.Zero : TimeSpan.FromSeconds(attempt), 
+                    exception => exception is UserIsMissingApiTokenException,
+                    scheduler);
         }
 
         public IObservable<ITogglDataSource> LoginWithGoogle()
