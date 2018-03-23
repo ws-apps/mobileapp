@@ -353,8 +353,8 @@ Task("Build.Tests.Integration")
 
 Task("Build.Tests.UI")
     .IsDependentOn("Nuget")
-    .Does(BuildSolution("Debug"))
-    .Does(GenerateApk("Debug"));
+    .Does(BuildSolution("UITests"))
+    .Does(GenerateApk("UITests"));
 
 //iOS Builds
 Task("Build.Release.iOS.AdHoc")
