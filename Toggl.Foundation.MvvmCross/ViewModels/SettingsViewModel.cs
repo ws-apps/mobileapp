@@ -31,6 +31,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private readonly IInteractorFactory interactorFactory;
         private readonly IMvxNavigationService navigationService;
         private readonly IUserPreferences userPreferences;
+        private readonly IOnboardingStorage onboardingStorage;
         private readonly IMailService mailService;
         private readonly UserAgent userAgent;
 
@@ -111,6 +112,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             IInteractorFactory interactorFactory,
             IPlatformConstants platformConstants,
             IUserPreferences userPreferences,
+            IOnboardingStorage onboardingStorage,
             IMvxNavigationService navigationService)
         {
             Ensure.Argument.IsNotNull(userAgent, nameof(userAgent));
@@ -118,6 +120,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             Ensure.Argument.IsNotNull(mailService, nameof(mailService));
             Ensure.Argument.IsNotNull(dialogService, nameof(dialogService));
             Ensure.Argument.IsNotNull(userPreferences, nameof(userPreferences));
+            Ensure.Argument.IsNotNull(onboardingStorage, nameof(onboardingStorage));
             Ensure.Argument.IsNotNull(interactorFactory, nameof(interactorFactory));
             Ensure.Argument.IsNotNull(navigationService, nameof(navigationService));
             Ensure.Argument.IsNotNull(platformConstants, nameof(platformConstants));
@@ -130,6 +133,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             this.navigationService = navigationService;
             this.platformConstants = platformConstants;
             this.userPreferences = userPreferences;
+            this.onboardingStorage = onboardingStorage;
 
             disposeBag.Add(dataSource.SyncManager
                 .ProgressObservable
@@ -325,6 +329,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             IsSynced = false;
             IsRunningSync = false;
             userPreferences.Reset();
+            onboardingStorage.Reset();
             await dataSource.Logout();
             await navigationService.Navigate<OnboardingViewModel>();
         }

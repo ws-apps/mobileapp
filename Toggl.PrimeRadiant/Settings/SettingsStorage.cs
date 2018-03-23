@@ -97,6 +97,10 @@ namespace Toggl.PrimeRadiant.Settings
 
         public void Dismiss(IDismissable dismissable) => keyValueStorage.SetBool(onboardingPrefix + dismissable.Key, true);
 
+        void IOnboardingStorage.Reset()
+        {
+        }
+
         #endregion
 
         #region IUserPreferences
@@ -113,7 +117,7 @@ namespace Toggl.PrimeRadiant.Settings
             keyValueStorage.SetBool(preferManualMode, false);
         }
 
-        public void Reset()
+        void IUserPreferences.Reset()
         {
             EnableTimerMode();
         }

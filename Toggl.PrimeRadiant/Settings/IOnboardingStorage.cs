@@ -15,5 +15,7 @@ namespace Toggl.PrimeRadiant.Settings
 
         bool WasDismissed(IDismissable dismissable);
         void Dismiss(IDismissable dismissable);
+
+        void Reset();
     }
 }
