@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
+using Toggl.Ultrawave.Exceptions;
 
 namespace Toggl.Foundation.Extensions
 {
@@ -10,22 +11,26 @@ namespace Toggl.Foundation.Extensions
             this IObservable<T> source,
             int maxRetries,
             Func<int, TimeSpan> backOffStrategy,
-            Func<Exception, bool> shouldRetry,
+            Func<Exception, bool> shouldRetryOn,
             IScheduler scheduler)
         {
             var currentAttempt = 0;
 
-            var deferedSource = Observable.Defer(() 
-                => source.DelaySubscription(backOffStrategy(currentAttempt++), scheduler) 
-            );
-
-            var catcher = deferedSource.Catch<T, Exception>(
-                ex => shouldRetry(ex) && currentAttempt < maxRetries
-                    ? deferedSource
-                    : Observable.Throw<T>(ex)
-            );
-
-            return catcher;
+            return Observable.Defer(() =>
+                {
+                    var timeSpan = currentAttempt == 0 ? TimeSpan.Zero : backOffStrategy(currentAttempt);
+                    currentAttempt++;
+                    return source.DelaySubscription(timeSpan, scheduler);
+                })
+                .Select<T, (bool succeeded, T t, Exception e)>(result => (true, result, null))
+                .Catch<(bool succeeded, T t, Exception e), Exception>(exception => 
+                    shouldRetryOn(exception)
+                    ? Observable.Throw<(bool succeeded, T t, Exception e)>(exception)
+                    : Observable.Return((succeeded: false, t: default(T), e: exception))
+                ).Retry(maxRetries + 1)
+                .SelectMany(result =>
+                    result.succeeded ? Observable.Return(result.t) : Observable.Throw<T>(result.e)
+                );
         }
     }
 }
