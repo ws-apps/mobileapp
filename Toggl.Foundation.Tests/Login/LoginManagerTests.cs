@@ -339,12 +339,12 @@ namespace Toggl.Foundation.Tests.Login
             [Fact, LogIfTooSlow]
             public void DoesNotRetryWhenTheApiThrowsSomethingOtherThanUserIsMissingApiTokenException()
             {
-                Api.User.Get().Returns(Observable.Throw<IUser>(
+                Api.User.SignUp(Email, Password).Returns(Observable.Throw<IUser>(
                     Substitute.For<ServerErrorException>(Substitute.For<IRequest>(), Substitute.For<IResponse>(), "Some Exception"))
                 );
                 
                 Action tryingToSignUpWhenTheApiIsThrowingSomeRandomServerErrorException =
-                    () => LoginManager.Login(Email, Password).Wait();
+                    () => LoginManager.SignUp(Email, Password).Wait();
 
                 tryingToSignUpWhenTheApiIsThrowingSomeRandomServerErrorException
                     .ShouldThrow<ServerErrorException>();
@@ -511,5 +511,44 @@ namespace Toggl.Foundation.Tests.Login
                 ApiFactory.Received(2).CreateApiWith(Arg.Any<Credentials>());
             }
         }
+        
+        public sealed class TheSignUpMethodRetries : LoginManagerWithTestSchedulerTest
+        {
+            [Theory, LogIfTooSlow]
+            [InlineData(1, 1)]
+            [InlineData(3, 2)]
+            [InlineData(5, 2)]
+            [InlineData(13, 3)]
+            [InlineData(100, 3)]
+            public void RetriesAfterAWhileWhenTheApiThrowsUserIsMissingApiTokenException(int seconds, int apiCalls)
+            {
+                Api.User.SignUp(Email, Password).Returns(Observable.Throw<IUser>(
+                    new UserIsMissingApiTokenException(Substitute.For<IRequest>(), Substitute.For<IResponse>())));
+
+                var observer = TestScheduler.CreateObserver<ITogglDataSource>();
+                TestScheduler.Start();
+                LoginManager.SignUp(Email, Password).Subscribe(observer);
+                TestScheduler.AdvanceBy(TimeSpan.FromSeconds(seconds).Ticks);
+                ApiFactory.Received(apiCalls).CreateApiWith(Arg.Any<Credentials>());
+                TestScheduler.AdvanceBy(TimeSpan.FromDays(1).Ticks);
+            }
+
+            [Fact, LogIfTooSlow]
+            public void WillStopRetryingAfterASuccessFullSingUpApiCall()
+            {
+                var observer = TestScheduler.CreateObserver<ITogglDataSource>();
+                Api.User.SignUp(Email, Password).Returns(Observable.Throw<IUser>(
+                    new UserIsMissingApiTokenException(Substitute.For<IRequest>(), Substitute.For<IResponse>()))
+                );
+                Api.User.SignUp(Email, Password).Returns(Observable.Return(User));
+
+                TestScheduler.Start();
+                LoginManager.SignUp(Email, Password).Subscribe(observer);
+                
+                TestScheduler.AdvanceBy(TimeSpan.FromDays(1).Ticks);
+                ApiFactory.Received(2).CreateApiWith(Arg.Any<Credentials>());
+            }
+        }
+
     }
 }
