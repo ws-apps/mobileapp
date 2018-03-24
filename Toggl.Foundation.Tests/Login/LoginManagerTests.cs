@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
@@ -494,6 +495,20 @@ namespace Toggl.Foundation.Tests.Login
                 ApiFactory.Received(apiCalls).CreateApiWith(Arg.Any<Credentials>());
                 TestScheduler.AdvanceBy(TimeSpan.FromDays(1).Ticks);
             }
+            
+            [Fact, LogIfTooSlow]
+            public void WillRetryTheLoginTwoTimesWhenReceivingUserIsMissingApiTokenExceptionAndThenThrowIt()
+            {
+                Api.User.Get().Returns(Observable.Throw<IUser>(
+                    new UserIsMissingApiTokenException(Substitute.For<IRequest>(), Substitute.For<IResponse>())));
+                
+                var observer = TestScheduler.CreateObserver<ITogglDataSource>();
+                TestScheduler.Start();
+                LoginManager.Login(Email, Password).Subscribe(observer);
+                TestScheduler.AdvanceBy(TimeSpan.FromSeconds(20).Ticks);
+
+                observer.Messages.Single().Value.Exception.Should().BeOfType<UserIsMissingApiTokenException>();
+            }
 
             [Fact, LogIfTooSlow]
             public void WillStopRetryingAfterASuccessFullLoginApiCall()
@@ -531,6 +546,20 @@ namespace Toggl.Foundation.Tests.Login
                 TestScheduler.AdvanceBy(TimeSpan.FromSeconds(seconds).Ticks);
                 ApiFactory.Received(apiCalls).CreateApiWith(Arg.Any<Credentials>());
                 TestScheduler.AdvanceBy(TimeSpan.FromDays(1).Ticks);
+            }
+            
+            [Fact, LogIfTooSlow]
+            public void WillRetryTheSignUpTwoTimesWhenReceivingUserIsMissingApiTokenExceptionAndThenThrowIt()
+            {
+                Api.User.SignUp(Email, Password).Returns(Observable.Throw<IUser>(
+                    new UserIsMissingApiTokenException(Substitute.For<IRequest>(), Substitute.For<IResponse>())));
+                
+                var observer = TestScheduler.CreateObserver<ITogglDataSource>();
+                TestScheduler.Start();
+                LoginManager.SignUp(Email, Password).Subscribe(observer);
+                TestScheduler.AdvanceBy(TimeSpan.FromSeconds(20).Ticks);
+
+                observer.Messages.Single().Value.Exception.Should().BeOfType<UserIsMissingApiTokenException>();
             }
 
             [Fact, LogIfTooSlow]
