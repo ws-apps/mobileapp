@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Reactive.Testing;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using Toggl.Foundation.DataSources;
 using Toggl.Foundation.Login;
 using Toggl.Foundation.Shortcuts;
@@ -41,12 +43,13 @@ namespace Toggl.Foundation.Tests.Login
             protected ITogglDataSource DataSource { get; } = Substitute.For<ITogglDataSource>();
             protected IApplicationShortcutCreator ApplicationShortcutCreator { get; } = Substitute.For<IApplicationShortcutCreator>();
             protected readonly ILoginManager LoginManager;
-            protected TestScheduler TestScheduler { get;  } = new TestScheduler();  
+            protected IScheduler Scheduler { get; } = System.Reactive.Concurrency.Scheduler.Default;  
             protected ITogglDataSource CreateDataSource(ITogglApi api) => DataSource;
+            protected virtual IScheduler CreateScheduler => Scheduler;
 
             protected LoginManagerTest()
             {
-                LoginManager = new LoginManager(ApiFactory, Database, GoogleService, ApplicationShortcutCreator, AccessRestrictionStorage, CreateDataSource, TestScheduler);
+                LoginManager = new LoginManager(ApiFactory, Database, GoogleService, ApplicationShortcutCreator, AccessRestrictionStorage, CreateDataSource, CreateScheduler);
 
                 Api.User.Get().Returns(Observable.Return(User));
                 Api.User.GetWithGoogle().Returns(Observable.Return(User));
@@ -55,11 +58,17 @@ namespace Toggl.Foundation.Tests.Login
                 Database.Clear().Returns(Observable.Return(Unit.Default));
             }
         }
+        
+        public abstract class LoginManagerWithTestSchedulerTest : LoginManagerTest
+        {
+            protected readonly TestScheduler TestScheduler = new TestScheduler();
+            protected override IScheduler CreateScheduler => TestScheduler;
+        }
 
         public sealed class Constructor : LoginManagerTest
         {
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(SixParameterConstructorTestData))]
+            [ClassData(typeof(SevenParameterConstructorTestData))]
             public void ThrowsIfAnyOfTheArgumentsIsNull(
                 bool useApiFactory,
                 bool useDatabase,
@@ -75,7 +84,7 @@ namespace Toggl.Foundation.Tests.Login
                 var accessRestrictionStorage = useAccessRestrictionStorage ? AccessRestrictionStorage : null;
                 var createDataSource = useCreateDataSource ? CreateDataSource : (Func<ITogglApi, ITogglDataSource>)null;
                 var shortcutCreator = useApplicationShortcutCreator ? ApplicationShortcutCreator : null;
-                var testScheduler = useScheduler ? TestScheduler : null;
+                var testScheduler = useScheduler ? Scheduler : null;
 
                 Action tryingToConstructWithEmptyParameters =
                     () => new LoginManager(apiFactory, database, googleService, shortcutCreator, accessRestrictionStorage, createDataSource, testScheduler);
@@ -126,26 +135,6 @@ namespace Toggl.Foundation.Tests.Login
                     await Api.User.Get();
                 });
             }
-            
-            [Fact, LogIfTooSlow]
-            public async Task RetriesAfterAWhileWhenTheAPIThrowsUserIsMissingApiTokenException()
-            {
-                Api.User.Get().Returns(Observable.Throw<IUser>(
-                   new UserIsMissingApiTokenException(Substitute.For<IRequest>(), Substitute.For<IResponse>())));
-
-                var observer = TestScheduler.CreateObserver<ITogglDataSource>();
-                LoginManager.Login(Email, Password).Subscribe(observer);                    
-                
-                TestScheduler.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
-                TestScheduler.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
-
-                Api.User.Get().Returns(Observable.Return(User));
-                
-                TestScheduler.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
-                TestScheduler.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
-                TestScheduler.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);
-                TestScheduler.AdvanceBy(TimeSpan.FromSeconds(1).Ticks);       
-            }
 
             [Fact, LogIfTooSlow]
             public async Task CallsTheGetMethodOfTheUserApi()
@@ -185,6 +174,20 @@ namespace Toggl.Foundation.Tests.Login
                 await LoginManager.Login(Email, Password);
 
                 ApplicationShortcutCreator.Received().OnLogin(Arg.Any<ITogglDataSource>());
+            }
+            
+            [Fact, LogIfTooSlow]
+            public void DoesNotRetryWhenTheApiThrowsSomethingOtherThanUserIsMissingApiTokenException()
+            {
+                Api.User.Get().Returns(Observable.Throw<IUser>(
+                    Substitute.For<ServerErrorException>(Substitute.For<IRequest>(), Substitute.For<IResponse>(), "Some Exception"))
+                );
+                
+                Action tryingToLoginWhenTheApiIsThrowingSomeRandomServerErrorException =
+                    () => LoginManager.Login(Email, Password).Wait();
+
+                tryingToLoginWhenTheApiIsThrowingSomeRandomServerErrorException
+                    .ShouldThrow<ServerErrorException>();
             }
         }
 
@@ -454,6 +457,44 @@ namespace Toggl.Foundation.Tests.Login
                 await LoginManager.LoginWithGoogle();
 
                 ApplicationShortcutCreator.Received().OnLogin(Arg.Any<ITogglDataSource>());
+            }
+        }
+
+        public sealed class TheLoginMethodRetries : LoginManagerWithTestSchedulerTest
+        {
+            [Theory, LogIfTooSlow]
+            [InlineData(1, 1)]
+            [InlineData(3, 2)]
+            [InlineData(5, 2)]
+            [InlineData(13, 3)]
+            [InlineData(100, 3)]
+            public void RetriesAfterAWhileWhenTheApiThrowsUserIsMissingApiTokenException(int seconds, int apiCalls)
+            {
+                Api.User.Get().Returns(Observable.Throw<IUser>(
+                   new UserIsMissingApiTokenException(Substitute.For<IRequest>(), Substitute.For<IResponse>())));
+
+                var observer = TestScheduler.CreateObserver<ITogglDataSource>();
+                TestScheduler.Start();
+                LoginManager.Login(Email, Password).Subscribe(observer);
+                TestScheduler.AdvanceBy(TimeSpan.FromSeconds(seconds).Ticks);
+                ApiFactory.Received(apiCalls).CreateApiWith(Arg.Any<Credentials>());
+                TestScheduler.AdvanceBy(TimeSpan.FromDays(1).Ticks);
+            }
+
+            [Fact, LogIfTooSlow]
+            public void WillStopRetryingAfterASuccessFullLoginApiCall()
+            {
+                var observer = TestScheduler.CreateObserver<ITogglDataSource>();
+                Api.User.Get().Returns(Observable.Throw<IUser>(
+                    new UserIsMissingApiTokenException(Substitute.For<IRequest>(), Substitute.For<IResponse>()))
+                );
+                Api.User.Get().Returns(Observable.Return(User));
+
+                TestScheduler.Start();
+                LoginManager.Login(Email, Password).Subscribe(observer);
+                
+                TestScheduler.AdvanceBy(TimeSpan.FromDays(1).Ticks);
+                ApiFactory.Received(2).CreateApiWith(Arg.Any<Credentials>());
             }
         }
     }
