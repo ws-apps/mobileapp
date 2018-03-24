@@ -98,7 +98,12 @@ namespace Toggl.Foundation.Login
                     .Select(User.Clean)
                     .SelectMany(database.User.Create)
                     .Select(dataSourceFromUser)
-                    .Do(shortcutCreator.OnLogin);
+                    .Do(shortcutCreator.OnLogin)
+                    .DelayedConditionalRetry(2, 
+                        attempt => TimeSpan.FromSeconds(attempt == 1 ? 2 : 10), 
+                        exception => exception is UserIsMissingApiTokenException,
+                        scheduler);
+                
         }
 
         public IObservable<ITogglDataSource> SignUpWithGoogle()
