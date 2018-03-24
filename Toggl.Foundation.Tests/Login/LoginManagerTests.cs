@@ -335,6 +335,20 @@ namespace Toggl.Foundation.Tests.Login
 
                 ApplicationShortcutCreator.Received().OnLogin(Arg.Any<ITogglDataSource>());
             }
+            
+            [Fact, LogIfTooSlow]
+            public void DoesNotRetryWhenTheApiThrowsSomethingOtherThanUserIsMissingApiTokenException()
+            {
+                Api.User.Get().Returns(Observable.Throw<IUser>(
+                    Substitute.For<ServerErrorException>(Substitute.For<IRequest>(), Substitute.For<IResponse>(), "Some Exception"))
+                );
+                
+                Action tryingToSignUpWhenTheApiIsThrowingSomeRandomServerErrorException =
+                    () => LoginManager.Login(Email, Password).Wait();
+
+                tryingToSignUpWhenTheApiIsThrowingSomeRandomServerErrorException
+                    .ShouldThrow<ServerErrorException>();
+            }
         }
         
         public sealed class TheRefreshTokenMethod : LoginManagerTest
