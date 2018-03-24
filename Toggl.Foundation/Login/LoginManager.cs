@@ -67,8 +67,8 @@ namespace Toggl.Foundation.Login
                 .SelectMany(database.User.Create)
                 .Select(dataSourceFromUser)
                 .Do(shortcutCreator.OnLogin)
-                .DelayedConditionalRetry(3, 
-                    attempt => attempt == 0 ? TimeSpan.Zero : TimeSpan.FromSeconds(attempt), 
+                .DelayedConditionalRetry(2, 
+                    attempt => TimeSpan.FromSeconds(attempt == 1 ? 2 : 10), 
                     exception => exception is UserIsMissingApiTokenException,
                     scheduler);
         }
